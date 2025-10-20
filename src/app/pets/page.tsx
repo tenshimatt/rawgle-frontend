@@ -15,7 +15,7 @@ interface Pet {
   name: string;
   species: string;
   breed: string;
-  birthDate: string;
+  birthdate: string;
   weight: number;
   gender: string;
   image?: string;
@@ -55,8 +55,8 @@ export default function PetsPage() {
     fetchPets();
   }, []);
 
-  const calculateAge = (birthDate: string): number => {
-    const birth = new Date(birthDate);
+  const calculateAge = (birthdate: string): number => {
+    const birth = new Date(birthdate);
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
@@ -132,7 +132,7 @@ export default function PetsPage() {
                         <div>
                           <p className="text-sm text-muted">Age</p>
                           <p className="font-semibold text-charcoal">
-                            {calculateAge(pet.birthDate)} years
+                            {calculateAge(pet.birthdate)} years
                           </p>
                         </div>
                       </div>
@@ -149,7 +149,7 @@ export default function PetsPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted">Born:</span>
                         <span className="font-semibold text-charcoal">
-                          {new Date(pet.birthDate).toLocaleDateString()}
+                          {new Date(pet.birthdate).toLocaleDateString()}
                         </span>
                       </div>
                     </div>

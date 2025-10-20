@@ -13,7 +13,7 @@ interface Pet {
   name: string;
   species: string;
   breed: string;
-  birthDate: string;
+  birthdate: string;
   weight: number;
   gender: string;
   image?: string;
@@ -33,7 +33,7 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
     name: pet.name,
     species: pet.species,
     breed: pet.breed,
-    birthDate: pet.birthDate,
+    birthdate: pet.birthdate,
     weight: pet.weight.toString(),
     gender: pet.gender,
     image: pet.image || '',
@@ -45,7 +45,7 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
       name: pet.name,
       species: pet.species,
       breed: pet.breed,
-      birthDate: pet.birthDate,
+      birthdate: pet.birthdate,
       weight: pet.weight.toString(),
       gender: pet.gender,
       image: pet.image || '',
@@ -57,13 +57,14 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/pets/${pet.id}`, {
+      const response = await fetch('/api/pets', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'x-user-id': 'demo-user', // TODO: Replace with actual user ID from auth
         },
         body: JSON.stringify({
+          id: pet.id,
           ...formData,
           weight: parseFloat(formData.weight),
         }),
@@ -92,7 +93,7 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
     setDeleting(true);
 
     try {
-      const response = await fetch(`/api/pets/${pet.id}`, {
+      const response = await fetch(`/api/pets?id=${pet.id}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': 'demo-user', // TODO: Replace with actual user ID from auth
