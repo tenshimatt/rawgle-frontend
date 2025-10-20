@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 203 37% 22%; /* charcoal */
+
+    --card: 0 0% 100%;
+    --card-foreground: 203 37% 22%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 203 37% 22%;
+
+    --primary: 203 37% 22%; /* charcoal */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 90 34% 63%; /* olivine */
+    --secondary-foreground: 203 37% 22%;
+
+    --muted: 203 37% 96%;
+    --muted-foreground: 203 37% 46%;
+
+    --accent: 44 97% 63%; /* sunglow */
+    --accent-foreground: 203 37% 22%;
+
+    --destructive: 24 82% 60%; /* pumpkin */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 203 37% 90%;
+    --input: 203 37% 90%;
+    --ring: 203 37% 22%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 203 37% 10%;
+    --foreground: 0 0% 95%;
+
+    --card: 203 37% 15%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 203 37% 15%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 90 34% 63%; /* olivine in dark mode */
+    --primary-foreground: 203 37% 22%;
+
+    --secondary: 162 23% 49%; /* zomp */
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 203 37% 20%;
+    --muted-foreground: 203 37% 60%;
+
+    --accent: 44 97% 63%; /* sunglow stays bright */
+    --accent-foreground: 203 37% 22%;
+
+    --destructive: 24 82% 60%;
+    --destructive-foreground: 0 0% 95%;
+
+    --border: 203 37% 25%;
+    --input: 203 37% 25%;
+    --ring: 90 34% 63%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .gradient-brand {
+    @apply bg-gradient-to-br from-charcoal via-zomp to-olivine;
+  }
+  
+  .gradient-paws {
+    @apply bg-gradient-to-r from-sunglow via-pumpkin to-sunglow;
+  }
+  
+  .text-gradient-brand {
+    @apply bg-gradient-to-r from-charcoal to-olivine bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-paws {
+    @apply bg-gradient-to-r from-sunglow to-pumpkin bg-clip-text text-transparent;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .btn-primary {
+    @apply bg-charcoal text-white hover:bg-charcoal-600 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-olivine text-charcoal hover:bg-olivine-600 transition-colors;
+  }
+  
+  .btn-paws {
+    @apply bg-gradient-to-r from-sunglow to-pumpkin text-white hover:shadow-lg transition-all;
+  }
+}
+
+/* Custom scrollbar */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.charcoal.300') transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-charcoal-300 rounded-full;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-charcoal-400;
+  }
+}

@@ -1,0 +1,46 @@
+name = "rawgle-frontend"
+compatibility_date = "2024-08-01"
+pages_build_output_dir = ".vercel/output/static"
+
+[build]
+command = "npm run pages:build"
+
+[build.environment]
+NODE_VERSION = "18"
+
+[[kv_namespaces]]
+binding = "RAWGLE_KV"
+id = "your-kv-namespace-id"
+preview_id = "your-preview-kv-namespace-id"
+
+[[r2_buckets]]
+binding = "RAWGLE_STORAGE"
+bucket_name = "rawgle-assets"
+preview_bucket_name = "rawgle-assets-preview"
+
+[[durable_objects.bindings]]
+name = "RAWGLE_DO"
+class_name = "RawgleDurableObject"
+script_name = "rawgle-worker"
+
+[vars]
+NEXT_PUBLIC_API_URL = "https://api.rawgle.com"
+NEXT_PUBLIC_SOLANA_NETWORK = "mainnet-beta"
+NEXT_PUBLIC_MAPBOX_TOKEN = "your-mapbox-token"
+
+[site]
+bucket = ".vercel/output/static"
+
+[[redirects]]
+from = "/api/*"
+to = "https://api.rawgle.com/:splat"
+status = 200
+
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+X-XSS-Protection = "1; mode=block"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
