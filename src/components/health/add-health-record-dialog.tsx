@@ -55,6 +55,7 @@ export function AddHealthRecordDialog({ petId, onRecordAdded }: AddHealthRecordD
           notes: '',
           nextDueDate: '',
           cost: '',
+          photos: [],
         });
         setOpen(false);
         onRecordAdded?.();

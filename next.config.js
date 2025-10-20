@@ -10,9 +10,7 @@ const withPWA = require('next-pwa')({
 
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export', // For Cloudflare Pages static export
   images: {
-    unoptimized: true, // Required for static export
     remotePatterns: [
       {
         protocol: 'https',

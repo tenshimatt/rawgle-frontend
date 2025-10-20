@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,7 +25,7 @@ interface Pet {
   name: string;
 }
 
-export default function ActivityPage() {
+function ActivityContent() {
   const searchParams = useSearchParams();
   const petId = searchParams?.get('pet');
 
@@ -178,5 +178,17 @@ export default function ActivityPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ActivityPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen page-gradient flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin icon-primary" />
+      </div>
+    }>
+      <ActivityContent />
+    </Suspense>
   );
 }
