@@ -39,12 +39,12 @@ export default function HealthPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-blue-500" />
+                  <Activity className="h-5 w-5 text-persian-green" />
                   Energy Level
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-blue-600">High</div>
+                <div className="text-3xl font-bold text-persian-green">High</div>
               </CardContent>
             </Card>
 

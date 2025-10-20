@@ -40,7 +40,7 @@ export default function FeedingPage() {
                 <CardTitle className="text-lg">Weekly Average</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold text-blue-600">475g</div>
+                <div className="text-4xl font-bold text-persian-green">475g</div>
                 <p className="text-sm text-gray-600">Per meal</p>
               </CardContent>
             </Card>

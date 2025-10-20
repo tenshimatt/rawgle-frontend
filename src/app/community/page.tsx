@@ -8,7 +8,7 @@ import { mockCommunityPosts } from '@/lib/mock-data';
 
 export default function CommunityPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-b gradient-hero">
       <MainNav />
 
       <div className="container mx-auto px-4 py-8">
@@ -43,7 +43,7 @@ export default function CommunityPage() {
                   <p className="text-gray-700 mb-4">{post.content}</p>
 
                   <div className="flex items-center gap-6 text-gray-600">
-                    <button className="flex items-center gap-2 hover:text-blue-500">
+                    <button className="flex items-center gap-2 hover:text-persian-green">
                       <ThumbsUp className="h-5 w-5" />
                       <span>{post.likes}</span>
                     </button>

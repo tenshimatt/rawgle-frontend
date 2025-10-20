@@ -72,7 +72,7 @@ export default function HomePage() {
           <Link href="/feeding">
             <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-blue-300 h-full">
               <CardContent className="p-6 text-center">
-                <Calendar className="h-16 w-16 text-blue-500 mx-auto mb-4" />
+                <Calendar className="h-16 w-16 text-persian-green mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Smart Feeding</h3>
                 <p className="text-gray-600 text-sm">
                   Calculate portions, track meals, and monitor digestion patterns

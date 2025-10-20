@@ -163,7 +163,7 @@ export default function SupplierMapPage() {
             <Marker position={userLocation}>
               <Popup>
                 <div className="text-center">
-                  <MapPin className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                  <MapPin className="h-6 w-6 text-persian-green mx-auto mb-2" />
                   <p className="font-semibold">Your Location</p>
                 </div>
               </Popup>
@@ -192,7 +192,7 @@ export default function SupplierMapPage() {
                   </div>
 
                   {supplier.distance_miles && (
-                    <p className="text-sm font-semibold text-blue-600 mb-3">
+                    <p className="text-sm font-semibold text-persian-green mb-3">
                       📍 {supplier.distance_miles.toFixed(1)} miles away
                     </p>
                   )}
@@ -202,7 +202,7 @@ export default function SupplierMapPage() {
                       href={supplier.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-sm font-medium"
+                      className="text-persian-green hover:underline text-sm font-medium"
                     >
                       Visit Website →
                     </a>
@@ -230,7 +230,7 @@ export default function SupplierMapPage() {
         {isLoading && (
           <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10 pointer-events-none">
             <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-persian-green" />
               <span className="font-medium">Loading suppliers...</span>
             </div>
           </div>

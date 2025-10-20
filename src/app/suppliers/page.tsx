@@ -142,7 +142,7 @@ export default function SuppliersPage() {
 
             {/* Sign In Button */}
             <Link href="/auth/sign-in">
-              <Button className="bg-blue-500 hover:bg-blue-600">
+              <Button className="bg-persian-green hover:bg-persian-green-600">
                 🔐 Sign In to Review
               </Button>
             </Link>
@@ -235,7 +235,7 @@ export default function SuppliersPage() {
                   {(supplier.phone || supplier.phone_number) && (
                     <div className="flex items-center gap-2">
                       <Phone className="h-5 w-5 text-gray-400" />
-                      <a href={`tel:${supplier.phone || supplier.phone_number}`} className="text-sm text-blue-600 hover:underline">
+                      <a href={`tel:${supplier.phone || supplier.phone_number}`} className="text-sm text-persian-green hover:underline">
                         {supplier.phone || supplier.phone_number}
                       </a>
                     </div>
@@ -249,7 +249,7 @@ export default function SuppliersPage() {
                         href={supplier.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                        className="text-sm text-persian-green hover:underline flex items-center gap-1"
                       >
                         {supplier.website.replace('https://', '')}
                         <ExternalLink className="h-3 w-3" />

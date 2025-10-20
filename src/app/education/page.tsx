@@ -31,10 +31,10 @@ export default function EducationPage() {
                   <CardHeader>
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Icon className="h-6 w-6 text-blue-600" />
+                        <Icon className="h-6 w-6 text-persian-green" />
                       </div>
                       <div>
-                        <span className="text-sm text-blue-600 font-semibold">{guide.type}</span>
+                        <span className="text-sm text-persian-green font-semibold">{guide.type}</span>
                         <CardTitle className="text-lg">{guide.title}</CardTitle>
                       </div>
                     </div>

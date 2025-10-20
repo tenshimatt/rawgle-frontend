@@ -4,65 +4,71 @@
 
 @layer base {
   :root {
+    /* New warm color palette */
+    --charcoal: 197 37% 24%;
+    --persian-green: 173 58% 40%;
+    --sandy-brown: 27 87% 67%;
+    --burnt-sienna: 12 76% 61%;
+
     --background: 0 0% 100%;
-    --foreground: 203 37% 22%; /* charcoal */
+    --foreground: var(--charcoal);
 
     --card: 0 0% 100%;
-    --card-foreground: 203 37% 22%;
+    --card-foreground: var(--charcoal);
 
     --popover: 0 0% 100%;
-    --popover-foreground: 203 37% 22%;
+    --popover-foreground: var(--charcoal);
 
-    --primary: 203 37% 22%; /* charcoal */
+    --primary: var(--persian-green);
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 90 34% 63%; /* olivine */
-    --secondary-foreground: 203 37% 22%;
+    --secondary: var(--sandy-brown);
+    --secondary-foreground: var(--charcoal);
 
-    --muted: 203 37% 96%;
-    --muted-foreground: 203 37% 46%;
+    --muted: 197 37% 96%;
+    --muted-foreground: 197 37% 46%;
 
-    --accent: 44 97% 63%; /* sunglow */
-    --accent-foreground: 203 37% 22%;
+    --accent: var(--burnt-sienna);
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 24 82% 60%; /* pumpkin */
+    --destructive: var(--burnt-sienna);
     --destructive-foreground: 0 0% 100%;
 
-    --border: 203 37% 90%;
-    --input: 203 37% 90%;
-    --ring: 203 37% 22%;
+    --border: 197 37% 90%;
+    --input: 197 37% 90%;
+    --ring: var(--persian-green);
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 203 37% 10%;
+    --background: 197 37% 10%;
     --foreground: 0 0% 95%;
 
-    --card: 203 37% 15%;
+    --card: 197 37% 15%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 203 37% 15%;
+    --popover: 197 37% 15%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 90 34% 63%; /* olivine in dark mode */
-    --primary-foreground: 203 37% 22%;
+    --primary: var(--persian-green);
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 162 23% 49%; /* zomp */
-    --secondary-foreground: 0 0% 95%;
+    --secondary: var(--sandy-brown);
+    --secondary-foreground: var(--charcoal);
 
-    --muted: 203 37% 20%;
-    --muted-foreground: 203 37% 60%;
+    --muted: 197 37% 20%;
+    --muted-foreground: 197 37% 60%;
 
-    --accent: 44 97% 63%; /* sunglow stays bright */
-    --accent-foreground: 203 37% 22%;
+    --accent: var(--burnt-sienna);
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 24 82% 60%;
+    --destructive: var(--burnt-sienna);
     --destructive-foreground: 0 0% 95%;
 
-    --border: 203 37% 25%;
-    --input: 203 37% 25%;
-    --ring: 90 34% 63%;
+    --border: 197 37% 25%;
+    --input: 197 37% 25%;
+    --ring: var(--persian-green);
   }
 }
 
@@ -80,36 +86,81 @@
 }
 
 @layer components {
+  /* Warm gradient backgrounds */
   .gradient-brand {
-    @apply bg-gradient-to-br from-charcoal via-zomp to-olivine;
+    background: linear-gradient(135deg, #264653ff, #2ba193ff, #f4a261ff, #e76f51ff);
   }
-  
+
+  .gradient-warm {
+    background: linear-gradient(to bottom right, #2ba193, #f4a261);
+  }
+
   .gradient-paws {
-    @apply bg-gradient-to-r from-sunglow via-pumpkin to-sunglow;
+    background: linear-gradient(90deg, #f4a261, #e76f51);
   }
-  
+
+  .gradient-hero {
+    background: linear-gradient(180deg,
+      rgba(43, 161, 147, 0.1) 0%,
+      rgba(244, 162, 97, 0.1) 50%,
+      rgba(231, 111, 81, 0.1) 100%
+    );
+  }
+
+  /* Text gradients */
   .text-gradient-brand {
-    @apply bg-gradient-to-r from-charcoal to-olivine bg-clip-text text-transparent;
+    background: linear-gradient(90deg, #2ba193, #f4a261);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  
-  .text-gradient-paws {
-    @apply bg-gradient-to-r from-sunglow to-pumpkin bg-clip-text text-transparent;
+
+  .text-gradient-warm {
+    background: linear-gradient(135deg, #f4a261, #e76f51);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  
+
+  /* Interactive elements */
   .card-hover {
     @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
   }
-  
+
   .btn-primary {
-    @apply bg-charcoal text-white hover:bg-charcoal-600 transition-colors;
+    background-color: #2ba193;
+    color: white;
+    @apply transition-colors shadow-md hover:shadow-lg;
   }
-  
+
+  .btn-primary:hover {
+    background-color: #228176;
+  }
+
   .btn-secondary {
-    @apply bg-olivine text-charcoal hover:bg-olivine-600 transition-colors;
+    background-color: #f4a261;
+    color: #264653;
+    @apply transition-colors shadow-md hover:shadow-lg;
   }
-  
+
+  .btn-secondary:hover {
+    background-color: #c3824e;
+  }
+
+  .btn-accent {
+    background-color: #e76f51;
+    color: white;
+    @apply transition-colors shadow-md hover:shadow-lg;
+  }
+
+  .btn-accent:hover {
+    background-color: #b95941;
+  }
+
   .btn-paws {
-    @apply bg-gradient-to-r from-sunglow to-pumpkin text-white hover:shadow-lg transition-all;
+    background: linear-gradient(90deg, #f4a261, #e76f51);
+    color: white;
+    @apply hover:shadow-lg transition-all;
   }
 }
 
