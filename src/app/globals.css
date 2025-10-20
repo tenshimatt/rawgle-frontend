@@ -154,19 +154,35 @@
   }
 
   .card-feature-primary {
-    @apply card-feature hover:border-persian-green;
+    @apply card-feature;
+  }
+
+  .card-feature-primary:hover {
+    border-color: #2ba193;
   }
 
   .card-feature-secondary {
-    @apply card-feature hover:border-sandy-brown;
+    @apply card-feature;
+  }
+
+  .card-feature-secondary:hover {
+    border-color: #f4a261;
   }
 
   .card-feature-accent {
-    @apply card-feature hover:border-burnt-sienna;
+    @apply card-feature;
+  }
+
+  .card-feature-accent:hover {
+    border-color: #e76f51;
   }
 
   .card-feature-dark {
-    @apply card-feature hover:border-charcoal;
+    @apply card-feature;
+  }
+
+  .card-feature-dark:hover {
+    border-color: #264653;
   }
 
   /* ========================================
@@ -179,7 +195,8 @@
   }
 
   .btn-primary {
-    @apply btn-base bg-persian-green text-white;
+    @apply btn-base text-white;
+    background-color: #2ba193;
   }
 
   .btn-primary:hover {
@@ -187,7 +204,9 @@
   }
 
   .btn-secondary {
-    @apply btn-base bg-sandy-brown text-charcoal;
+    @apply btn-base;
+    background-color: #f4a261;
+    color: #264653;
   }
 
   .btn-secondary:hover {
@@ -195,7 +214,8 @@
   }
 
   .btn-accent {
-    @apply btn-base bg-burnt-sienna text-white;
+    @apply btn-base text-white;
+    background-color: #e76f51;
   }
 
   .btn-accent:hover {
@@ -203,11 +223,14 @@
   }
 
   .btn-outline {
-    @apply btn-base bg-transparent border-2 border-charcoal text-charcoal;
+    @apply btn-base bg-transparent border-2 text-white;
+    border-color: #264653;
+    color: #264653;
   }
 
   .btn-outline:hover {
-    @apply bg-charcoal text-white;
+    background-color: #264653;
+    color: white;
   }
 
   /* ========================================
@@ -281,8 +304,12 @@
     @apply w-full px-4 py-3 rounded-lg border-2 border-charcoal/20;
     @apply bg-white/80 backdrop-blur-sm;
     @apply text-charcoal placeholder:text-charcoal/50;
-    @apply focus:outline-none focus:ring-2 focus:ring-persian-green focus:border-transparent;
+    @apply focus:outline-none focus:border-transparent;
     @apply transition-all duration-200;
+  }
+
+  .input-base:focus {
+    ring: 2px solid #2ba193;
   }
 
   .label-base {
@@ -309,19 +336,19 @@
 
   /* Icon styles */
   .icon-primary {
-    @apply text-persian-green;
+    color: #2ba193;
   }
 
   .icon-secondary {
-    @apply text-sandy-brown;
+    color: #f4a261;
   }
 
   .icon-accent {
-    @apply text-burnt-sienna;
+    color: #e76f51;
   }
 
   .icon-dark {
-    @apply text-charcoal;
+    color: #264653;
   }
 }
 
