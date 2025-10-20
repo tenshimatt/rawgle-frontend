@@ -20,28 +20,30 @@ export default function AIAssistantPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b gradient-hero">
+    <div className="min-h-screen page-gradient">
       <MainNav />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container-page">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4">AI Pet Nutritionist</h1>
-            <p className="text-gray-600">Get expert answers on raw pet nutrition 24/7</p>
+            <h1 className="hero-title">AI Pet Nutritionist</h1>
+            <p className="hero-description">Get expert answers on raw pet nutrition 24/7</p>
           </div>
 
-          <Card className="mb-4">
+          <Card className="card-glass mb-4">
             <CardContent className="p-6">
-              <div className="space-y-4 mb-4 h-96 overflow-y-auto">
+              <div className="space-y-4 mb-4 h-96 overflow-y-auto scrollbar-thin">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    {msg.role === 'assistant' && <Bot className="h-8 w-8 text-persian-green flex-shrink-0" />}
+                    {msg.role === 'assistant' && <Bot className="h-8 w-8 icon-primary flex-shrink-0" />}
                     <div className={`max-w-[80%] p-4 rounded-lg ${
-                      msg.role === 'user' ? 'bg-orange-500 text-white' : 'bg-gray-100'
+                      msg.role === 'user'
+                        ? 'bg-persian-green text-white'
+                        : 'bg-white border-2 border-charcoal/10 text-charcoal'
                     }`}>
                       {msg.content}
                     </div>
-                    {msg.role === 'user' && <User className="h-8 w-8 text-orange-500 flex-shrink-0" />}
+                    {msg.role === 'user' && <User className="h-8 w-8 icon-primary flex-shrink-0" />}
                   </div>
                 ))}
               </div>
@@ -51,12 +53,12 @@ export default function AIAssistantPage() {
                   value={input}
                   onChange={handleInputChange}
                   placeholder="Ask about raw feeding, portions, safety..."
-                  className="flex-1"
+                  className="input-base flex-1"
                   disabled={isLoading}
                 />
                 <Button
                   type="submit"
-                  className="bg-persian-green hover:bg-persian-green-600"
+                  className="btn-primary"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -70,22 +72,22 @@ export default function AIAssistantPage() {
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
+            <Card className="card-feature-primary">
               <CardContent className="p-4 text-center">
-                <h3 className="font-semibold mb-2">Portion Calculator</h3>
-                <p className="text-sm text-gray-600">Calculate ideal portions for your pet</p>
+                <h3 className="font-semibold mb-2 text-charcoal">Portion Calculator</h3>
+                <p className="text-sm text-muted">Calculate ideal portions for your pet</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="card-feature-secondary">
               <CardContent className="p-4 text-center">
-                <h3 className="font-semibold mb-2">Food Safety</h3>
-                <p className="text-sm text-gray-600">Learn safe handling practices</p>
+                <h3 className="font-semibold mb-2 text-charcoal">Food Safety</h3>
+                <p className="text-sm text-muted">Learn safe handling practices</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="card-feature-accent">
               <CardContent className="p-4 text-center">
-                <h3 className="font-semibold mb-2">Meal Planning</h3>
-                <p className="text-sm text-gray-600">Get personalized meal plans</p>
+                <h3 className="font-semibold mb-2 text-charcoal">Meal Planning</h3>
+                <p className="text-sm text-muted">Get personalized meal plans</p>
               </CardContent>
             </Card>
           </div>

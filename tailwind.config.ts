@@ -52,6 +52,19 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         // RAWGLE brand colors - warm palette
+        'seasalt': {
+          DEFAULT: '#f8f8f8',
+          50: '#ffffff',
+          100: '#fefefe',
+          200: '#fdfdfd',
+          300: '#fbfbfb',
+          400: '#f9f9f9',
+          500: '#f8f8f8',
+          600: '#c6c6c6',
+          700: '#959595',
+          800: '#636363',
+          900: '#323232',
+        },
         'charcoal': {
           DEFAULT: '#264653',
           50: '#e8edef',

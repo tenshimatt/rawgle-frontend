@@ -7,39 +7,39 @@ import { Plus, Heart, Activity, Calendar } from 'lucide-react';
 
 export default function HealthPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-50 via-white to-pink-50">
+    <div className="min-h-screen page-gradient">
       <MainNav />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container-page">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Health & Wellness</h1>
-              <p className="text-gray-600">Track symptoms, monitor progress, share with your vet</p>
+              <h1 className="hero-title">Health & Wellness</h1>
+              <p className="hero-description">Track symptoms, monitor progress, share with your vet</p>
             </div>
-            <Button className="bg-red-500 hover:bg-red-600">
+            <Button className="btn-accent">
               <Plus className="h-5 w-5 mr-2" />
               Log Health Event
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card>
+            <Card className="card-feature-accent">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-red-500" />
+                <CardTitle className="text-lg flex items-center gap-2 text-charcoal">
+                  <Heart className="h-5 w-5 icon-accent" />
                   Overall Health
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-green-600">Excellent</div>
+                <div className="text-3xl font-bold text-persian-green">Excellent</div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="card-feature-primary">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-persian-green" />
+                <CardTitle className="text-lg flex items-center gap-2 text-charcoal">
+                  <Activity className="h-5 w-5 icon-primary" />
                   Energy Level
                 </CardTitle>
               </CardHeader>
@@ -48,25 +48,25 @@ export default function HealthPage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="card-feature-secondary">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-purple-500" />
+                <CardTitle className="text-lg flex items-center gap-2 text-charcoal">
+                  <Calendar className="h-5 w-5 icon-secondary" />
                   Last Checkup
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-purple-600">2 weeks ago</div>
+                <div className="text-3xl font-bold text-sandy-brown">2 weeks ago</div>
               </CardContent>
             </Card>
           </div>
 
-          <Card>
+          <Card className="card-glass">
             <CardHeader>
-              <CardTitle>Health Timeline</CardTitle>
+              <CardTitle className="text-charcoal">Health Timeline</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600">Health tracking data will appear here</p>
+              <p className="text-muted">Health tracking data will appear here</p>
             </CardContent>
           </Card>
         </div>

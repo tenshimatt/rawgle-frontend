@@ -4,13 +4,14 @@
 
 @layer base {
   :root {
-    /* New warm color palette */
+    /* Brand color palette */
+    --seasalt: 0 0% 97%;
     --charcoal: 197 37% 24%;
     --persian-green: 173 58% 40%;
     --sandy-brown: 27 87% 67%;
     --burnt-sienna: 12 76% 61%;
 
-    --background: 0 0% 100%;
+    --background: var(--seasalt);
     --foreground: var(--charcoal);
 
     --card: 0 0% 100%;
@@ -86,28 +87,38 @@
 }
 
 @layer components {
-  /* Warm gradient backgrounds */
-  .gradient-brand {
-    background: linear-gradient(135deg, #264653ff, #2ba193ff, #f4a261ff, #e76f51ff);
+  /* ========================================
+     BACKGROUND GRADIENTS
+     ======================================== */
+
+  /* Subtle page background - use on all pages */
+  .page-gradient {
+    background-color: #f8f8f8;
   }
 
-  .gradient-warm {
-    background: linear-gradient(to bottom right, #2ba193, #f4a261);
-  }
-
-  .gradient-paws {
-    background: linear-gradient(90deg, #f4a261, #e76f51);
-  }
-
-  .gradient-hero {
-    background: linear-gradient(180deg,
-      rgba(43, 161, 147, 0.1) 0%,
-      rgba(244, 162, 97, 0.1) 50%,
-      rgba(231, 111, 81, 0.1) 100%
+  /* Hero section overlay - subtle brand colors */
+  .hero-gradient {
+    background: linear-gradient(to bottom right,
+      rgba(43, 161, 147, 0.05),
+      rgba(244, 162, 97, 0.05),
+      rgba(231, 111, 81, 0.05)
     );
   }
 
-  /* Text gradients */
+  /* Strong gradient for sections that need emphasis */
+  .section-gradient-primary {
+    background: linear-gradient(to right, #2ba193, #238c7e);
+  }
+
+  .section-gradient-secondary {
+    background: linear-gradient(to right, #f4a261, #e89350);
+  }
+
+  .section-gradient-accent {
+    background: linear-gradient(to right, #e76f51, #d45d44);
+  }
+
+  /* Text gradients for headings */
   .text-gradient-brand {
     background: linear-gradient(90deg, #2ba193, #f4a261);
     background-clip: text;
@@ -122,45 +133,195 @@
     -webkit-text-fill-color: transparent;
   }
 
-  /* Interactive elements */
+  /* ========================================
+     CARD STYLES
+     ======================================== */
+
+  /* Standard card with glass effect */
+  .card-glass {
+    @apply bg-white/80 backdrop-blur-sm border-2 border-white/20 shadow-lg;
+  }
+
+  /* Card hover effect */
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  /* Feature card with border accent */
+  .card-feature {
+    @apply bg-white/80 backdrop-blur-sm border-2 transition-all duration-300;
+    @apply hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .card-feature-primary {
+    @apply card-feature hover:border-persian-green;
+  }
+
+  .card-feature-secondary {
+    @apply card-feature hover:border-sandy-brown;
+  }
+
+  .card-feature-accent {
+    @apply card-feature hover:border-burnt-sienna;
+  }
+
+  .card-feature-dark {
+    @apply card-feature hover:border-charcoal;
+  }
+
+  /* ========================================
+     BUTTON STYLES
+     ======================================== */
+
+  .btn-base {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200;
+    @apply shadow-md hover:shadow-lg active:scale-95;
   }
 
   .btn-primary {
-    background-color: #2ba193;
-    color: white;
-    @apply transition-colors shadow-md hover:shadow-lg;
+    @apply btn-base bg-persian-green text-white;
   }
 
   .btn-primary:hover {
-    background-color: #228176;
+    background-color: #238c7e;
   }
 
   .btn-secondary {
-    background-color: #f4a261;
-    color: #264653;
-    @apply transition-colors shadow-md hover:shadow-lg;
+    @apply btn-base bg-sandy-brown text-charcoal;
   }
 
   .btn-secondary:hover {
-    background-color: #c3824e;
+    background-color: #e89350;
   }
 
   .btn-accent {
-    background-color: #e76f51;
-    color: white;
-    @apply transition-colors shadow-md hover:shadow-lg;
+    @apply btn-base bg-burnt-sienna text-white;
   }
 
   .btn-accent:hover {
-    background-color: #b95941;
+    background-color: #d45d44;
   }
 
-  .btn-paws {
-    background: linear-gradient(90deg, #f4a261, #e76f51);
-    color: white;
-    @apply hover:shadow-lg transition-all;
+  .btn-outline {
+    @apply btn-base bg-transparent border-2 border-charcoal text-charcoal;
+  }
+
+  .btn-outline:hover {
+    @apply bg-charcoal text-white;
+  }
+
+  /* ========================================
+     SECTION STYLES
+     ======================================== */
+
+  /* Hero sections */
+  .hero-section {
+    @apply relative py-20 md:py-28 px-4 overflow-hidden;
+  }
+
+  .hero-content {
+    @apply container mx-auto max-w-4xl text-center;
+  }
+
+  .hero-title {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-charcoal;
+  }
+
+  .hero-subtitle {
+    @apply text-xl md:text-2xl mb-4 text-charcoal/90;
+  }
+
+  .hero-description {
+    @apply text-base md:text-lg mb-8 text-charcoal/70 max-w-2xl mx-auto;
+  }
+
+  /* Content sections */
+  .section {
+    @apply py-12 md:py-16 px-4;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12 text-charcoal;
+  }
+
+  .section-subtitle {
+    @apply text-lg md:text-xl text-center mb-6 text-charcoal/70 max-w-3xl mx-auto;
+  }
+
+  /* ========================================
+     TEXT STYLES
+     ======================================== */
+
+  /* Consistent text hierarchy */
+  .text-display {
+    @apply text-charcoal font-bold;
+  }
+
+  .text-body {
+    @apply text-charcoal/80;
+  }
+
+  .text-muted {
+    @apply text-charcoal/60;
+  }
+
+  .text-light-bg {
+    @apply text-charcoal;
+  }
+
+  .text-dark-bg {
+    @apply text-white;
+  }
+
+  /* ========================================
+     FORM STYLES
+     ======================================== */
+
+  .input-base {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-charcoal/20;
+    @apply bg-white/80 backdrop-blur-sm;
+    @apply text-charcoal placeholder:text-charcoal/50;
+    @apply focus:outline-none focus:ring-2 focus:ring-persian-green focus:border-transparent;
+    @apply transition-all duration-200;
+  }
+
+  .label-base {
+    @apply block text-sm font-semibold text-charcoal mb-2;
+  }
+
+  /* ========================================
+     UTILITY CLASSES
+     ======================================== */
+
+  /* Container with consistent padding */
+  .container-page {
+    @apply container mx-auto px-4 py-8;
+  }
+
+  /* Grid layouts */
+  .grid-cards {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  .grid-features {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  /* Icon styles */
+  .icon-primary {
+    @apply text-persian-green;
+  }
+
+  .icon-secondary {
+    @apply text-sandy-brown;
+  }
+
+  .icon-accent {
+    @apply text-burnt-sienna;
+  }
+
+  .icon-dark {
+    @apply text-charcoal;
   }
 }
 
