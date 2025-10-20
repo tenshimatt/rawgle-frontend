@@ -200,10 +200,10 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
               Birth Date *
             </Label>
             <Input
-              id="birthDate"
+              id="birthdate"
               type="date"
-              value={formData.birthDate}
-              onChange={(e) => handleChange('birthDate', e.target.value)}
+              value={formData.birthdate}
+              onChange={(e) => handleChange('birthdate', e.target.value)}
               className="input-base"
               required
             />
