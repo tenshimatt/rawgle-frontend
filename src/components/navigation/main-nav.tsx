@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Dog, Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { NotificationCenter } from '@/components/notifications/notification-center';
 
 export function MainNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -106,9 +107,10 @@ export function MainNav() {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex lg:items-center lg:space-x-3">
-            <Link href="/auth/sign-in">
+            <NotificationCenter />
+            <Link href="/profile">
               <Button variant="ghost" size="sm">
-                Sign In
+                Profile
               </Button>
             </Link>
             <Link href="/auth/sign-up">
