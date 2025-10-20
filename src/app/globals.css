@@ -4,72 +4,55 @@
 
 @layer base {
   :root {
-    /* Brand color palette */
+    /* Extended brand color palette - Light theme only */
     --seasalt: 0 0% 97%;
     --charcoal: 197 37% 24%;
+    --myrtle-green: 179 48% 31%;
     --persian-green: 173 58% 40%;
+    --moss-green: 87 18% 56%;
+    --maize: 51 100% 68%;
     --sandy-brown: 27 87% 67%;
+    --coral: 19 81% 64%;
     --burnt-sienna: 12 76% 61%;
 
+    /* Base colors - light theme */
     --background: var(--seasalt);
     --foreground: var(--charcoal);
 
+    /* Card colors */
     --card: 0 0% 100%;
     --card-foreground: var(--charcoal);
 
+    /* Popover colors */
     --popover: 0 0% 100%;
     --popover-foreground: var(--charcoal);
 
+    /* Primary color */
     --primary: var(--persian-green);
-    --primary-foreground: 0 0% 100%;
+    --primary-foreground: var(--charcoal);
 
+    /* Secondary color */
     --secondary: var(--sandy-brown);
     --secondary-foreground: var(--charcoal);
 
+    /* Muted colors */
     --muted: 197 37% 96%;
-    --muted-foreground: 197 37% 46%;
+    --muted-foreground: var(--charcoal);
 
-    --accent: var(--burnt-sienna);
-    --accent-foreground: 0 0% 100%;
+    /* Accent color */
+    --accent: var(--coral);
+    --accent-foreground: var(--charcoal);
 
+    /* Destructive color */
     --destructive: var(--burnt-sienna);
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: var(--charcoal);
 
-    --border: 197 37% 90%;
+    /* Border and input */
+    --border: 197 37% 85%;
     --input: 197 37% 90%;
     --ring: var(--persian-green);
 
     --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 197 37% 10%;
-    --foreground: 0 0% 95%;
-
-    --card: 197 37% 15%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 197 37% 15%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: var(--persian-green);
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: var(--sandy-brown);
-    --secondary-foreground: var(--charcoal);
-
-    --muted: 197 37% 20%;
-    --muted-foreground: 197 37% 60%;
-
-    --accent: var(--burnt-sienna);
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: var(--burnt-sienna);
-    --destructive-foreground: 0 0% 95%;
-
-    --border: 197 37% 25%;
-    --input: 197 37% 25%;
-    --ring: var(--persian-green);
   }
 }
 
@@ -82,7 +65,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    @apply font-heading text-charcoal;
+  }
+  p {
+    @apply text-charcoal;
   }
 }
 
@@ -91,36 +77,74 @@
      BACKGROUND GRADIENTS
      ======================================== */
 
-  /* Subtle page background - use on all pages */
+  /* Clean light background - use on all pages */
   .page-gradient {
     background-color: #f8f8f8;
   }
 
-  /* Hero section overlay - subtle brand colors */
+  /* Subtle hero section with soft gradient overlay */
   .hero-gradient {
     background: linear-gradient(to bottom right,
-      rgba(43, 161, 147, 0.05),
-      rgba(244, 162, 97, 0.05),
-      rgba(231, 111, 81, 0.05)
+      rgba(43, 161, 147, 0.03),
+      rgba(238, 137, 89, 0.03)
     );
   }
 
-  /* Strong gradient for sections that need emphasis */
-  .section-gradient-primary {
-    background: linear-gradient(to right, #2ba193, #238c7e);
+  /* Accent backgrounds with dark text - use sparingly */
+  .bg-persian-green {
+    background-color: #2ba193;
+    color: #264653;
   }
 
-  .section-gradient-secondary {
-    background: linear-gradient(to right, #f4a261, #e89350);
+  .bg-myrtle-green {
+    background-color: #297473;
+    color: #264653;
   }
 
-  .section-gradient-accent {
-    background: linear-gradient(to right, #e76f51, #d45d44);
+  .bg-moss-green {
+    background-color: #90a27a;
+    color: #264653;
+  }
+
+  .bg-maize {
+    background-color: #ffe75c;
+    color: #264653;
+  }
+
+  .bg-sandy-brown {
+    background-color: #f4a261;
+    color: #264653;
+  }
+
+  .bg-coral {
+    background-color: #ee8959;
+    color: #264653;
+  }
+
+  .bg-burnt-sienna {
+    background-color: #e76f51;
+    color: #264653;
+  }
+
+  /* Gradient backgrounds for accent sections */
+  .section-gradient-green {
+    background: linear-gradient(135deg, #2ba193, #297473);
+    color: #264653;
+  }
+
+  .section-gradient-warm {
+    background: linear-gradient(135deg, #f4a261, #ee8959);
+    color: #264653;
+  }
+
+  .section-gradient-sunset {
+    background: linear-gradient(135deg, #ee8959, #e76f51);
+    color: #264653;
   }
 
   /* Text gradients for headings */
   .text-gradient-brand {
-    background: linear-gradient(90deg, #2ba193, #f4a261);
+    background: linear-gradient(90deg, #2ba193, #ee8959);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -133,24 +157,32 @@
     -webkit-text-fill-color: transparent;
   }
 
+  .text-gradient-cool {
+    background: linear-gradient(135deg, #297473, #2ba193);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   /* ========================================
      CARD STYLES
      ======================================== */
 
-  /* Standard card with glass effect */
+  /* Clean white card */
   .card-glass {
-    @apply bg-white/80 backdrop-blur-sm border-2 border-white/20 shadow-lg;
+    @apply bg-white border border-charcoal/10 shadow-sm rounded-lg;
   }
 
-  /* Card hover effect */
+  /* Card with subtle hover effect */
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-md hover:-translate-y-0.5;
   }
 
-  /* Feature card with border accent */
+  /* Feature cards with colored borders */
   .card-feature {
-    @apply bg-white/80 backdrop-blur-sm border-2 transition-all duration-300;
-    @apply hover:shadow-xl hover:-translate-y-1;
+    @apply bg-white border-2 border-charcoal/10 rounded-lg shadow-sm;
+    @apply transition-all duration-300;
+    @apply hover:shadow-md hover:-translate-y-0.5;
   }
 
   .card-feature-primary {
@@ -174,15 +206,15 @@
   }
 
   .card-feature-accent:hover {
-    border-color: #e76f51;
+    border-color: #ee8959;
   }
 
-  .card-feature-dark {
+  .card-feature-warm {
     @apply card-feature;
   }
 
-  .card-feature-dark:hover {
-    border-color: #264653;
+  .card-feature-warm:hover {
+    border-color: #e76f51;
   }
 
   /* ========================================
@@ -191,12 +223,13 @@
 
   .btn-base {
     @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200;
-    @apply shadow-md hover:shadow-lg active:scale-95;
+    @apply shadow-sm hover:shadow-md active:scale-[0.98];
   }
 
   .btn-primary {
-    @apply btn-base text-white;
+    @apply btn-base;
     background-color: #2ba193;
+    color: #264653;
   }
 
   .btn-primary:hover {
@@ -214,23 +247,43 @@
   }
 
   .btn-accent {
-    @apply btn-base text-white;
-    background-color: #e76f51;
+    @apply btn-base;
+    background-color: #ee8959;
+    color: #264653;
   }
 
   .btn-accent:hover {
+    background-color: #e57748;
+  }
+
+  .btn-warm {
+    @apply btn-base;
+    background-color: #e76f51;
+    color: #264653;
+  }
+
+  .btn-warm:hover {
     background-color: #d45d44;
   }
 
   .btn-outline {
-    @apply btn-base bg-transparent border-2 text-white;
+    @apply btn-base bg-white border-2;
     border-color: #264653;
     color: #264653;
   }
 
   .btn-outline:hover {
     background-color: #264653;
-    color: white;
+    color: #f8f8f8;
+  }
+
+  .btn-ghost {
+    @apply btn-base bg-transparent shadow-none;
+    color: #264653;
+  }
+
+  .btn-ghost:hover {
+    background-color: rgba(43, 161, 147, 0.1);
   }
 
   /* ========================================
@@ -239,11 +292,11 @@
 
   /* Hero sections */
   .hero-section {
-    @apply relative py-20 md:py-28 px-4 overflow-hidden;
+    @apply relative py-16 md:py-24 px-4;
   }
 
   .hero-content {
-    @apply container mx-auto max-w-4xl text-center;
+    @apply container mx-auto max-w-5xl text-center;
   }
 
   .hero-title {
@@ -251,11 +304,11 @@
   }
 
   .hero-subtitle {
-    @apply text-xl md:text-2xl mb-4 text-charcoal/90;
+    @apply text-xl md:text-2xl mb-4 text-charcoal;
   }
 
   .hero-description {
-    @apply text-base md:text-lg mb-8 text-charcoal/70 max-w-2xl mx-auto;
+    @apply text-base md:text-lg mb-8 text-charcoal/80 max-w-2xl mx-auto;
   }
 
   /* Content sections */
@@ -268,32 +321,81 @@
   }
 
   .section-subtitle {
-    @apply text-lg md:text-xl text-center mb-6 text-charcoal/70 max-w-3xl mx-auto;
+    @apply text-lg md:text-xl text-center mb-6 text-charcoal/80 max-w-3xl mx-auto;
   }
 
   /* ========================================
      TEXT STYLES
      ======================================== */
 
-  /* Consistent text hierarchy */
+  /* All text is dark on light backgrounds */
   .text-display {
     @apply text-charcoal font-bold;
   }
 
+  .text-heading {
+    @apply text-charcoal font-semibold;
+  }
+
   .text-body {
-    @apply text-charcoal/80;
-  }
-
-  .text-muted {
-    @apply text-charcoal/60;
-  }
-
-  .text-light-bg {
     @apply text-charcoal;
   }
 
-  .text-dark-bg {
-    @apply text-white;
+  .text-muted {
+    @apply text-charcoal/70;
+  }
+
+  .text-subtle {
+    @apply text-charcoal/50;
+  }
+
+  /* Color accents for text */
+  .text-primary {
+    color: #2ba193;
+  }
+
+  .text-secondary {
+    color: #f4a261;
+  }
+
+  .text-accent {
+    color: #ee8959;
+  }
+
+  .text-warm {
+    color: #e76f51;
+  }
+
+  /* ========================================
+     BADGE STYLES
+     ======================================== */
+
+  .badge-base {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-primary {
+    @apply badge-base;
+    background-color: rgba(43, 161, 147, 0.15);
+    color: #264653;
+  }
+
+  .badge-secondary {
+    @apply badge-base;
+    background-color: rgba(244, 162, 97, 0.15);
+    color: #264653;
+  }
+
+  .badge-accent {
+    @apply badge-base;
+    background-color: rgba(238, 137, 89, 0.15);
+    color: #264653;
+  }
+
+  .badge-warm {
+    @apply badge-base;
+    background-color: rgba(231, 111, 81, 0.15);
+    color: #264653;
   }
 
   /* ========================================
@@ -301,19 +403,30 @@
      ======================================== */
 
   .input-base {
-    @apply w-full px-4 py-3 rounded-lg border-2 border-charcoal/20;
-    @apply bg-white/80 backdrop-blur-sm;
-    @apply text-charcoal placeholder:text-charcoal/50;
-    @apply focus:outline-none focus:border-transparent;
-    @apply transition-all duration-200;
+    @apply w-full px-4 py-2.5 rounded-lg border bg-white;
+    @apply text-charcoal focus:outline-none focus:ring-2 transition-all duration-200;
+    border-color: rgba(38, 70, 83, 0.2);
+  }
+
+  .input-base::placeholder {
+    color: rgba(38, 70, 83, 0.5);
   }
 
   .input-base:focus {
-    ring: 2px solid #2ba193;
+    --tw-ring-color: rgba(43, 161, 147, 0.5);
+    border-color: #2ba193;
   }
 
   .label-base {
     @apply block text-sm font-semibold text-charcoal mb-2;
+  }
+
+  .select-base {
+    @apply input-base appearance-none bg-white;
+  }
+
+  .textarea-base {
+    @apply input-base resize-none;
   }
 
   /* ========================================
@@ -325,16 +438,28 @@
     @apply container mx-auto px-4 py-8;
   }
 
+  .container-narrow {
+    @apply container mx-auto px-4 max-w-4xl;
+  }
+
+  .container-wide {
+    @apply container mx-auto px-4 max-w-7xl;
+  }
+
   /* Grid layouts */
   .grid-cards {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
   }
 
   .grid-features {
     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
   }
 
-  /* Icon styles */
+  .grid-auto {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  /* Icon styles - colored icons */
   .icon-primary {
     color: #2ba193;
   }
@@ -344,11 +469,47 @@
   }
 
   .icon-accent {
+    color: #ee8959;
+  }
+
+  .icon-warm {
     color: #e76f51;
   }
 
   .icon-dark {
     color: #264653;
+  }
+
+  .icon-muted {
+    color: rgba(38, 70, 83, 0.5);
+  }
+
+  /* Dividers */
+  .divider {
+    @apply h-px bg-charcoal/10 my-8;
+  }
+
+  .divider-vertical {
+    @apply w-px bg-charcoal/10 mx-4;
+  }
+
+  /* Link styles */
+  .link {
+    @apply text-charcoal underline underline-offset-2 transition-colors duration-200;
+    text-decoration-color: rgba(43, 161, 147, 0.3);
+  }
+
+  .link:hover {
+    text-decoration-color: #2ba193;
+  }
+
+  .link-primary {
+    color: #2ba193;
+    @apply transition-colors duration-200;
+  }
+
+  .link-primary:hover {
+    color: #297473;
   }
 }
 
@@ -356,23 +517,24 @@
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: theme('colors.charcoal.300') transparent;
+    scrollbar-color: rgba(38, 70, 83, 0.3) transparent;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-charcoal-300 rounded-full;
+    background-color: rgba(38, 70, 83, 0.3);
+    border-radius: 9999px;
   }
-  
+
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-charcoal-400;
+    background-color: rgba(38, 70, 83, 0.5);
   }
 }
