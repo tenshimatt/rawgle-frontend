@@ -6,7 +6,7 @@ interface Pet {
   name: string;
   species: 'dog' | 'cat';
   breed: string;
-  age: number;
+  birthdate: string;
   weight: number;
   gender: 'male' | 'female';
   image?: string;
@@ -21,7 +21,7 @@ const pets: Pet[] = [
     name: 'Max',
     species: 'dog',
     breed: 'Golden Retriever',
-    age: 3,
+    birthdate: '2021-03-15',
     weight: 65,
     gender: 'male',
     createdAt: new Date().toISOString(),
@@ -32,7 +32,7 @@ const pets: Pet[] = [
     name: 'Luna',
     species: 'dog',
     breed: 'Labrador Retriever',
-    age: 2,
+    birthdate: '2022-06-20',
     weight: 55,
     gender: 'female',
     createdAt: new Date().toISOString(),
@@ -77,10 +77,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, species, breed, age, weight, gender, image } = body;
+    const { name, species, breed, birthdate, weight, gender, image } = body;
 
     // Validation
-    if (!name || !species || !breed || !age || !weight || !gender) {
+    if (!name || !species || !breed || !birthdate || !weight || !gender) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
       name,
       species,
       breed,
-      age: Number(age),
+      birthdate,
       weight: Number(weight),
       gender,
       image,
@@ -141,7 +141,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, name, species, breed, age, weight, gender, image } = body;
+    const { id, name, species, breed, birthdate, weight, gender, image } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -164,7 +164,7 @@ export async function PUT(request: NextRequest) {
       name: name || pets[petIndex].name,
       species: species || pets[petIndex].species,
       breed: breed || pets[petIndex].breed,
-      age: age !== undefined ? Number(age) : pets[petIndex].age,
+      birthdate: birthdate || pets[petIndex].birthdate,
       weight: weight !== undefined ? Number(weight) : pets[petIndex].weight,
       gender: gender || pets[petIndex].gender,
       image: image !== undefined ? image : pets[petIndex].image,

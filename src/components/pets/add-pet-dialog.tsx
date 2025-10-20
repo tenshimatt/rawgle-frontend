@@ -35,7 +35,7 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
     name: '',
     species: 'dog' as 'dog' | 'cat',
     breed: '',
-    age: '',
+    birthdate: '',
     weight: '',
     gender: 'male' as 'male' | 'female',
     image: '',
@@ -86,7 +86,7 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
           name: '',
           species: 'dog',
           breed: '',
-          age: '',
+          birthdate: '',
           weight: '',
           gender: 'male',
           image: '',
@@ -270,17 +270,15 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
             </RadioGroup>
           </div>
 
-          {/* Age */}
+          {/* Birthdate */}
           <div className="space-y-2">
-            <Label htmlFor="age">Age (years) *</Label>
+            <Label htmlFor="birthdate">Birthdate *</Label>
             <Input
-              id="age"
-              type="number"
-              min="0"
-              max="30"
-              value={formData.age}
-              onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))}
-              placeholder="Enter age"
+              id="birthdate"
+              type="date"
+              value={formData.birthdate}
+              onChange={(e) => setFormData(prev => ({ ...prev, birthdate: e.target.value }))}
+              max={new Date().toISOString().split('T')[0]}
               required
             />
           </div>
