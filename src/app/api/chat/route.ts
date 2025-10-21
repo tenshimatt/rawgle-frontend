@@ -64,7 +64,7 @@ Keep responses concise but informative, typically 2-4 paragraphs unless more det
     });
 
     // Convert the response into a friendly text-stream
-    const stream = OpenAIStream(response);
+    const stream = OpenAIStream(response as any);
 
     // Respond with the stream
     return new StreamingTextResponse(stream);
