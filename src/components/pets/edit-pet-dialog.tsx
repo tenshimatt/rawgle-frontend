@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Edit2, Loader2, Trash2 } from 'lucide-react';
+import { DOG_BREEDS, CAT_BREEDS } from '@/lib/constants/breeds';
 
 interface Pet {
   id: string;
@@ -168,14 +169,18 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
             <Label htmlFor="breed" className="label-base">
               Breed *
             </Label>
-            <Input
-              id="breed"
-              value={formData.breed}
-              onChange={(e) => handleChange('breed', e.target.value)}
-              className="input-base"
-              placeholder="e.g., Golden Retriever, Persian"
-              required
-            />
+            <Select value={formData.breed} onValueChange={(value) => handleChange('breed', value)}>
+              <SelectTrigger className="input-base">
+                <SelectValue placeholder="Select a breed" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                {(formData.species === 'dog' ? DOG_BREEDS : CAT_BREEDS).map((breed) => (
+                  <SelectItem key={breed} value={breed}>
+                    {breed}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Gender */}
