@@ -115,7 +115,7 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
           Add Pet
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Pet</DialogTitle>
           <DialogDescription>
