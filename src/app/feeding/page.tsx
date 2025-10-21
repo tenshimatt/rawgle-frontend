@@ -156,15 +156,15 @@ export default function FeedingPage() {
   const getMealTypeColor = (mealType: string) => {
     switch (mealType.toLowerCase()) {
       case 'breakfast':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return 'bg-maize/20 text-charcoal border-maize/30';
       case 'lunch':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-persian-green/20 text-charcoal border-persian-green/30';
       case 'dinner':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-burnt-sienna/20 text-charcoal border-burnt-sienna/30';
       case 'snack':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-coral/20 text-charcoal border-coral/30';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-charcoal/10 text-charcoal border-charcoal/20';
     }
   };
 
