@@ -1,0 +1,277 @@
+{
+  "name": "Container Maintenance Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 1 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Daily at 1:30 AM (before Watchtower)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "watchtower-updates",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Watchtower Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 500],
+      "webhookId": "watchtower-updates"
+    },
+    {
+      "parameters": {
+        "url": "http://172.17.0.2:9000/api/endpoints/3/docker/containers/json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Pre-Update Container Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Portainer API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Store pre-update container states\nconst containers = $input.all()[0].json;\n\nconst containerStates = containers.map(c => ({\n  id: c.Id,\n  name: c.Names[0],\n  image: c.Image,\n  state: c.State,\n  status: c.Status,\n  created: c.Created\n}));\n\n// Store in workflow static data for comparison later\n$workflow.staticData.preUpdateState = containerStates;\n\nreturn [\n  {\n    json: {\n      timestamp: new Date().toISOString(),\n      totalContainers: containerStates.length,\n      running: containerStates.filter(c => c.state === 'running').length,\n      containers: containerStates\n    }\n  }\n];"
+      },
+      "name": "Store Pre-Update State",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse Watchtower webhook notification\nconst input = $input.all()[0].json;\n\n// Watchtower sends shoutrrr formatted notifications\nconst notification = {\n  level: input.level || 'info',\n  container: input.container || input.title,\n  message: input.message || input.body,\n  timestamp: new Date().toISOString()\n};\n\n// Determine update status\nlet status = 'success';\nif (input.level === 'error' || input.message?.includes('failed')) {\n  status = 'failed';\n} else if (input.message?.includes('up to date')) {\n  status = 'unchanged';\n}\n\nreturn [\n  {\n    json: {\n      ...notification,\n      status,\n      updateType: status === 'success' ? 'updated' : status\n    }\n  }\n];"
+      },
+      "name": "Parse Watchtower Notification",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 500]
+    },
+    {
+      "parameters": {
+        "url": "http://172.17.0.2:9000/api/endpoints/3/docker/containers/json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Post-Update Container Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 500],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Portainer API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Compare pre and post update states\nconst postUpdate = $input.all()[0].json;\nconst preUpdate = $workflow.staticData.preUpdateState || [];\n\nconst updates = [];\nconst failures = [];\nconst unchanged = [];\n\npostUpdate.forEach(container => {\n  const before = preUpdate.find(c => c.id === container.Id);\n  \n  if (!before) {\n    // New container\n    updates.push({\n      name: container.Names[0],\n      status: 'new',\n      image: container.Image\n    });\n  } else if (before.image !== container.Image) {\n    // Updated container\n    updates.push({\n      name: container.Names[0],\n      status: 'updated',\n      oldImage: before.image,\n      newImage: container.Image\n    });\n  } else if (before.state === 'running' && container.State !== 'running') {\n    // Container stopped/failed\n    failures.push({\n      name: container.Names[0],\n      status: 'failed',\n      state: container.State,\n      error: container.Status\n    });\n  } else {\n    // No change\n    unchanged.push({\n      name: container.Names[0],\n      status: 'unchanged'\n    });\n  }\n});\n\nreturn [\n  {\n    json: {\n      timestamp: new Date().toISOString(),\n      summary: {\n        total: postUpdate.length,\n        updated: updates.length,\n        failed: failures.length,\n        unchanged: unchanged.length\n      },\n      updates,\n      failures,\n      unchanged,\n      needsAttention: failures.length > 0\n    }\n  }\n];"
+      },
+      "name": "Compare States",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [850, 500]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.needsAttention }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Check for Failures",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 500]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Generate maintenance report\nconst data = $input.all()[0].json;\n\nconst report = `🐳 **Container Maintenance Report**\n📅 ${data.timestamp}\n\n**Summary:**\n- ✅ Updated: ${data.summary.updated}\n- ❌ Failed: ${data.summary.failed}\n- ⏸️ Unchanged: ${data.summary.unchanged}\n- 📊 Total: ${data.summary.total}\n\n${data.updates.length > 0 ? `**Updated Containers:**\n${data.updates.map(u => `- ${u.name}: ${u.oldImage || 'new'} → ${u.newImage}`).join('\\n')}\n` : ''}\n\n${data.failures.length > 0 ? `**⚠️ FAILURES REQUIRE ATTENTION:**\n${data.failures.map(f => `- ${f.name}: ${f.error}`).join('\\n')}\n` : ''}\n\n${data.unchanged.length > 0 ? `**Unchanged:**\n${data.unchanged.map(u => `- ${u.name}`).join('\\n')}\n` : ''}`;\n\nreturn [\n  {\n    json: {\n      report,\n      data,\n      severity: data.failures.length > 0 ? 'high' : 'low'\n    }\n  }\n];"
+      },
+      "name": "Generate Report",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1250, 500]
+    },
+    {
+      "parameters": {
+        "command": "docker image prune -af --filter \"until=72h\""
+      },
+      "name": "Cleanup Old Images",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "options": {
+          "responseData": "={{ { status: 'success', message: 'Maintenance report generated' } }}"
+        }
+      },
+      "name": "Send Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1450, 400]
+    },
+    {
+      "parameters": {
+        "content": "={{ $json.report }}",
+        "additionalFields": {
+          "priority": "={{ $json.severity === 'high' ? 'high' : 'normal' }}"
+        }
+      },
+      "name": "Send Notification (Email/Slack/etc)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1450, 600],
+      "notes": "Replace with your preferred notification method (email, Slack, Discord, etc)"
+    }
+  ],
+  "connections": {
+    "Daily at 1:30 AM (before Watchtower)": {
+      "main": [
+        [
+          {
+            "node": "Pre-Update Container Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Watchtower Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Watchtower Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pre-Update Container Status": {
+      "main": [
+        [
+          {
+            "node": "Store Pre-Update State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Pre-Update State": {
+      "main": [
+        [
+          {
+            "node": "Cleanup Old Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Watchtower Notification": {
+      "main": [
+        [
+          {
+            "node": "Post-Update Container Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post-Update Container Status": {
+      "main": [
+        [
+          {
+            "node": "Compare States",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compare States": {
+      "main": [
+        [
+          {
+            "node": "Check for Failures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Failures": {
+      "main": [
+        [
+          {
+            "node": "Generate Report",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Report": {
+      "main": [
+        [
+          {
+            "node": "Send Success Response",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Notification (Email/Slack/etc)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-21T00:00:00.000Z",
+  "versionId": "1"
+}

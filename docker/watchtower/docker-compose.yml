@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower-updater
+    restart: unless-stopped
+    networks:
+      - monitoring
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # Scheduling - Daily at 2 AM
+      - WATCHTOWER_SCHEDULE=0 0 2 * * *
+      - WATCHTOWER_TIMEOUT=300s
+
+      # Behavior
+      - WATCHTOWER_CLEANUP=true          # Remove old images after update
+      - WATCHTOWER_INCLUDE_STOPPED=true  # Update stopped containers too
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+      - WATCHTOWER_ROLLING_RESTART=true  # Update one at a time (safer)
+
+      # Filtering
+      - WATCHTOWER_LABEL_ENABLE=false    # Update all unless explicitly excluded
+      - WATCHTOWER_MONITOR_ONLY=false    # Actually perform updates
+
+      # Notifications - Send to n8n webhook
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=generic+http://10.90.10.6:5678/webhook/watchtower-updates
+
+      # Logging
+      - WATCHTOWER_DEBUG=false
+      - WATCHTOWER_LOG_LEVEL=info
+      - TZ=America/New_York  # Adjust to your timezone
+
+    labels:
+      # Don't update watchtower itself automatically
+      - "com.centurylinklabs.watchtower.enable=false"
+
+    healthcheck:
+      test: ["CMD", "sh", "-c", "ps | grep watchtower"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+
+networks:
+  monitoring:
+    external: true

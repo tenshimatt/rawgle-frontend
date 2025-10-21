@@ -1,0 +1,34 @@
+{
+  "name": "Watchtower Updates",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "watchtower",
+        "options": {}
+      },
+      "name": "Watchtower Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { status: 'received', timestamp: new Date().toISOString(), data: $input.all()[0].json } }];"
+      },
+      "name": "Log Update",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    }
+  ],
+  "connections": {
+    "Watchtower Webhook": {
+      "main": [[{ "node": "Log Update", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null
+}
