@@ -8,10 +8,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-persian-green text-charcoal hover:bg-persian-green-600",
-        destructive: "bg-burnt-sienna text-charcoal hover:bg-burnt-sienna-600",
-        outline: "border-2 border-charcoal bg-white text-charcoal hover:bg-charcoal hover:text-white",
-        secondary: "bg-fawn text-charcoal hover:bg-fawn-600",
+        default: "bg-persian-green text-white hover:bg-persian-green-600",
+        destructive: "bg-burnt-sienna text-white hover:bg-burnt-sienna-600",
+        outline: "border-2 border-persian-green bg-white text-persian-green hover:bg-persian-green hover:text-white",
+        secondary: "bg-fawn text-white hover:bg-fawn-600",
         ghost: "bg-transparent shadow-none text-charcoal hover:bg-persian-green/10",
         link: "text-persian-green underline-offset-4 hover:underline shadow-none",
       },
