@@ -6,14 +6,15 @@ const productsStore = new Map<string, any[]>();
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
     const userId = req.headers.get('x-user-id') || 'demo-user';
 
     const products = productsStore.get(userId) || [];
-    const productIndex = products.findIndex(p => p.id === params.id);
+    const productIndex = products.findIndex(p => p.id === id);
 
     if (productIndex === -1) {
       return NextResponse.json(
@@ -25,7 +26,7 @@ export async function PATCH(
     const updatedProduct = {
       ...products[productIndex],
       ...body,
-      id: params.id, // Ensure ID cannot be changed
+      id, // Ensure ID cannot be changed
       updatedAt: new Date().toISOString(),
     };
 
@@ -47,13 +48,14 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const userId = req.headers.get('x-user-id') || 'demo-user';
 
     const products = productsStore.get(userId) || [];
-    const filteredProducts = products.filter(p => p.id !== params.id);
+    const filteredProducts = products.filter(p => p.id !== id);
 
     if (filteredProducts.length === products.length) {
       return NextResponse.json(
