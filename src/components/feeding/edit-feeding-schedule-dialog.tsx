@@ -167,7 +167,7 @@ export function EditFeedingScheduleDialog({ schedule, onScheduleUpdated, onSched
               <Button type="button" onClick={() => setOpen(false)} className="btn-outline">
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading} className="btn-primary">
+              <Button type="submit" disabled={loading} variant="default">
                 {loading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -48,7 +48,7 @@ export default function ShopPage() {
 
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold text-persian-green">${product.price.toFixed(2)}</span>
-                    <Button className="btn-accent">Add to Cart</Button>
+                    <Button variant="accent">Add to Cart</Button>
                   </div>
                 </CardContent>
               </Card>

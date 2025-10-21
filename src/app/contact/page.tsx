@@ -29,7 +29,7 @@ export default function ContactPage() {
                 <div><Label className="label-base">Name</Label><Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="input-base" required /></div>
                 <div><Label className="label-base">Email</Label><Input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="input-base" required /></div>
                 <div><Label className="label-base">Message</Label><Textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="input-base min-h-[120px]" required /></div>
-                <Button type="submit" className="btn-primary">Send Message</Button>
+                <Button type="submit" variant="default">Send Message</Button>
               </form>
             </CardContent>
           </Card>

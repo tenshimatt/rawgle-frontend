@@ -70,7 +70,7 @@ export function AddHealthRecordDialog({ petId, onRecordAdded }: AddHealthRecordD
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="btn-primary">
+        <Button variant="default">
           <Plus className="h-4 w-4 mr-2" />
           Add Health Record
         </Button>
@@ -185,7 +185,7 @@ export function AddHealthRecordDialog({ petId, onRecordAdded }: AddHealthRecordD
             <Button type="button" onClick={() => setOpen(false)} className="btn-outline">
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="btn-primary">
+            <Button type="submit" disabled={loading} variant="default">
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

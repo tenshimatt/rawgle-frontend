@@ -128,7 +128,7 @@ export function Navigation() {
                 <Button variant="ghost">Sign In</Button>
               </Link>
               <Link href="/auth/register">
-                <Button className="btn-primary">
+                <Button variant="default">
                   Get Started
                   <Coins className="ml-2 w-4 h-4" />
                 </Button>

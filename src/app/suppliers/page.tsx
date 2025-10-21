@@ -142,7 +142,7 @@ export default function SuppliersPage() {
 
             {/* Sign In Button */}
             <Link href="/auth/sign-in">
-              <Button className="btn-primary">
+              <Button variant="default">
                 🔐 Sign In to Review
               </Button>
             </Link>
@@ -265,7 +265,7 @@ export default function SuppliersPage() {
                           📏 {supplier.distance_miles ? `${supplier.distance_miles.toFixed(1)} miles` : `${supplier.distance_km?.toFixed(1)} km`} away
                         </span>
                         <Link href="/pets">
-                          <Button size="sm" className="btn-accent">
+                          <Button size="sm" variant="accent">
                             ✍️ Write Review
                           </Button>
                         </Link>

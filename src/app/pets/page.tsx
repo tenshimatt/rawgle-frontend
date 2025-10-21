@@ -87,7 +87,7 @@ export default function PetsPage() {
           ) : error ? (
             <div className="text-center py-20">
               <p className="text-burnt-sienna text-lg mb-4">{error}</p>
-              <Button onClick={fetchPets} className="btn-primary">
+              <Button onClick={fetchPets} variant="default">
                 Try Again
               </Button>
             </div>

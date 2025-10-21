@@ -288,7 +288,7 @@ export default function DashboardPage() {
                           You have {dashboardData.upcomingVaccinations} vaccination(s) due soon
                         </p>
                       </div>
-                      <Button className="btn-accent">View Details</Button>
+                      <Button variant="accent">View Details</Button>
                     </div>
                   </CardContent>
                 </Card>

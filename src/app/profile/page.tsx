@@ -111,7 +111,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="mt-6">
-          <Button className="btn-primary" onClick={handleSave}>
+          <Button variant="default" onClick={handleSave}>
             Save Changes
           </Button>
         </div>

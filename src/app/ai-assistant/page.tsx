@@ -84,7 +84,7 @@ export default function AIAssistantPage() {
                 />
                 <Button
                   type="submit"
-                  className="btn-primary"
+                  variant="default"
                   disabled={isLoading}
                 >
                   {isLoading ? (

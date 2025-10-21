@@ -253,7 +253,7 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
               type="button"
               variant="destructive"
               onClick={handleDelete}
-              className="btn-accent"
+              variant="accent"
               disabled={loading || deleting}
             >
               {deleting ? (
@@ -278,7 +278,7 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
             >
               Cancel
             </Button>
-            <Button type="submit" className="btn-primary" disabled={loading || deleting}>
+            <Button type="submit" variant="default" disabled={loading || deleting}>
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

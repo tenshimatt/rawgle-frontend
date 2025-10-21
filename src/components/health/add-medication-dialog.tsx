@@ -77,7 +77,7 @@ export function AddMedicationDialog({ petId, onMedicationAdded }: AddMedicationD
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="btn-accent">
+        <Button variant="accent">
           <Plus className="h-4 w-4 mr-2" />
           Add Medication
         </Button>

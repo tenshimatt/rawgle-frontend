@@ -75,7 +75,7 @@ export function AddActivityDialog({ petId, onActivityAdded }: AddActivityDialogP
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="btn-primary">
+        <Button variant="default">
           <Plus className="h-4 w-4 mr-2" />
           Log Activity
         </Button>

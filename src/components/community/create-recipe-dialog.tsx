@@ -75,7 +75,7 @@ export function CreateRecipeDialog({ onRecipeCreated }: CreateRecipeDialogProps)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="btn-secondary">
+        <Button variant="secondary">
           <Plus className="h-4 w-4 mr-2" />
           Share Recipe
         </Button>
