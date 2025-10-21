@@ -22,6 +22,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar, Loader2, Plus, X } from 'lucide-react';
 import { FOOD_TYPES } from '@/lib/constants/food-types';
+import { SUPPLEMENTS } from '@/lib/constants/supplements';
 
 interface SetupScheduleDialogProps {
   petId: string;
@@ -30,7 +31,8 @@ interface SetupScheduleDialogProps {
 }
 
 interface Ingredient {
-  foodType: string;
+  type: 'ingredient' | 'supplement';
+  name: string;
   amount: string;
   unit: string;
 }
@@ -48,11 +50,12 @@ export function SetupScheduleDialog({
     notes: '',
   });
   const [ingredients, setIngredients] = useState<Ingredient[]>([
-    { foodType: '', amount: '', unit: 'grams' },
+    { type: 'ingredient', name: '', amount: '', unit: 'grams' },
   ]);
+  const [supplements, setSupplements] = useState<Ingredient[]>([]);
 
   const addIngredient = () => {
-    setIngredients([...ingredients, { foodType: '', amount: '', unit: 'grams' }]);
+    setIngredients([...ingredients, { type: 'ingredient', name: '', amount: '', unit: 'grams' }]);
   };
 
   const removeIngredient = (index: number) => {
@@ -67,18 +70,36 @@ export function SetupScheduleDialog({
     setIngredients(updated);
   };
 
+  const addSupplement = () => {
+    setSupplements([...supplements, { type: 'supplement', name: '', amount: '', unit: 'capsules' }]);
+  };
+
+  const removeSupplement = (index: number) => {
+    setSupplements(supplements.filter((_, i) => i !== index));
+  };
+
+  const updateSupplement = (index: number, field: keyof Ingredient, value: string) => {
+    const updated = [...supplements];
+    updated[index] = { ...updated[index], [field]: value };
+    setSupplements(updated);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Validate that all ingredients have food type and amount
       const validIngredients = ingredients.filter(
-        (ing) => ing.foodType && ing.amount
+        (ing) => ing.name && ing.amount
+      );
+      const validSupplements = supplements.filter(
+        (sup) => sup.name && sup.amount
       );
 
-      if (validIngredients.length === 0) {
-        alert('Please add at least one ingredient with food type and amount');
+      const allItems = [...validIngredients, ...validSupplements];
+
+      if (allItems.length === 0) {
+        alert('Please add at least one ingredient or supplement');
         setLoading(false);
         return;
       }
@@ -92,9 +113,11 @@ export function SetupScheduleDialog({
         body: JSON.stringify({
           petId,
           ...formData,
-          ingredients: validIngredients.map((ing) => ({
-            ...ing,
-            amount: parseFloat(ing.amount),
+          ingredients: allItems.map((item) => ({
+            type: item.type,
+            name: item.name,
+            amount: parseFloat(item.amount),
+            unit: item.unit,
           })),
         }),
       });
@@ -109,7 +132,8 @@ export function SetupScheduleDialog({
         frequency: 'daily',
         notes: '',
       });
-      setIngredients([{ foodType: '', amount: '', unit: 'grams' }]);
+      setIngredients([{ type: 'ingredient', name: '', amount: '', unit: 'grams' }]);
+      setSupplements([]);
       onScheduleCreated();
     } catch (error) {
       console.error('Error creating schedule:', error);
@@ -127,7 +151,7 @@ export function SetupScheduleDialog({
           Setup Schedule for {petName}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Setup Feeding Schedule</DialogTitle>
           <DialogDescription>
@@ -156,9 +180,10 @@ export function SetupScheduleDialog({
             </Select>
           </div>
 
+          {/* Ingredients Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label>Ingredients *</Label>
+              <Label>Ingredients</Label>
               <Button
                 type="button"
                 variant="outline"
@@ -172,7 +197,7 @@ export function SetupScheduleDialog({
             </div>
 
             {ingredients.map((ingredient, index) => (
-              <div key={index} className="space-y-2 p-4 border border-charcoal/20 rounded-lg bg-white">
+              <div key={`ing-${index}`} className="space-y-2 p-4 border border-charcoal/20 rounded-lg bg-white">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-charcoal">
                     Ingredient {index + 1}
@@ -191,11 +216,11 @@ export function SetupScheduleDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor={`foodType-${index}`}>Ingredient</Label>
+                  <Label htmlFor={`ingredient-${index}`}>Ingredient</Label>
                   <Select
-                    value={ingredient.foodType}
+                    value={ingredient.name}
                     onValueChange={(value) =>
-                      updateIngredient(index, 'foodType', value)
+                      updateIngredient(index, 'name', value)
                     }
                   >
                     <SelectTrigger>
@@ -242,6 +267,101 @@ export function SetupScheduleDialog({
                         <SelectItem value="ounces">Ounces</SelectItem>
                         <SelectItem value="cups">Cups</SelectItem>
                         <SelectItem value="pieces">Pieces</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Supplements Section */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Supplements (Optional)</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addSupplement}
+                className="h-8"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Supplement
+              </Button>
+            </div>
+
+            {supplements.map((supplement, index) => (
+              <div key={`sup-${index}`} className="space-y-2 p-4 border border-persian-green/30 rounded-lg bg-persian-green/5">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-charcoal">
+                    Supplement {index + 1}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeSupplement(index)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`supplement-${index}`}>Supplement</Label>
+                  <Select
+                    value={supplement.name}
+                    onValueChange={(value) =>
+                      updateSupplement(index, 'name', value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select supplement" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SUPPLEMENTS.map((supp) => (
+                        <SelectItem key={supp} value={supp}>
+                          {supp}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor={`supp-amount-${index}`}>Amount</Label>
+                    <Input
+                      id={`supp-amount-${index}`}
+                      type="number"
+                      step="0.1"
+                      placeholder="1"
+                      value={supplement.amount}
+                      onChange={(e) =>
+                        updateSupplement(index, 'amount', e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`supp-unit-${index}`}>Unit</Label>
+                    <Select
+                      value={supplement.unit}
+                      onValueChange={(value) =>
+                        updateSupplement(index, 'unit', value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="capsules">Capsules</SelectItem>
+                        <SelectItem value="tablets">Tablets</SelectItem>
+                        <SelectItem value="ml">mL</SelectItem>
+                        <SelectItem value="drops">Drops</SelectItem>
+                        <SelectItem value="grams">Grams</SelectItem>
+                        <SelectItem value="teaspoons">Teaspoons</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
