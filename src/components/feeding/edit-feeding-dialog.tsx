@@ -259,7 +259,6 @@ export function EditFeedingDialog({
               type="button"
               variant="destructive"
               onClick={handleDelete}
-              variant="accent"
               disabled={loading || deleting}
             >
               {deleting ? (
