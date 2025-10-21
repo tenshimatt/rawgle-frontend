@@ -12,6 +12,7 @@ const buttonVariants = cva(
         destructive: "bg-burnt-sienna text-white hover:bg-burnt-sienna-600",
         outline: "border-2 border-persian-green bg-white text-persian-green hover:bg-persian-green hover:text-white",
         secondary: "bg-fawn text-white hover:bg-fawn-600",
+        accent: "bg-coral text-white hover:bg-coral-600",
         ghost: "bg-transparent shadow-none text-charcoal hover:bg-persian-green/10",
         link: "text-persian-green underline-offset-4 hover:underline shadow-none",
       },
