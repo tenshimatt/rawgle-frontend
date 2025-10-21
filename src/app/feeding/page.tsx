@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { AddFeedingDialog } from '@/components/feeding/add-feeding-dialog';
 import { EditFeedingDialog } from '@/components/feeding/edit-feeding-dialog';
+import { SetupScheduleDialog } from '@/components/feeding/setup-schedule-dialog';
+import { ConfirmMealsDialog } from '@/components/feeding/confirm-meals-dialog';
 
 interface Pet {
   id: string;
@@ -40,10 +42,12 @@ export default function FeedingPage() {
   const [feedings, setFeedings] = useState<FeedingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState<'today' | 'week' | 'month' | 'all'>('week');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const fetchPets = async () => {
     try {
-      const response = await fetch('/api/pets', {
+      // Fetch only active pets
+      const response = await fetch('/api/pets?active=true', {
         headers: { 'x-user-id': 'demo-user' },
       });
       const data = await response.json();
@@ -53,6 +57,31 @@ export default function FeedingPage() {
       }
     } catch (error) {
       console.error('Error fetching pets:', error);
+    }
+  };
+
+  const autoGenerateMeals = async () => {
+    try {
+      const today = new Date();
+      const nextWeek = new Date();
+      nextWeek.setDate(today.getDate() + 7);
+
+      await fetch('/api/feeding/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': 'demo-user',
+        },
+        body: JSON.stringify({
+          startDate: today.toISOString().split('T')[0],
+          endDate: nextWeek.toISOString().split('T')[0],
+        }),
+      });
+
+      // Show confirmation dialog after generating
+      setShowConfirmDialog(true);
+    } catch (error) {
+      console.error('Error auto-generating meals:', error);
     }
   };
 
@@ -93,6 +122,8 @@ export default function FeedingPage() {
 
   useEffect(() => {
     fetchPets();
+    // Auto-generate meals on page load
+    autoGenerateMeals();
   }, []);
 
   useEffect(() => {
@@ -178,11 +209,23 @@ export default function FeedingPage() {
                 Track {selectedPetName}'s meals and nutrition
               </p>
             </div>
-            <AddFeedingDialog
-              pets={pets}
-              selectedPetId={selectedPet}
-              onFeedingAdded={fetchFeedings}
-            />
+            <div className="flex gap-3">
+              {selectedPet && (
+                <SetupScheduleDialog
+                  petId={selectedPet}
+                  petName={selectedPetName}
+                  onScheduleCreated={() => {
+                    autoGenerateMeals();
+                    fetchFeedings();
+                  }}
+                />
+              )}
+              <AddFeedingDialog
+                pets={pets}
+                selectedPetId={selectedPet}
+                onFeedingAdded={fetchFeedings}
+              />
+            </div>
           </div>
 
           {/* Pet Selector */}
@@ -346,6 +389,16 @@ export default function FeedingPage() {
           )}
         </div>
       </div>
+
+      {/* Confirmation Dialog for Auto-Generated Meals */}
+      <ConfirmMealsDialog
+        show={showConfirmDialog}
+        onClose={() => setShowConfirmDialog(false)}
+        onConfirmed={() => {
+          setShowConfirmDialog(false);
+          fetchFeedings();
+        }}
+      />
     </div>
   );
 }

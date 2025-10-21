@@ -10,6 +10,7 @@ interface Pet {
   weight: number;
   gender: 'male' | 'female';
   image?: string;
+  active: boolean;
   createdAt: string;
 }
 
@@ -24,6 +25,7 @@ const pets: Pet[] = [
     birthdate: '2021-03-15',
     weight: 65,
     gender: 'male',
+    active: true,
     createdAt: new Date().toISOString(),
   },
   {
@@ -35,6 +37,7 @@ const pets: Pet[] = [
     birthdate: '2022-06-20',
     weight: 55,
     gender: 'female',
+    active: true,
     createdAt: new Date().toISOString(),
   },
 ];
@@ -50,7 +53,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userPets = pets.filter(pet => pet.userId === userId);
+    const { searchParams } = new URL(request.url);
+    const activeOnly = searchParams.get('active') === 'true';
+
+    let userPets = pets.filter(pet => pet.userId === userId);
+
+    // Filter by active status if requested
+    if (activeOnly) {
+      userPets = userPets.filter(pet => pet.active);
+    }
 
     return NextResponse.json({
       success: true,
@@ -111,6 +122,7 @@ export async function POST(request: NextRequest) {
       weight: Number(weight),
       gender,
       image,
+      active: true, // New pets are active by default
       createdAt: new Date().toISOString(),
     };
 
