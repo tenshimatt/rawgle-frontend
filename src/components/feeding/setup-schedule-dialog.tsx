@@ -191,7 +191,7 @@ export function SetupScheduleDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor={`foodType-${index}`}>Food Type</Label>
+                  <Label htmlFor={`foodType-${index}`}>Ingredient</Label>
                   <Select
                     value={ingredient.foodType}
                     onValueChange={(value) =>
@@ -199,7 +199,7 @@ export function SetupScheduleDialog({
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select food type" />
+                      <SelectValue placeholder="Select ingredient" />
                     </SelectTrigger>
                     <SelectContent>
                       {FOOD_TYPES.map((type) => (
