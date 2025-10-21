@@ -20,12 +20,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Loader2 } from 'lucide-react';
+import { Calendar, Loader2, Plus, X } from 'lucide-react';
+import { FOOD_TYPES } from '@/lib/constants/food-types';
 
 interface SetupScheduleDialogProps {
   petId: string;
   petName: string;
   onScheduleCreated: () => void;
+}
+
+interface Ingredient {
+  foodType: string;
+  amount: string;
+  unit: string;
 }
 
 export function SetupScheduleDialog({
@@ -37,19 +44,45 @@ export function SetupScheduleDialog({
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     mealType: 'breakfast',
-    time: '08:00',
-    foodType: '',
-    amount: '',
-    unit: 'grams',
-    notes: '',
     frequency: 'daily',
+    notes: '',
   });
+  const [ingredients, setIngredients] = useState<Ingredient[]>([
+    { foodType: '', amount: '', unit: 'grams' },
+  ]);
+
+  const addIngredient = () => {
+    setIngredients([...ingredients, { foodType: '', amount: '', unit: 'grams' }]);
+  };
+
+  const removeIngredient = (index: number) => {
+    if (ingredients.length > 1) {
+      setIngredients(ingredients.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateIngredient = (index: number, field: keyof Ingredient, value: string) => {
+    const updated = [...ingredients];
+    updated[index] = { ...updated[index], [field]: value };
+    setIngredients(updated);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Validate that all ingredients have food type and amount
+      const validIngredients = ingredients.filter(
+        (ing) => ing.foodType && ing.amount
+      );
+
+      if (validIngredients.length === 0) {
+        alert('Please add at least one ingredient with food type and amount');
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch('/api/feeding/schedule', {
         method: 'POST',
         headers: {
@@ -59,7 +92,10 @@ export function SetupScheduleDialog({
         body: JSON.stringify({
           petId,
           ...formData,
-          amount: parseFloat(formData.amount),
+          ingredients: validIngredients.map((ing) => ({
+            ...ing,
+            amount: parseFloat(ing.amount),
+          })),
         }),
       });
 
@@ -70,13 +106,10 @@ export function SetupScheduleDialog({
       setOpen(false);
       setFormData({
         mealType: 'breakfast',
-        time: '08:00',
-        foodType: '',
-        amount: '',
-        unit: 'grams',
-        notes: '',
         frequency: 'daily',
+        notes: '',
       });
+      setIngredients([{ foodType: '', amount: '', unit: 'grams' }]);
       onScheduleCreated();
     } catch (error) {
       console.error('Error creating schedule:', error);
@@ -89,12 +122,12 @@ export function SetupScheduleDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-persian-green text-white hover:bg-persian-green-600">
+        <Button variant="default">
           <Calendar className="h-4 w-4 mr-2" />
           Setup Schedule for {petName}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Setup Feeding Schedule</DialogTitle>
           <DialogDescription>
@@ -123,68 +156,98 @@ export function SetupScheduleDialog({
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="time">Time *</Label>
-            <Input
-              id="time"
-              type="time"
-              value={formData.time}
-              onChange={(e) =>
-                setFormData({ ...formData, time: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="foodType">Food Type *</Label>
-            <Input
-              id="foodType"
-              type="text"
-              placeholder="e.g., Raw chicken mix, BARF beef"
-              value={formData.foodType}
-              onChange={(e) =>
-                setFormData({ ...formData, foodType: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="amount">Amount *</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.1"
-                placeholder="250"
-                value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="unit">Unit</Label>
-              <Select
-                value={formData.unit}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, unit: value })
-                }
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Ingredients *</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addIngredient}
+                className="h-8"
               >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="grams">Grams</SelectItem>
-                  <SelectItem value="ounces">Ounces</SelectItem>
-                  <SelectItem value="cups">Cups</SelectItem>
-                  <SelectItem value="pieces">Pieces</SelectItem>
-                </SelectContent>
-              </Select>
+                <Plus className="h-4 w-4 mr-1" />
+                Add Ingredient
+              </Button>
             </div>
+
+            {ingredients.map((ingredient, index) => (
+              <div key={index} className="space-y-2 p-4 border border-charcoal/20 rounded-lg bg-white">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-charcoal">
+                    Ingredient {index + 1}
+                  </span>
+                  {ingredients.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeIngredient(index)}
+                      className="h-6 w-6 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor={`foodType-${index}`}>Food Type</Label>
+                  <Select
+                    value={ingredient.foodType}
+                    onValueChange={(value) =>
+                      updateIngredient(index, 'foodType', value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select food type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FOOD_TYPES.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor={`amount-${index}`}>Amount</Label>
+                    <Input
+                      id={`amount-${index}`}
+                      type="number"
+                      step="0.1"
+                      placeholder="250"
+                      value={ingredient.amount}
+                      onChange={(e) =>
+                        updateIngredient(index, 'amount', e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`unit-${index}`}>Unit</Label>
+                    <Select
+                      value={ingredient.unit}
+                      onValueChange={(value) =>
+                        updateIngredient(index, 'unit', value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="grams">Grams</SelectItem>
+                        <SelectItem value="ounces">Ounces</SelectItem>
+                        <SelectItem value="cups">Cups</SelectItem>
+                        <SelectItem value="pieces">Pieces</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="space-y-2">
@@ -219,7 +282,7 @@ export function SetupScheduleDialog({
             />
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-4">
             <Button
               type="button"
               variant="outline"
@@ -231,7 +294,8 @@ export function SetupScheduleDialog({
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-persian-green text-white hover:bg-persian-green-600"
+              variant="default"
+              className="flex-1"
               disabled={loading}
             >
               {loading ? (
