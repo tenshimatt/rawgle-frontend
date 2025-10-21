@@ -253,7 +253,6 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
               type="button"
               variant="destructive"
               onClick={handleDelete}
-              variant="accent"
               disabled={loading || deleting}
             >
               {deleting ? (

@@ -1,5 +1,5 @@
-import { OpenAIStream, StreamingTextResponse } from 'ai';
-import OpenAI from 'openai';
+import { streamText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 
 export const runtime = 'edge';
 
@@ -7,7 +7,6 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
-    // Check if API key is configured
     if (!process.env.OPENAI_API_KEY) {
       return new Response(
         JSON.stringify({
@@ -20,12 +19,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create an OpenAI API client
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-
-    // System prompt for raw pet nutrition assistant
     const systemPrompt = `You are an expert AI pet nutrition assistant specializing in raw feeding (BARF diet) for dogs and cats.
 
 Your expertise includes:
@@ -48,30 +41,19 @@ Guidelines:
 
 Keep responses concise but informative, typically 2-4 paragraphs unless more detail is specifically requested.`;
 
-    // Request the OpenAI API for the response
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', // Using mini for cost efficiency
-      stream: true,
+    const result = streamText({
+      model: openai('gpt-4o-mini'),
       messages: [
-        {
-          role: 'system',
-          content: systemPrompt,
-        },
+        { role: 'system', content: systemPrompt },
         ...messages,
       ],
       temperature: 0.7,
-      max_tokens: 500,
     });
 
-    // Convert the response into a friendly text-stream
-    const stream = OpenAIStream(response as any);
-
-    // Respond with the stream
-    return new StreamingTextResponse(stream);
+    return result.toTextStreamResponse();
   } catch (error: any) {
     console.error('Chat API Error:', error);
 
-    // Provide helpful error messages
     let errorMessage = 'Failed to process chat request';
     if (error?.status === 401) {
       errorMessage = 'Invalid OpenAI API key. Please check your OPENAI_API_KEY environment variable.';
