@@ -8,13 +8,13 @@ import { Dog, MapPin, MessageSquare, Calendar, Heart, ShoppingBag, BookOpen, Use
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-seasalt">
       <MainNav />
 
       {/* Hero Section */}
       <div className="relative py-24 px-4 overflow-hidden">
         {/* Subtle gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-persian-green/5 via-sandy-brown/5 to-burnt-sienna/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-persian-green/5 via-fawn/5 to-burnt-sienna/5"></div>
         <div className="relative">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
@@ -27,12 +27,12 @@ export default function HomePage() {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Link href="/ai-assistant">
-                  <Button size="lg" className="bg-persian-green text-white hover:bg-persian-green-600 px-8 py-6 text-lg shadow-lg">
+                  <Button size="lg" variant="default">
                     💬 Talk to AI Assistant
                   </Button>
                 </Link>
                 <Link href="/suppliers">
-                  <Button size="lg" className="bg-sandy-brown text-charcoal hover:bg-sandy-brown-600 px-8 py-6 text-lg shadow-lg">
+                  <Button size="lg" variant="secondary">
                     📍 Find Suppliers
                   </Button>
                 </Link>
@@ -44,17 +44,17 @@ export default function HomePage() {
 
       {/* Features Grid */}
       <div className="container mx-auto px-4 py-16">
-        <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">
+        <h2 className="text-4xl font-bold text-center mb-12 text-charcoal">
           Everything You Need for Raw Pet Nutrition
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link href="/ai-assistant">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-sandy-brown h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-fawn h-full bg-white/80 backdrop-blur">
               <CardContent className="p-6 text-center">
-                <MessageSquare className="h-16 w-16 text-sandy-brown mx-auto mb-4" />
+                <MessageSquare className="h-16 w-16 text-fawn mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">AI Assistant</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal/70 text-sm">
                   Get expert answers on raw nutrition, portions, safety, and meal planning
                 </p>
               </CardContent>
@@ -66,7 +66,7 @@ export default function HomePage() {
               <CardContent className="p-6 text-center">
                 <Heart className="h-16 w-16 text-persian-green mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Pet Management</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal/70 text-sm">
                   Manage profiles, health records, and track your pet's well-being
                 </p>
               </CardContent>
@@ -74,11 +74,11 @@ export default function HomePage() {
           </Link>
 
           <Link href="/feeding">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-charcoal h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-maize h-full bg-white/80 backdrop-blur">
               <CardContent className="p-6 text-center">
-                <Calendar className="h-16 w-16 text-charcoal mx-auto mb-4" />
+                <Calendar className="h-16 w-16 text-maize-700 mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Smart Feeding</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal/70 text-sm">
                   Calculate portions, track meals, and monitor digestion patterns
                 </p>
               </CardContent>
@@ -90,7 +90,7 @@ export default function HomePage() {
               <CardContent className="p-6 text-center">
                 <MapPin className="h-16 w-16 text-burnt-sienna mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Find Suppliers</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal/70 text-sm">
                   Discover 9,190+ verified raw pet food suppliers near you
                 </p>
               </CardContent>
@@ -102,7 +102,7 @@ export default function HomePage() {
               <CardContent className="p-6 text-center">
                 <Heart className="h-16 w-16 text-persian-green mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Health & Wellness</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal/70 text-sm">
                   Track symptoms, monitor progress, and share with your vet
                 </p>
               </CardContent>
@@ -114,7 +114,7 @@ export default function HomePage() {
               <CardContent className="p-6 text-center">
                 <Users className="h-16 w-16 text-burnt-sienna mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Community</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal/70 text-sm">
                   Connect with other raw feeders, share tips, and learn together
                 </p>
               </CardContent>
@@ -122,11 +122,11 @@ export default function HomePage() {
           </Link>
 
           <Link href="/shop">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-sandy-brown h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-fawn h-full bg-white/80 backdrop-blur">
               <CardContent className="p-6 text-center">
-                <ShoppingBag className="h-16 w-16 text-sandy-brown mx-auto mb-4" />
+                <ShoppingBag className="h-16 w-16 text-fawn mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Shop & Marketplace</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal/70 text-sm">
                   Browse products, supplements, and essential feeding supplies
                 </p>
               </CardContent>
@@ -134,11 +134,11 @@ export default function HomePage() {
           </Link>
 
           <Link href="/education">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-charcoal h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-coral h-full bg-white/80 backdrop-blur">
               <CardContent className="p-6 text-center">
-                <BookOpen className="h-16 w-16 text-charcoal mx-auto mb-4" />
+                <BookOpen className="h-16 w-16 text-coral mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Education</h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-charcoal/70 text-sm">
                   Guides, tutorials, and expert advice on raw pet nutrition
                 </p>
               </CardContent>
@@ -182,12 +182,12 @@ export default function HomePage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/pets">
-              <Button size="lg" className="bg-burnt-sienna text-white hover:bg-burnt-sienna-600 px-8 py-6 text-lg shadow-lg">
+              <Button size="lg" variant="destructive">
                 🐾 Add Your Pet
               </Button>
             </Link>
             <Link href="/education">
-              <Button size="lg" variant="outline" className="border-2 border-charcoal text-charcoal hover:bg-charcoal hover:text-white px-8 py-6 text-lg">
+              <Button size="lg" variant="outline">
                 📚 Learn More
               </Button>
             </Link>
