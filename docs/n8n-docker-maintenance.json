@@ -1,0 +1,331 @@
+{
+  "name": "Docker Container Maintenance - Daily",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Schedule: Daily at 2 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "schedule-trigger"
+    },
+    {
+      "parameters": {
+        "command": "docker ps --filter 'health=unhealthy' --format '{{.Names}}'"
+      },
+      "name": "Check Unhealthy Containers",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "id": "check-unhealthy",
+      "credentials": {
+        "ssh": {
+          "id": "1",
+          "name": "docker-server SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.stdout}}",
+              "value2": ""
+            }
+          ]
+        }
+      },
+      "name": "Has Unhealthy Containers?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "id": "check-if-unhealthy"
+    },
+    {
+      "parameters": {
+        "command": "echo '{{$json.stdout}}' | while read container; do docker restart $container; done"
+      },
+      "name": "Restart Unhealthy Containers",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [850, 200],
+      "id": "restart-unhealthy",
+      "credentials": {
+        "ssh": {
+          "id": "1",
+          "name": "docker-server SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "~/rawgle-automation/scripts/docker-maintenance.sh"
+      },
+      "name": "Run Full Maintenance Script",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [850, 400],
+      "id": "run-maintenance",
+      "credentials": {
+        "ssh": {
+          "id": "1",
+          "name": "docker-server SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "docker images -f 'dangling=true' -q | xargs -r docker rmi"
+      },
+      "name": "Clean Dangling Images",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1050, 300],
+      "id": "clean-images",
+      "credentials": {
+        "ssh": {
+          "id": "1",
+          "name": "docker-server SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "docker system prune -f --volumes"
+      },
+      "name": "System Prune",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1250, 300],
+      "id": "system-prune",
+      "credentials": {
+        "ssh": {
+          "id": "1",
+          "name": "docker-server SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "docker ps --format 'table {{.Names}}\\t{{.Status}}\\t{{.Image}}' | head -20"
+      },
+      "name": "Get Container Status",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1450, 300],
+      "id": "get-status",
+      "credentials": {
+        "ssh": {
+          "id": "1",
+          "name": "docker-server SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#docker-alerts",
+        "text": "🐳 *Docker Maintenance Report*\n\n```\n={{$json.stdout}}\n```\n\n✅ Maintenance completed successfully",
+        "otherOptions": {}
+      },
+      "name": "Send Slack Notification",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1650, 300],
+      "id": "slack-notify",
+      "credentials": {
+        "slackApi": {
+          "id": "2",
+          "name": "Slack API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "docker ps --filter 'status=restarting' --format '{{.Names}}'"
+      },
+      "name": "Check Restarting Containers",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [450, 500],
+      "id": "check-restarting",
+      "credentials": {
+        "ssh": {
+          "id": "1",
+          "name": "docker-server SSH"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.stdout}}",
+              "value2": ""
+            }
+          ]
+        }
+      },
+      "name": "Has Restarting Containers?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 500],
+      "id": "check-if-restarting"
+    },
+    {
+      "parameters": {
+        "channel": "#docker-alerts",
+        "text": "⚠️ *ALERT: Containers Stuck Restarting*\n\nContainers:\n```\n={{$json.stdout}}\n```\n\nThese containers may need manual intervention.",
+        "otherOptions": {}
+      },
+      "name": "Alert Restarting Containers",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [850, 600],
+      "id": "alert-restarting",
+      "credentials": {
+        "slackApi": {
+          "id": "2",
+          "name": "Slack API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule: Daily at 2 AM": {
+      "main": [
+        [
+          {
+            "node": "Check Unhealthy Containers",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Restarting Containers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Unhealthy Containers": {
+      "main": [
+        [
+          {
+            "node": "Has Unhealthy Containers?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Unhealthy Containers?": {
+      "main": [
+        [
+          {
+            "node": "Restart Unhealthy Containers",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Full Maintenance Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restart Unhealthy Containers": {
+      "main": [
+        [
+          {
+            "node": "Run Full Maintenance Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Full Maintenance Script": {
+      "main": [
+        [
+          {
+            "node": "Clean Dangling Images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Dangling Images": {
+      "main": [
+        [
+          {
+            "node": "System Prune",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "System Prune": {
+      "main": [
+        [
+          {
+            "node": "Get Container Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Container Status": {
+      "main": [
+        [
+          {
+            "node": "Send Slack Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Restarting Containers": {
+      "main": [
+        [
+          {
+            "node": "Has Restarting Containers?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Restarting Containers?": {
+      "main": [
+        [
+          {
+            "node": "Alert Restarting Containers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
