@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // In-memory storage (replace with database later)
-const feedingSchedules = (global as any).__feedingSchedules || [];
-if (!(global as any).__feedingSchedules) {
-  (global as any).__feedingSchedules = feedingSchedules;
-}
+const feedingSchedules: any[] = [];
 
 export async function GET(request: NextRequest) {
   const petId = request.nextUrl.searchParams.get('petId');
   const userId = request.headers.get('x-user-id') || 'demo-user';
 
-  let schedules = feedingSchedules.filter((s: any) => s.userId === userId);
+  let schedules = feedingSchedules.filter(s => s.userId === userId);
 
   if (petId) {
-    schedules = schedules.filter((s: any) => s.petId === petId);
+    schedules = schedules.filter(s => s.petId === petId);
   }
 
   return NextResponse.json({
@@ -24,12 +21,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { petId, mealType, ingredients, notes, frequency, days } = body;
+  const { petId, mealType, time, foodType, amount, unit, notes, frequency, days } = body;
 
-  if (!petId || !mealType || !ingredients || ingredients.length === 0) {
+  if (!petId || !mealType || !time || !foodType || !amount) {
     return NextResponse.json({
       success: false,
-      error: 'petId, mealType, and at least one ingredient are required'
+      error: 'petId, mealType, time, foodType, and amount are required'
     }, { status: 400 });
   }
 
@@ -40,9 +37,12 @@ export async function POST(request: NextRequest) {
     userId,
     petId,
     mealType, // breakfast, lunch, dinner, snack
-    ingredients, // Array of { foodType, amount, unit }
+    time, // HH:MM format
+    foodType,
+    amount: parseFloat(amount),
+    unit: unit || 'grams',
     notes: notes || '',
-    frequency: frequency || 'daily', // daily, weekdays, weekends
+    frequency: frequency || 'daily', // daily, weekly, custom
     days: days || [1, 2, 3, 4, 5, 6, 7], // Days of week (1=Monday, 7=Sunday)
     active: true,
     createdAt: new Date().toISOString(),
@@ -50,10 +50,6 @@ export async function POST(request: NextRequest) {
   };
 
   feedingSchedules.push(newSchedule);
-
-  console.log('[API POST] Created feeding schedule:', newSchedule);
-  console.log('[API POST] Total schedules:', feedingSchedules.length);
-
   return NextResponse.json({
     success: true,
     data: newSchedule
@@ -72,7 +68,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const userId = request.headers.get('x-user-id') || 'demo-user';
-  const scheduleIndex = feedingSchedules.findIndex((s: any) => s.id === id && s.userId === userId);
+  const scheduleIndex = feedingSchedules.findIndex(s => s.id === id && s.userId === userId);
 
   if (scheduleIndex === -1) {
     return NextResponse.json({
@@ -107,7 +103,7 @@ export async function DELETE(request: NextRequest) {
 
   const userId = request.headers.get('x-user-id') || 'demo-user';
   const initialLength = feedingSchedules.length;
-  const filteredSchedules = feedingSchedules.filter((s: any) => !(s.id === id && s.userId === userId));
+  const filteredSchedules = feedingSchedules.filter(s => !(s.id === id && s.userId === userId));
 
   if (filteredSchedules.length === initialLength) {
     return NextResponse.json({

@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // In-memory store for feeding records
-const feedingStore = (global as any).__feedingStore || new Map<string, any[]>();
-if (!(global as any).__feedingStore) {
-  (global as any).__feedingStore = feedingStore;
-}
+const feedingStore = new Map<string, any[]>();
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,19 +15,19 @@ export async function GET(req: NextRequest) {
 
     // Filter by petId if provided
     if (petId) {
-      records = records.filter((r: any) => r.petId === petId);
+      records = records.filter(r => r.petId === petId);
     }
 
     // Filter by date range if provided
     if (startDate) {
-      records = records.filter((r: any) => new Date(r.date) >= new Date(startDate));
+      records = records.filter(r => new Date(r.date) >= new Date(startDate));
     }
     if (endDate) {
-      records = records.filter((r: any) => new Date(r.date) <= new Date(endDate));
+      records = records.filter(r => new Date(r.date) <= new Date(endDate));
     }
 
     // Sort by date descending
-    records.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return NextResponse.json({
       success: true,
