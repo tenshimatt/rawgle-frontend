@@ -308,7 +308,7 @@
   }
 
   .hero-description {
-    @apply text-base md:text-lg mb-8 text-charcoal/80 max-w-2xl mx-auto;
+    @apply text-base md:text-lg mb-8 text-charcoal max-w-2xl mx-auto;
   }
 
   /* Content sections */
@@ -321,7 +321,7 @@
   }
 
   .section-subtitle {
-    @apply text-lg md:text-xl text-center mb-6 text-charcoal/80 max-w-3xl mx-auto;
+    @apply text-lg md:text-xl text-center mb-6 text-charcoal max-w-3xl mx-auto;
   }
 
   /* ========================================
@@ -342,11 +342,11 @@
   }
 
   .text-muted {
-    @apply text-charcoal/70;
+    @apply text-charcoal;
   }
 
   .text-subtle {
-    @apply text-charcoal/50;
+    @apply text-charcoal/80;
   }
 
   /* Color accents for text */
@@ -409,7 +409,7 @@
   }
 
   .input-base::placeholder {
-    color: rgba(38, 70, 83, 0.5);
+    color: rgba(38, 70, 83, 0.7);
   }
 
   .input-base:focus {
@@ -481,7 +481,7 @@
   }
 
   .icon-muted {
-    color: rgba(38, 70, 83, 0.5);
+    color: rgba(38, 70, 83, 0.8);
   }
 
   /* Dividers */
