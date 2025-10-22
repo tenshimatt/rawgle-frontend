@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { MessageSquare, ThumbsUp, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { CreatePostDialog } from '@/components/community/create-post-dialog';
+import { SocialActions } from '@/components/community/social/social-actions';
 
 interface Post {
   id: string;
@@ -100,15 +101,16 @@ export default function CommunityPage() {
                       />
                     )}
 
-                    <div className="flex items-center gap-6 text-muted">
-                      <button className="flex items-center gap-2 hover:text-persian-green transition-colors">
-                        <ThumbsUp className="h-5 w-5" />
-                        <span>{post.likes}</span>
-                      </button>
-                      <button className="flex items-center gap-2 hover:text-persian-green transition-colors">
-                        <MessageSquare className="h-5 w-5" />
-                        <span>{post.comments} comments</span>
-                      </button>
+                    <div className="pt-2 border-t border-charcoal/10">
+                      <SocialActions
+                        itemId={post.id}
+                        itemType="post"
+                        title={post.title}
+                        description={post.content}
+                        initialLikes={post.likes}
+                        initialComments={post.comments}
+                        showComments={true}
+                      />
                     </div>
                   </CardContent>
                 </Card>

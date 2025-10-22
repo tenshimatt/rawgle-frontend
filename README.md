@@ -11,6 +11,8 @@ A comprehensive platform for raw pet food enthusiasts built with Next.js 15, Rea
 - 💊 **Medication Tracker** - Never miss a dose with medication reminders
 - 📍 **Supplier Locator** - Find raw food suppliers near you
 - 👥 **Community** - Connect with other raw feeding enthusiasts
+- 🍲 **Recipe Exchange** - Share and discover raw feeding recipes with search, filters, and social features
+- ❤️ **Social Features** - Like, save, share, and comment on posts and recipes
 
 ## Quick Start
 
@@ -95,16 +97,30 @@ src/
 │   ├── ai-assistant/      # AI chat interface
 │   ├── api/               # API routes
 │   │   ├── chat/         # AI chat endpoint
+│   │   ├── community/    # Community & recipe APIs
+│   │   │   ├── posts/   # Post likes & comments
+│   │   │   └── recipes/ # Recipe CRUD & interactions
 │   │   ├── feeding/      # Feeding tracker API
 │   │   ├── health/       # Health records API
 │   │   ├── medications/  # Medications API
 │   │   └── pets/         # Pet management API
+│   ├── community/         # Community hub
+│   │   └── recipes/      # Recipe exchange
 │   ├── feeding/           # Feeding tracker
 │   ├── health/            # Health records
 │   ├── medications/       # Medication tracker
 │   ├── pets/              # Pet management
 │   └── ...
 ├── components/            # Reusable React components
+│   ├── community/        # Community components
+│   │   ├── recipe-card.tsx    # Recipe display card
+│   │   └── social/       # Social interaction components
+│   │       ├── like-button.tsx
+│   │       ├── save-button.tsx
+│   │       ├── share-button.tsx
+│   │       ├── comment-section.tsx
+│   │       ├── comment-input.tsx
+│   │       └── social-actions.tsx
 │   ├── feeding/          # Feeding-related components
 │   ├── health/           # Health-related components
 │   ├── navigation/       # Navigation components
@@ -223,6 +239,27 @@ Powered by GPT-4o-mini, the AI assistant provides:
 - Mark doses as taken
 - View medication history
 
+### Recipe Exchange
+
+- Share raw feeding recipes with the community
+- Browse recipes with search functionality
+- Filter by diet type (dog, cat, both)
+- Sort by recent, popular, or most saved
+- Photo galleries for recipe presentation
+- Detailed recipe pages with ingredients and instructions
+- Print-friendly recipe format
+- Full social integration (like, save, share, comment)
+
+### Social Features
+
+- **Like Button**: Animated heart with optimistic UI updates
+- **Save/Bookmark**: Save favorite posts and recipes for later
+- **Share**: Native Web Share API with fallback to social media links (Twitter, Facebook, LinkedIn, Email)
+- **Comments**: Full comment system with nested replies support
+- **Keyboard Shortcuts**: Cmd+Enter (Mac) or Ctrl+Enter (Windows) to submit comments
+- Real-time engagement metrics
+- Responsive social action bars on all community content
+
 ## Troubleshooting
 
 ### AI Assistant not responding
@@ -334,4 +371,4 @@ This project is proprietary and confidential.
 
 **Built with ❤️ for the raw pet food community**
 
-Last updated: 2025-10-21
+Last updated: 2025-10-22
