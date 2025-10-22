@@ -18,6 +18,7 @@ import { EditFeedingDialog } from '@/components/feeding/edit-feeding-dialog';
 import { SetupScheduleDialog } from '@/components/feeding/setup-schedule-dialog';
 import { ConfirmMealsDialog } from '@/components/feeding/confirm-meals-dialog';
 import { ScheduleList } from '@/components/feeding/schedule-list';
+import { NutritionCalculator } from '@/components/feeding/nutrition-calculator';
 
 interface Pet {
   id: string;
@@ -336,6 +337,11 @@ export default function FeedingPage() {
                 </p>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Nutrition Calculator */}
+          <div className="mb-8">
+            <NutritionCalculator />
           </div>
 
           {/* Feeding Schedules Section */}
