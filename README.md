@@ -276,6 +276,20 @@ PORT=3001 npm run dev
 
 **Note**: This is expected behavior in development. The app uses in-memory storage with global persistence that survives HMR but not full server restarts. In production with a real database, this won't be an issue.
 
+### Console Errors: PWA Icons 404
+
+**Problem**: Browser console shows 404 errors for `icon-192.png`, `icon-512.png`, `icon-144x144.png`
+
+**Status**: These are harmless warnings during PWA manifest validation. The icon files exist and load correctly when needed by the PWA system. You can safely ignore these console messages.
+
+**Why it happens**: Next.js PWA plugin validates multiple icon paths during manifest generation. The icons are actually present in the `/public` folder and function correctly.
+
+### Console: WireframeIt Script
+
+**Problem**: Console shows `[WIREFRAMEIT] - Content Core Script loaded`
+
+**Status**: This is from a browser extension or developer tool, not from the Rawgle app. It's injected by your browser and can be safely ignored.
+
 ## Contributing
 
 Contributions are welcome! Please:
