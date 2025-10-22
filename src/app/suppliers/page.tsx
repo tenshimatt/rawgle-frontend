@@ -141,7 +141,7 @@ export default function SuppliersPage() {
             </div>
 
             {/* Sign In Button */}
-            <Link href="/auth/sign-in">
+            <Link href="/auth/login">
               <Button variant="default">
                 🔐 Sign In to Review
               </Button>

@@ -1,269 +1,323 @@
-# RAWGLE Frontend - Next.js 14 + Cloudflare Pages
+# RAWGLE - Raw Pet Food Community Platform
 
-## 🐾 Overview
+A comprehensive platform for raw pet food enthusiasts built with Next.js 15, React 19, and TypeScript.
 
-RAWGLE is a comprehensive raw pet food community platform built with Next.js 14, Tailwind CSS, and deployed on Cloudflare Pages. Features include feeding tracking, community engagement, PAWS token rewards on Solana, and AI-powered nutrition assistance.
+## Features
 
-## 🚀 Quick Start
+- 🤖 **AI Pet Nutritionist** - Get expert answers on raw feeding using GPT-4o-mini
+- 🐕 **Pet Management** - Track multiple pets with detailed profiles
+- 🍖 **Smart Feeding Tracker** - Schedule meals with ingredients and supplements
+- 🏥 **Health & Wellness** - Monitor vaccinations, vet visits, and health records
+- 💊 **Medication Tracker** - Never miss a dose with medication reminders
+- 📍 **Supplier Locator** - Find raw food suppliers near you
+- 👥 **Community** - Connect with other raw feeding enthusiasts
+
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 20.x or later
 - npm or yarn
-- Cloudflare account
-- Wrangler CLI (`npm install -g wrangler`)
+- OpenAI API key (for AI Assistant feature)
 
-### Local Development
+### Installation
 
-1. **Clone and Install**
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/rawgle-frontend.git
+   cd rawgle-frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+
+   Edit `.env.local` and add your OpenAI API key:
+   ```bash
+   # OpenAI Configuration
+   # Add your OpenAI API key here for the AI Assistant feature
+   # Get your key from: https://platform.openai.com/api-keys
+   OPENAI_API_KEY=sk-your-key-here
+   ```
+
+4. **Run development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Environment Variables
+
+### Required
+
+- `OPENAI_API_KEY` - Your OpenAI API key for the AI Assistant
+  - Get one at: https://platform.openai.com/api-keys
+  - The AI Assistant will show setup instructions if this is missing
+
+### Optional
+
+- `NEXT_PUBLIC_RAWGLE_API_URL` - API URL (default: https://rawgle.com/api)
+- `NEXT_PUBLIC_APP_NAME` - Application name (default: RAWGLE)
+- `NEXT_PUBLIC_APP_URL` - Full app URL for meta tags
+
+## Development
+
+### Available Scripts
+
 ```bash
-cd rawgle-frontend
-npm install
-```
-
-2. **Environment Setup**
-```bash
-cp .env.example .env.local
-# Edit .env.local with your values
-```
-
-3. **Run Development Server**
-```bash
+# Start development server
 npm run dev
-# Open http://localhost:3000
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Run linter
+npm run lint
+
+# Type check
+npx tsc --noEmit
 ```
 
-## 📦 Deployment to Cloudflare Pages
+### Project Structure
 
-### Option 1: Direct Deployment (Recommended)
+```
+src/
+├── app/                    # Next.js 15 App Router pages
+│   ├── ai-assistant/      # AI chat interface
+│   ├── api/               # API routes
+│   │   ├── chat/         # AI chat endpoint
+│   │   ├── feeding/      # Feeding tracker API
+│   │   ├── health/       # Health records API
+│   │   ├── medications/  # Medications API
+│   │   └── pets/         # Pet management API
+│   ├── feeding/           # Feeding tracker
+│   ├── health/            # Health records
+│   ├── medications/       # Medication tracker
+│   ├── pets/              # Pet management
+│   └── ...
+├── components/            # Reusable React components
+│   ├── feeding/          # Feeding-related components
+│   ├── health/           # Health-related components
+│   ├── navigation/       # Navigation components
+│   └── ui/               # UI primitives (shadcn/ui)
+├── lib/                  # Utility functions and constants
+│   ├── constants/        # App constants (food types, supplements)
+│   └── utils.ts          # Helper functions
+└── styles/               # Global styles
+```
 
-1. **Build for Cloudflare Pages**
+### Tech Stack
+
+- **Framework**: Next.js 15.5.6 (App Router)
+- **Language**: TypeScript 5.7.3
+- **UI Library**: React 19.2.0
+- **Styling**: Tailwind CSS 4.0.14
+- **AI**: Vercel AI SDK 5.0.76 with OpenAI
+- **UI Components**: shadcn/ui
+- **Icons**: Lucide React
+- **Map**: Mapbox GL
+
+### Key Dependencies
+
+```json
+{
+  "next": "15.5.6",
+  "react": "19.2.0",
+  "typescript": "5.7.3",
+  "tailwindcss": "4.0.14",
+  "ai": "5.0.76",
+  "@ai-sdk/openai": "1.0.14"
+}
+```
+
+## Deployment
+
+### Deploy to Vercel (Recommended)
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Import to Vercel**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import your repository
+
+3. **Configure Environment Variables**
+   - In Vercel project settings
+   - Go to Settings → Environment Variables
+   - Add `OPENAI_API_KEY` with your OpenAI key
+   - Select Production, Preview, and Development environments
+   - Add any other optional variables
+
+4. **Deploy**
+   - Click "Deploy"
+   - Vercel will automatically build and deploy
+   - Every push to main triggers a new deployment
+
+### Pre-Deployment Checklist
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for comprehensive deployment guide.
+
+**Quick checks:**
+- ✅ Run `npm run build` successfully
+- ✅ All environment variables configured in Vercel
+- ✅ Test AI Assistant works with API key
+- ✅ No TypeScript errors
+- ✅ All features tested locally
+
+## Features Overview
+
+### AI Pet Nutritionist
+
+Powered by GPT-4o-mini, the AI assistant provides:
+- Raw feeding advice and principles
+- Portion calculations based on pet weight
+- Food safety guidance
+- Meal planning suggestions
+- Transition support from kibble to raw
+
+**Note**: Requires `OPENAI_API_KEY` environment variable. Will display setup instructions if missing.
+
+### Feeding Tracker
+
+- Create feeding schedules with multiple ingredients
+- Add supplements separately (visually distinguished with green badges)
+- Track actual feedings with timestamps
+- View feeding history by day/week/month
+- Auto-generate meals from schedules
+- 15 predefined food types (Beef, Chicken, Salmon, etc.)
+- 15 predefined supplements (Omega-3, Probiotics, etc.)
+
+### Pet Management
+
+- Multiple pet profiles
+- Track species, breed, weight, age
+- Upload pet photos
+- Mark pets as active/inactive
+- View all pet-related data in one place
+
+### Health & Wellness
+
+- Track vaccinations and vet visits
+- Monitor weight trends
+- Record health observations
+- Set reminders for checkups
+
+### Medication Tracker
+
+- Add medications with dosage
+- Set frequency and reminders
+- Mark doses as taken
+- View medication history
+
+## Troubleshooting
+
+### AI Assistant not responding
+
+**Problem**: Chat doesn't respond or shows error
+
+**Solution**:
+1. Check `OPENAI_API_KEY` is set in `.env.local`
+2. Verify API key is valid at https://platform.openai.com
+3. Check browser console for errors
+4. Restart dev server: `npm run dev`
+
+### Build fails
+
+**Problem**: `npm run build` fails with errors
+
+**Solution**:
 ```bash
-npm run pages:build
-```
-
-2. **Deploy to Cloudflare**
-```bash
-# First time - login to Cloudflare
-wrangler login
-
-# Deploy to production
-npm run deploy
-```
-
-3. **Access your site**
-```
-https://rawgle-frontend.pages.dev
-# or your custom domain
-```
-
-### Option 2: GitHub Integration
-
-1. Push code to GitHub
-2. Connect repo in Cloudflare Pages dashboard
-3. Configure build settings:
-   - Build command: `npm run pages:build`
-   - Build output: `.vercel/output/static`
-   - Node version: `18`
-
-### Option 3: Vercel Deployment (Alternative)
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel --prod
-```
-
-## 🏗️ Project Structure
-
-```
-rawgle-frontend/
-├── src/
-│   ├── app/              # Next.js 14 app directory
-│   │   ├── layout.tsx    # Root layout
-│   │   ├── page.tsx      # Home page
-│   │   └── globals.css   # Global styles
-│   ├── components/       # React components
-│   │   ├── home/        # Homepage components
-│   │   ├── ui/          # shadcn/ui components
-│   │   ├── layout/      # Layout components
-│   │   ├── chat/        # AI chat widget
-│   │   └── wallet/      # Solana wallet
-│   ├── lib/             # Utilities
-│   ├── hooks/           # Custom hooks
-│   ├── store/           # Zustand stores
-│   └── types/           # TypeScript types
-├── public/              # Static assets
-├── wrangler.toml        # Cloudflare config
-└── next.config.js       # Next.js config
-```
-
-## 🔧 Configuration
-
-### Cloudflare Services Setup
-
-1. **KV Namespace** (for session storage)
-```bash
-wrangler kv:namespace create "RAWGLE_KV"
-# Add the ID to wrangler.toml
-```
-
-2. **R2 Bucket** (for file storage)
-```bash
-wrangler r2 bucket create rawgle-assets
-```
-
-3. **Durable Objects** (for real-time features)
-```bash
-# Configure in wrangler.toml
-```
-
-### Environment Variables
-
-Key variables to configure:
-
-- `NEXT_PUBLIC_API_URL` - Backend API endpoint
-- `NEXT_PUBLIC_SOLANA_NETWORK` - Solana network (devnet/mainnet)
-- `CF_ACCOUNT_ID` - Cloudflare account ID
-- `NEXTAUTH_SECRET` - Authentication secret
-
-## 🎨 Features Implemented
-
-### ✅ Completed
-- [x] Landing page with hero, features, testimonials
-- [x] Responsive navigation with mobile menu
-- [x] Dark mode support
-- [x] PAWS token section
-- [x] AI chat widget
-- [x] Wallet integration (Phantom, Solflare)
-- [x] PWA manifest
-- [x] SEO optimization
-- [x] Animations with Framer Motion
-
-### 🚧 In Progress
-- [ ] Authentication flow (login/register)
-- [ ] Dashboard pages
-- [ ] Feeding tracker
-- [ ] Community features
-- [ ] Store locator with maps
-- [ ] E-commerce integration
-
-### 📝 TODO
-- [ ] Complete all dashboard routes
-- [ ] Implement API connections
-- [ ] Add real-time features with Durable Objects
-- [ ] Set up payment processing
-- [ ] Create admin panel
-
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS + shadcn/ui
-- **State**: Zustand
-- **Animations**: Framer Motion
-- **Blockchain**: Solana Web3.js
-- **Deployment**: Cloudflare Pages
-- **Edge Functions**: Cloudflare Workers
-- **Storage**: Cloudflare KV + R2
-- **Real-time**: Cloudflare Durable Objects
-
-## 📱 PWA Features
-
-The app is PWA-ready with:
-- Offline support
-- Install prompts
-- Push notifications (coming soon)
-- App shortcuts
-- Splash screens
-
-## 🔐 Security
-
-- CSP headers configured
-- XSS protection
-- CSRF protection
-- Rate limiting via Cloudflare
-- Input validation with Zod
-
-## 📊 Performance
-
-Target metrics:
-- Lighthouse Score: 95+
-- FCP: < 1.5s
-- TTI: < 3.5s
-- CLS: < 0.1
-
-## 🧪 Testing
-
-```bash
-# Run tests
-npm test
-
-# E2E tests
-npm run test:e2e
-
-# Type checking
-npm run type-check
-```
-
-## 🐛 Troubleshooting
-
-### Build Issues
-```bash
-# Clear cache
-rm -rf .next .vercel node_modules
+# Clean install
+rm -rf node_modules package-lock.json .next
 npm install
 npm run build
 ```
 
-### Cloudflare Deployment
-```bash
-# Check deployment status
-wrangler pages deployment list --project-name=rawgle-frontend
+### TypeScript errors
 
-# View logs
-wrangler pages deployment tail --project-name=rawgle-frontend
+**Problem**: Type errors during development
+
+**Solution**:
+```bash
+# Update type definitions
+npm install --save-dev @types/react@latest @types/node@latest
 ```
 
-## 📚 Documentation
+### Port already in use
 
-- [Next.js Docs](https://nextjs.org/docs)
-- [Cloudflare Pages Docs](https://developers.cloudflare.com/pages)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [shadcn/ui](https://ui.shadcn.com)
-- [Solana Web3.js](https://solana-labs.github.io/solana-web3.js)
+**Problem**: Port 3000 is already in use
 
-## 🤝 Contributing
+**Solution**:
+```bash
+# Kill process on port 3000 (macOS/Linux)
+lsof -ti:3000 | xargs kill -9
+
+# Or use a different port
+PORT=3001 npm run dev
+```
+
+### Feeding schedules not saving
+
+**Problem**: Schedules disappear on dev server restart
+
+**Note**: This is expected behavior in development. The app uses in-memory storage with global persistence that survives HMR but not full server restarts. In production with a real database, this won't be an issue.
+
+## Contributing
+
+Contributions are welcome! Please:
 
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests and linter
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
-## 📄 License
+### Development Guidelines
 
-MIT License - see LICENSE file
+- Use TypeScript for all new code
+- Follow existing code style
+- Add comments for complex logic
+- Test all features before submitting
+- Update documentation if needed
+- Run `npm run build` to verify no errors
 
-## 💬 Support
+## Documentation
 
-- Email: support@rawgle.com
-- Discord: [Join our server](https://discord.gg/rawgle)
-- Twitter: [@rawgle](https://twitter.com/rawgle)
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Complete deployment guide
+- [Next.js Docs](https://nextjs.org/docs)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [shadcn/ui](https://ui.shadcn.com)
+- [Vercel AI SDK](https://sdk.vercel.ai/docs)
 
-## 🎯 Deployment Checklist
+## Support
 
-- [ ] Environment variables configured
-- [ ] Cloudflare KV namespace created
-- [ ] R2 bucket configured
-- [ ] Custom domain setup
-- [ ] SSL certificate active
-- [ ] Analytics configured
-- [ ] Error tracking setup
-- [ ] Monitoring enabled
-- [ ] Backup strategy defined
+For issues and questions:
+- Open a GitHub issue
+- Check [DEPLOYMENT.md](./DEPLOYMENT.md) for deployment help
+- Review error logs in browser console and Vercel dashboard
+
+## License
+
+This project is proprietary and confidential.
 
 ---
 
 **Built with ❤️ for the raw pet food community**
+
+Last updated: 2025-10-21

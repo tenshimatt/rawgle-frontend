@@ -113,7 +113,7 @@ export function MainNav() {
                 Profile
               </Button>
             </Link>
-            <Link href="/auth/sign-up">
+            <Link href="/auth/register">
               <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
                 Get Started Free
               </Button>
@@ -149,12 +149,12 @@ export function MainNav() {
               </Link>
             ))}
             <div className="pt-4 mt-4 border-t space-y-2">
-              <Link href="/auth/sign-in" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="ghost" className="w-full">
                   Sign In
                 </Button>
               </Link>
-              <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full bg-orange-500 hover:bg-orange-600">
                   Get Started Free
                 </Button>

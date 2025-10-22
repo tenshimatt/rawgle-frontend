@@ -1,38 +1,21 @@
 'use client';
 
-import { useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { MainNav } from '@/components/navigation/main-nav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, Bot, User, Loader2, AlertCircle } from 'lucide-react';
+import { Send, Bot, User, Loader2 } from 'lucide-react';
 
 export default function AIAssistantPage() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     initialMessages: [
       {
         id: '1',
         role: 'assistant',
-        content: 'Hello! I\'m your AI pet nutrition assistant. Ask me anything about raw feeding, portion sizes, food safety, or meal planning!'
+        content: 'Hello! I\'m Dr. Raw, your veterinary nutritionist specializing in raw feeding for dogs and cats. Whether you have questions about BARF diets, portion sizes, transitioning from kibble, or food safety, I\'m here to help. Do you have a dog or a cat?'
       }
     ],
-    onError: (error) => {
-      console.error('Chat error:', error);
-      // Try to extract error message from response
-      try {
-        const errorData = JSON.parse(error.message);
-        setErrorMessage(errorData.error || 'Failed to get response from AI assistant');
-      } catch {
-        setErrorMessage(error.message || 'Failed to get response from AI assistant');
-      }
-    },
-    onResponse: () => {
-      // Clear error on successful response
-      setErrorMessage(null);
-    }
   });
 
   return (
@@ -42,8 +25,8 @@ export default function AIAssistantPage() {
       <div className="container-page">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="hero-title">AI Pet Nutritionist</h1>
-            <p className="hero-description">Get expert answers on raw pet nutrition 24/7</p>
+            <h1 className="hero-title">Dr. Raw - Veterinary Nutritionist</h1>
+            <p className="hero-description">Expert raw feeding advice for dogs and cats, available 24/7</p>
           </div>
 
           <Card className="card-glass mb-4">
@@ -64,21 +47,11 @@ export default function AIAssistantPage() {
                 ))}
               </div>
 
-              {errorMessage && (
-                <div className="mb-4 p-4 bg-burnt-sienna/10 border-2 border-burnt-sienna/30 rounded-lg flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-burnt-sienna flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-burnt-sienna mb-1">Error</p>
-                    <p className="text-sm text-charcoal">{errorMessage}</p>
-                  </div>
-                </div>
-              )}
-
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <Input
                   value={input}
                   onChange={handleInputChange}
-                  placeholder="Ask about raw feeding, portions, safety..."
+                  placeholder="Ask Dr. Raw about BARF diets, portions, transitioning, safety..."
                   className="input-base flex-1"
                   disabled={isLoading}
                 />

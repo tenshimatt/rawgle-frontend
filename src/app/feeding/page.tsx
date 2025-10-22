@@ -17,6 +17,7 @@ import { AddFeedingDialog } from '@/components/feeding/add-feeding-dialog';
 import { EditFeedingDialog } from '@/components/feeding/edit-feeding-dialog';
 import { SetupScheduleDialog } from '@/components/feeding/setup-schedule-dialog';
 import { ConfirmMealsDialog } from '@/components/feeding/confirm-meals-dialog';
+import { ScheduleList } from '@/components/feeding/schedule-list';
 
 interface Pet {
   id: string;
@@ -36,10 +37,26 @@ interface FeedingRecord {
   createdAt: string;
 }
 
+interface Schedule {
+  id: string;
+  petId: string;
+  mealType: string;
+  ingredients: Array<{
+    type: 'ingredient' | 'supplement';
+    name: string;
+    amount: number;
+    unit: string;
+  }>;
+  frequency: string;
+  notes: string;
+  active: boolean;
+}
+
 export default function FeedingPage() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [selectedPet, setSelectedPet] = useState<string>('');
   const [feedings, setFeedings] = useState<FeedingRecord[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState<'today' | 'week' | 'month' | 'all'>('week');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -83,6 +100,25 @@ export default function FeedingPage() {
     } catch (error) {
       console.error('Error auto-generating meals:', error);
     }
+  };
+
+  const fetchSchedules = async () => {
+    if (!selectedPet) return;
+
+    try {
+      const response = await fetch(`/api/feeding/schedule?petId=${selectedPet}`, {
+        headers: { 'x-user-id': 'demo-user' },
+      });
+      const data = await response.json();
+      setSchedules(data.data || []);
+    } catch (error) {
+      console.error('Error fetching schedules:', error);
+    }
+  };
+
+  const handleDeleteSchedule = async (id: string) => {
+    setSchedules(schedules.filter((s) => s.id !== id));
+    await fetchSchedules();
   };
 
   const fetchFeedings = async () => {
@@ -129,6 +165,7 @@ export default function FeedingPage() {
   useEffect(() => {
     if (selectedPet) {
       fetchFeedings();
+      fetchSchedules();
     }
   }, [selectedPet, dateFilter]);
 
@@ -215,6 +252,7 @@ export default function FeedingPage() {
                   petId={selectedPet}
                   petName={selectedPetName}
                   onScheduleCreated={() => {
+                    fetchSchedules();
                     autoGenerateMeals();
                     fetchFeedings();
                   }}
@@ -299,6 +337,20 @@ export default function FeedingPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Feeding Schedules Section */}
+          {schedules.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-charcoal mb-4">
+                Feeding Schedules
+              </h2>
+              <ScheduleList
+                schedules={schedules}
+                onDelete={handleDeleteSchedule}
+                onRefresh={fetchSchedules}
+              />
+            </div>
+          )}
 
           {/* Filter Buttons */}
           <div className="flex items-center gap-2 mb-6">
