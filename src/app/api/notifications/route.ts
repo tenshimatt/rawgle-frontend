@@ -32,14 +32,32 @@ const notifications: any[] = [
 
 export async function GET(request: NextRequest) {
   const userId = request.headers.get('x-user-id');
+
+  // Security: Require authentication
+  if (!userId) {
+    return NextResponse.json(
+      { error: 'Unauthorized - User ID required' },
+      { status: 401 }
+    );
+  }
+
   const userNotifications = notifications.filter(n => n.userId === userId);
   return NextResponse.json({ data: userNotifications });
 }
 
 export async function POST(request: NextRequest) {
+  const userId = request.headers.get('x-user-id');
+
+  // Security: Require authentication
+  if (!userId) {
+    return NextResponse.json(
+      { error: 'Unauthorized - User ID required' },
+      { status: 401 }
+    );
+  }
+
   const body = await request.json();
   const { type, title, message } = body;
-  const userId = request.headers.get('x-user-id');
 
   if (!type || !title || !message) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -47,7 +65,7 @@ export async function POST(request: NextRequest) {
 
   const newNotification = {
     id: Date.now().toString(),
-    userId: userId || 'anonymous',
+    userId,
     type,
     title,
     message,

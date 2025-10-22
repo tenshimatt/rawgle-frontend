@@ -10,6 +10,8 @@ const withPWA = require('@ducanh2912/next-pwa').default({
 
 const nextConfig = {
   reactStrictMode: true,
+  // Remove X-Powered-By header for security
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {
@@ -21,6 +23,10 @@ const nextConfig = {
         hostname: '**.rawgle.com',
       },
     ],
+    // Security: Prevent loading images from arbitrary domains
+    dangerouslyAllowSVG: false,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   env: {
     NEXT_PUBLIC_CLOUDFLARE_DB_ID: '9dcf8539-f274-486c-807b-7e265146ce6b',
