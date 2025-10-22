@@ -3,9 +3,17 @@ import { openai } from '@ai-sdk/openai';
 
 export const runtime = 'edge';
 
+interface Pet {
+  name: string;
+  species: 'dog' | 'cat';
+  breed: string;
+  weight: number;
+  age?: number;
+}
+
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const { messages, pets } = await req.json();
 
     if (!process.env.OPENAI_API_KEY) {
       // Create a simple error stream that the AI SDK can parse
@@ -23,6 +31,20 @@ export async function POST(req: Request) {
           'Content-Type': 'text/plain; charset=utf-8',
         },
       });
+    }
+
+    // Build pet context if pets are provided
+    let petContext = '';
+    if (pets && pets.length > 0) {
+      petContext = '\n\nUSER\'S PETS:\n';
+      pets.forEach((pet: Pet) => {
+        petContext += `- ${pet.name}: ${pet.breed} ${pet.species}, ${pet.weight}lbs`;
+        if (pet.age) {
+          petContext += `, ${pet.age} years old`;
+        }
+        petContext += '\n';
+      });
+      petContext += '\nWhen the user asks questions, you can reference their specific pets by name and provide personalized advice based on their breed, weight, and species. If they mention a pet name, assume they\'re asking about that specific pet.';
     }
 
     const systemPrompt = `You are Dr. Raw, a veterinary nutritionist specializing exclusively in raw feeding (BARF - Biologically Appropriate Raw Food) for dogs and cats. You have extensive clinical experience with canine and feline nutrition and are passionate about species-appropriate diets.
@@ -78,13 +100,14 @@ Health Indicators:
 - Weight management: adjust portions based on body condition
 
 RESPONSE GUIDELINES:
-- Ask if they have a dog or cat to tailor advice specifically
+- If user's pets are known, reference them by name and provide personalized advice
+- If no pet context, ask which pet they're asking about (if they have multiple) or ask if they have a dog or cat
 - Use species-specific terminology (canine/feline)
 - Cite percentages and measurements clearly
 - Always prioritize safety: "When in doubt, consult your veterinarian"
 - Be encouraging but honest about challenges
 - Provide actionable, step-by-step advice
-- Use examples: "For a 30lb dog, that's about 0.6-0.9lbs of food daily"
+- Use examples: "For Max at 65lbs, that's about 1.3-1.95lbs of food daily"
 - Acknowledge when medical issues require in-person veterinary care
 
 IMPORTANT LIMITATIONS:
@@ -94,7 +117,7 @@ IMPORTANT LIMITATIONS:
 - You recommend veterinary consultation for: persistent symptoms, sudden behavior changes, illness, injury
 - You stay within nutritional advice scope
 
-Keep responses clear, practical, and species-appropriate. Default to 2-4 paragraphs unless complex detail is requested.`;
+Keep responses clear, practical, and species-appropriate. Default to 2-4 paragraphs unless complex detail is requested.${petContext}`;
 
     const result = streamText({
       model: openai('gpt-4o-mini'),
