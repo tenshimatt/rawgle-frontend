@@ -143,19 +143,30 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
                   </button>
                 </div>
               ) : (
-                <div className="w-24 h-24 rounded-full bg-seasalt border-2 border-dashed border-gray-300 flex items-center justify-center">
+                <label
+                  htmlFor="pet-image-upload"
+                  className="w-24 h-24 rounded-full bg-seasalt border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-teal-600 hover:bg-teal-600/10 transition-colors"
+                >
                   <Upload className="h-8 w-8 text-muted" />
-                </div>
+                </label>
               )}
               <div className="flex-1">
-                <Input
+                <input
+                  id="pet-image-upload"
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  className="cursor-pointer"
+                  className="hidden"
                 />
-                <p className="text-xs text-muted mt-1">
-                  Upload a photo of your pet
+                <label
+                  htmlFor="pet-image-upload"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg cursor-pointer hover:bg-teal-700 transition-colors text-sm font-medium"
+                >
+                  <Upload className="h-4 w-4" />
+                  Choose Photo
+                </label>
+                <p className="text-xs text-muted mt-2">
+                  Upload a photo of your pet (PNG, JPG)
                 </p>
               </div>
             </div>

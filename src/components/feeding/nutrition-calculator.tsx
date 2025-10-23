@@ -37,6 +37,7 @@ export function NutritionCalculator() {
   const [lifeStage, setLifeStage] = useState<'puppy' | 'kitten' | 'adult' | 'senior'>('adult');
   const [results, setResults] = useState<NutritionResults | null>(null);
   const [loading, setLoading] = useState(true);
+  const [unit, setUnit] = useState<'grams' | 'ounces'>('ounces'); // Default to oz for USA
 
   useEffect(() => {
     const fetchPets = async () => {
@@ -182,6 +183,29 @@ export function NutritionCalculator() {
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Unit Switcher */}
+        <div className="flex items-center justify-between p-3 bg-seasalt rounded-lg border-2 border-gray-900/10">
+          <Label className="text-gray-900 font-semibold text-sm">Measurement Units</Label>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setUnit('ounces')}
+              variant={unit === 'ounces' ? 'default' : 'outline'}
+              size="sm"
+              className={unit === 'ounces' ? 'btn-secondary' : 'btn-outline'}
+            >
+              oz (Imperial)
+            </Button>
+            <Button
+              onClick={() => setUnit('grams')}
+              variant={unit === 'grams' ? 'default' : 'outline'}
+              size="sm"
+              className={unit === 'grams' ? 'btn-secondary' : 'btn-outline'}
+            >
+              g (Metric)
+            </Button>
+          </div>
+        </div>
+
         {/* Pet Selection */}
         <div>
           <Label className="text-gray-900 font-semibold mb-2">Select Pet</Label>
@@ -305,8 +329,17 @@ export function NutritionCalculator() {
             <div className="grid grid-cols-2 gap-3">
               <div className="p-4 bg-maize/20 border-2 border-maize/30 rounded-lg">
                 <p className="text-xs text-gray-900 font-medium mb-1">Total Daily</p>
-                <p className="text-2xl font-bold text-gray-900">{results.totalGrams}g</p>
-                <p className="text-sm text-gray-900 font-medium">{results.totalOunces}oz</p>
+                {unit === 'grams' ? (
+                  <>
+                    <p className="text-2xl font-bold text-gray-900">{results.totalGrams}g</p>
+                    <p className="text-sm text-gray-900 font-medium">({results.totalOunces}oz)</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-2xl font-bold text-gray-900">{results.totalOunces}oz</p>
+                    <p className="text-sm text-gray-900 font-medium">({results.totalGrams}g)</p>
+                  </>
+                )}
               </div>
               <div className="p-4 bg-orange-500/20 border-2 border-orange-500/30 rounded-lg">
                 <p className="text-xs text-gray-900 font-medium mb-1">Daily Calories</p>
@@ -330,8 +363,17 @@ export function NutritionCalculator() {
                     <span className="text-sm font-medium text-gray-900">Muscle Meat</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900">{results.muscleMeat}g</p>
-                    <p className="text-xs text-gray-700">{results.muscleMeatOz}oz</p>
+                    {unit === 'grams' ? (
+                      <>
+                        <p className="text-sm font-bold text-gray-900">{results.muscleMeat}g</p>
+                        <p className="text-xs text-gray-700">({results.muscleMeatOz}oz)</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm font-bold text-gray-900">{results.muscleMeatOz}oz</p>
+                        <p className="text-xs text-gray-700">({results.muscleMeat}g)</p>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -343,8 +385,17 @@ export function NutritionCalculator() {
                     <span className="text-sm font-medium text-gray-900">Raw Meaty Bones</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900">{results.bone}g</p>
-                    <p className="text-xs text-gray-700">{results.boneOz}oz</p>
+                    {unit === 'grams' ? (
+                      <>
+                        <p className="text-sm font-bold text-gray-900">{results.bone}g</p>
+                        <p className="text-xs text-gray-700">({results.boneOz}oz)</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm font-bold text-gray-900">{results.boneOz}oz</p>
+                        <p className="text-xs text-gray-700">({results.bone}g)</p>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -356,8 +407,17 @@ export function NutritionCalculator() {
                     <span className="text-sm font-medium text-gray-900">Organ Meat</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900">{results.organ}g</p>
-                    <p className="text-xs text-gray-700">{results.organOz}oz</p>
+                    {unit === 'grams' ? (
+                      <>
+                        <p className="text-sm font-bold text-gray-900">{results.organ}g</p>
+                        <p className="text-xs text-gray-700">({results.organOz}oz)</p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm font-bold text-gray-900">{results.organOz}oz</p>
+                        <p className="text-xs text-gray-700">({results.organ}g)</p>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -370,8 +430,17 @@ export function NutritionCalculator() {
                       <span className="text-sm font-medium text-gray-900">Vegetables</span>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-gray-900">{results.vegetables}g</p>
-                      <p className="text-xs text-gray-700">{results.vegetablesOz}oz</p>
+                      {unit === 'grams' ? (
+                        <>
+                          <p className="text-sm font-bold text-gray-900">{results.vegetables}g</p>
+                          <p className="text-xs text-gray-700">({results.vegetablesOz}oz)</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-sm font-bold text-gray-900">{results.vegetablesOz}oz</p>
+                          <p className="text-xs text-gray-700">({results.vegetables}g)</p>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
