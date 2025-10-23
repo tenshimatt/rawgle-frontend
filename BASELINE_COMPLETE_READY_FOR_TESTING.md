@@ -215,19 +215,19 @@ Your `.env.local` is fully configured with:
 
 ```bash
 # Google Places API (from findrawdogfood)
-GOOGLE_PLACES_API_KEY=AIzaSyAaitGKLzY7PuyYYWLNifeQEqxfaWzncfg
-GOOGLE_PLACES_API_KEY_BACKUP=AIzaSyBnvRVRCE8ixANqhHCS99MQtlUBmlFr7Mk
+GOOGLE_PLACES_API_KEY=your_google_api_key_here
+GOOGLE_PLACES_API_KEY_BACKUP=your_backup_google_api_key_here
 
 # OpenAI API (user provided)
-OPENAI_API_KEY=sk-proj-NLgU...
+OPENAI_API_KEY=your_openai_api_key_here
 
 # NextAuth
 NEXTAUTH_URL=http://localhost:3005
-NEXTAUTH_SECRET=rawgle-dev-secret-2025-change-in-production
+NEXTAUTH_SECRET=your_nextauth_secret_here
 
 # Supabase (already configured)
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 ---

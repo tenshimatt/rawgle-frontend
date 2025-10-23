@@ -45,7 +45,7 @@ const getPostStore = () => {
 
 export async function GET(request: NextRequest) {
   const postStore = getPostStore();
-  const posts = Array.from(postStore.values()).sort((a, b) =>
+  const posts = Array.from(postStore.values()).sort((a: any, b: any) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
   return NextResponse.json({ data: posts });

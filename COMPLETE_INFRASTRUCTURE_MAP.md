@@ -513,7 +513,7 @@ case '/api/ai/recommendations':
 
 **From .env.local:**
 ```
-OPENAI_API_KEY=sk-proj-NLgU1892cd1YVRGbMbJgvoyIP2mYu...
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 ### AI Features to Build:

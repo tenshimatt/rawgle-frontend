@@ -1,8 +1,11 @@
+export type SupplementCategory = 'vitamins' | 'minerals' | 'digestive' | 'joint' | 'omega' | 'probiotics' | 'specialty';
+export type PetSpecies = 'dog' | 'cat' | 'both';
+
 export interface Supplement {
   id: string;
   name: string;
   brand: string;
-  category: 'vitamins' | 'minerals' | 'digestive' | 'joint' | 'omega' | 'probiotics' | 'specialty';
+  category: SupplementCategory;
   price: number;
   size: string;
   description: string;
@@ -12,7 +15,7 @@ export interface Supplement {
     dogs: string;
     cats: string;
   };
-  forSpecies: ('dog' | 'cat' | 'both')[];
+  forSpecies: PetSpecies[];
   inStock: boolean;
   rating: number;
   reviews: number;
@@ -504,3 +507,8 @@ export const supplementCategories = [
     icon: '⭐'
   }
 ];
+
+// Helper function to get all unique categories
+export function getAllCategories(): SupplementCategory[] {
+  return Array.from(new Set(supplements.map(s => s.category)));
+}
