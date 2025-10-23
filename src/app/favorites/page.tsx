@@ -46,16 +46,14 @@ export default function FavoritesPage() {
   };
 
   const handleAddToCart = async (product: any) => {
-    await addToCart({
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      sizeOption: product.sizeOptions[0],
-      quantity: 1,
-      image: product.image,
-      description: product.description,
-    });
-    toast.success(`${product.name} added to cart`);
+    const success = await addToCart(
+      product.id,
+      1,
+      product.sizeOptions?.[0] || 'Standard'
+    );
+    if (success) {
+      toast.success(`${product.name} added to cart`);
+    }
   };
 
   const favoriteProducts = supplements.filter((p) => favoriteIds.includes(p.id));
