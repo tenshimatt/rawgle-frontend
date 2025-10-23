@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ShoppingCart, Star, Search, X } from 'lucide-react';
-import { supplements, getAllCategories, type SupplementCategory, type PetSpecies } from '@/data/products/supplements';
+import { supplements, supplementCategories, type SupplementCategory, type PetSpecies } from '@/data/products/supplements';
 import { useCart } from '@/components/cart/cart-provider';
 import { useState, useMemo, useEffect } from 'react';
 
@@ -110,7 +110,7 @@ export default function ShopPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {getAllCategories().map((cat) => (
+                {supplementCategories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
                     {cat.icon} {cat.name}
                   </SelectItem>
