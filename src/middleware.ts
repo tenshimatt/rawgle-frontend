@@ -9,12 +9,12 @@ export function middleware(request: NextRequest) {
     // Content Security Policy - Strict policy for production
     'Content-Security-Policy': [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com https://js.stripe.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https://api.openai.com https://*.cloudflare.com",
-      "frame-src 'self' https://challenges.cloudflare.com",
+      "connect-src 'self' https://api.openai.com https://*.cloudflare.com https://rawgle.com https://*.rawgle.com https://api.stripe.com https://*.stripe.com",
+      "frame-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -32,10 +32,10 @@ export function middleware(request: NextRequest) {
 
     // Restrict browser features and APIs
     'Permissions-Policy': [
-      'geolocation=()',
+      'geolocation=(self)',
       'microphone=()',
       'camera=()',
-      'payment=()',
+      'payment=(self)',
       'usb=()',
       'magnetometer=()',
       'gyroscope=()',

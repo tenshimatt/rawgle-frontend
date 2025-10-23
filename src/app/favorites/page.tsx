@@ -49,7 +49,7 @@ export default function FavoritesPage() {
     const success = await addToCart(
       product.id,
       1,
-      product.sizeOptions?.[0] || 'Standard'
+      product.size || 'Standard'
     );
     if (success) {
       toast.success(`${product.name} added to cart`);
@@ -121,8 +121,8 @@ export default function FavoritesPage() {
 
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-2xl font-bold text-teal-600">${product.price}</span>
-                      {product.sizeOptions && product.sizeOptions.length > 0 && (
-                        <span className="text-sm text-gray-900/60">{product.sizeOptions[0]}</span>
+                      {product.size && (
+                        <span className="text-sm text-gray-900/60">{product.size}</span>
                       )}
                     </div>
 
