@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShareButton } from '@/components/blog/share-button';
@@ -43,7 +42,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
       <div className="container-page">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
@@ -60,10 +58,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {/* Category Badge */}
               {category && (
                 <div className="mb-4">
-                  <Link href={`/education/blog?category=${category.id}`}>
-                    <span className="inline-block px-4 py-2 bg-teal-600/20 text-teal-600 text-sm font-semibold rounded-full hover:bg-teal-600/30 transition-colors">
-                      {category.name}
-                    </span>
+                  <Link
+                    href={`/education/blog?category=${category.id}`}
+                    className="inline-block px-4 py-2 bg-teal-600/20 text-teal-600 text-sm font-semibold rounded-full hover:bg-teal-600/30 transition-colors"
+                  >
+                    {category.name}
                   </Link>
                 </div>
               )}
@@ -98,11 +97,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-8">
                 {article.tags.map(tag => (
-                  <Link key={tag} href={`/education/blog?tag=${tag}`}>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-teal-700/10 text-teal-700 text-sm rounded-full hover:bg-teal-700/20 transition-colors">
-                      <Tag className="h-3 w-3" />
-                      {tag}
-                    </span>
+                  <Link
+                    key={tag}
+                    href={`/education/blog?tag=${tag}`}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-teal-700/10 text-teal-700 text-sm rounded-full hover:bg-teal-700/20 transition-colors"
+                  >
+                    <Tag className="h-3 w-3" />
+                    {tag}
                   </Link>
                 ))}
               </div>

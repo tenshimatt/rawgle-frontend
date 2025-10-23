@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -235,8 +234,6 @@ export default function FeedingPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
-
       <div className="container-page">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -287,7 +284,7 @@ export default function FeedingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="card-feature-primary">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted">
+                <CardTitle className="text-sm font-medium text-gray-900/60">
                   Today's Feedings
                 </CardTitle>
                 <UtensilsCrossed className="h-4 w-4 icon-secondary" />
@@ -296,7 +293,7 @@ export default function FeedingPage() {
                 <div className="text-3xl font-bold text-gray-900">
                   {todayFeedings.length}
                 </div>
-                <p className="text-xs text-muted mt-1">
+                <p className="text-xs text-gray-900/60 mt-1">
                   {totalAmountToday.toFixed(0)}g total
                 </p>
               </CardContent>
@@ -304,7 +301,7 @@ export default function FeedingPage() {
 
             <Card className="card-feature-primary">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted">
+                <CardTitle className="text-sm font-medium text-gray-900/60">
                   Weekly Average
                 </CardTitle>
                 <TrendingUp className="h-4 w-4 icon-accent" />
@@ -313,13 +310,13 @@ export default function FeedingPage() {
                 <div className="text-3xl font-bold text-gray-900">
                   {avgDailyAmount.toFixed(0)}g
                 </div>
-                <p className="text-xs text-muted mt-1">per day</p>
+                <p className="text-xs text-gray-900/60 mt-1">per day</p>
               </CardContent>
             </Card>
 
             <Card className="card-feature-primary">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted">
+                <CardTitle className="text-sm font-medium text-gray-900/60">
                   Total Records
                 </CardTitle>
                 <Calendar className="h-4 w-4 icon-dark" />
@@ -328,7 +325,7 @@ export default function FeedingPage() {
                 <div className="text-3xl font-bold text-gray-900">
                   {feedings.length}
                 </div>
-                <p className="text-xs text-muted mt-1">
+                <p className="text-xs text-gray-900/60 mt-1">
                   {dateFilter === 'week'
                     ? 'this week'
                     : dateFilter === 'month'
