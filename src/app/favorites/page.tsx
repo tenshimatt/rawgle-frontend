@@ -100,10 +100,10 @@ export default function FavoritesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {favoriteProducts.map((product) => (
                 <Card key={product.id} className="card-feature-secondary overflow-hidden hover:shadow-lg transition-shadow">
-                  {product.image && (
+                  {product.imageUrl && (
                     <div className="aspect-square bg-gray-100 flex items-center justify-center">
                       <img
-                        src={product.image}
+                        src={product.imageUrl}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
