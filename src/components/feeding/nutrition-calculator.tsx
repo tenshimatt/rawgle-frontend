@@ -304,9 +304,9 @@ export function NutritionCalculator() {
             {/* Total Daily Amount */}
             <div className="grid grid-cols-2 gap-3">
               <div className="p-4 bg-maize/20 border-2 border-maize/30 rounded-lg">
-                <p className="text-xs text-muted mb-1">Total Daily</p>
+                <p className="text-xs text-gray-900 font-medium mb-1">Total Daily</p>
                 <p className="text-2xl font-bold text-gray-900">{results.totalGrams}g</p>
-                <p className="text-sm text-muted">{results.totalOunces}oz</p>
+                <p className="text-sm text-gray-900 font-medium">{results.totalOunces}oz</p>
               </div>
               <div className="p-4 bg-orange-500/20 border-2 border-orange-500/30 rounded-lg">
                 <p className="text-xs text-gray-900 font-medium mb-1">Daily Calories</p>
@@ -331,7 +331,7 @@ export function NutritionCalculator() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold text-gray-900">{results.muscleMeat}g</p>
-                    <p className="text-xs text-muted">{results.muscleMeatOz}oz</p>
+                    <p className="text-xs text-gray-700">{results.muscleMeatOz}oz</p>
                   </div>
                 </div>
 
@@ -344,7 +344,7 @@ export function NutritionCalculator() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold text-gray-900">{results.bone}g</p>
-                    <p className="text-xs text-muted">{results.boneOz}oz</p>
+                    <p className="text-xs text-gray-700">{results.boneOz}oz</p>
                   </div>
                 </div>
 
@@ -357,7 +357,7 @@ export function NutritionCalculator() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-bold text-gray-900">{results.organ}g</p>
-                    <p className="text-xs text-muted">{results.organOz}oz</p>
+                    <p className="text-xs text-gray-700">{results.organOz}oz</p>
                   </div>
                 </div>
 
@@ -371,7 +371,7 @@ export function NutritionCalculator() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-bold text-gray-900">{results.vegetables}g</p>
-                      <p className="text-xs text-muted">{results.vegetablesOz}oz</p>
+                      <p className="text-xs text-gray-700">{results.vegetablesOz}oz</p>
                     </div>
                   </div>
                 )}
