@@ -144,7 +144,7 @@ export default function ShopPage() {
               )}
               {selectedCategory !== 'all' && (
                 <Badge variant="secondary" className="gap-1">
-                  Category: {getAllCategories().find((c) => c.id === selectedCategory)?.name}
+                  Category: {supplementCategories.find((c) => c.id === selectedCategory)?.name}
                   <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCategory('all')} />
                 </Badge>
               )}
@@ -176,8 +176,8 @@ export default function ShopPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <Badge variant={product.featured ? 'default' : 'secondary'} className="bg-green-100 text-green-800">
-                      {getAllCategories().find((c) => c.id === product.category)?.icon}{' '}
-                      {getAllCategories().find((c) => c.id === product.category)?.name}
+                      {supplementCategories.find((c) => c.id === product.category)?.icon}{' '}
+                      {supplementCategories.find((c) => c.id === product.category)?.name}
                     </Badge>
                     {product.featured && (
                       <Badge className="bg-yellow-100 text-yellow-800">⭐ Featured</Badge>
