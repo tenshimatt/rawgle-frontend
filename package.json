@@ -94,8 +94,7 @@
     "eslint-config-next": "^15.5.6",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3",
-    "wrangler": "^3.95.0"
+    "typescript": "^5.7.3"
   },
   "overrides": {
     "glob": "^10.4.5",

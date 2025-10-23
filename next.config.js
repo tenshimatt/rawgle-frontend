@@ -29,10 +29,7 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   env: {
-    NEXT_PUBLIC_CLOUDFLARE_DB_ID: '9dcf8539-f274-486c-807b-7e265146ce6b',
-    NEXT_PUBLIC_OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.CLERK_PUBLISHABLE_KEY,
-    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: '/auth/sign-in',
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: '/auth/sign-up',
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: '/dashboard',
