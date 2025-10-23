@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MainNav } from '@/components/navigation/main-nav';
 import { rawgleApi, type Supplier } from '@/lib/rawgle-api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,8 +80,6 @@ export default function SuppliersPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
-
       {/* Header Banner */}
       <div className="section-gradient-primary text-white py-4">
         <div className="container mx-auto px-4">

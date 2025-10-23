@@ -4,7 +4,10 @@
  * Database: 9,190 suppliers with geolocation
  */
 
-const RAWGLE_API_BASE = process.env.NEXT_PUBLIC_RAWGLE_API_URL || 'https://rawgle.com/api';
+// Use proxy to avoid CORS issues
+const RAWGLE_API_BASE = typeof window !== 'undefined'
+  ? '/api/rawgle-proxy'
+  : process.env.NEXT_PUBLIC_RAWGLE_API_URL || 'https://rawgle.com/api';
 
 export interface Supplier {
   id: string;
@@ -71,12 +74,13 @@ export const rawgleApi = {
    */
   searchSuppliers: async (params: SearchParams): Promise<Supplier[]> => {
     const query = new URLSearchParams({
+      endpoint: 'search',
       q: params.q || '',
       limit: String(params.limit || 20),
       offset: String(params.offset || 0),
     });
 
-    const response = await fetch(`${RAWGLE_API_BASE}/search?${query}`);
+    const response = await fetch(`${RAWGLE_API_BASE}?${query}`);
 
     if (!response.ok) {
       throw new Error(`Search failed: ${response.statusText}`);
@@ -93,12 +97,13 @@ export const rawgleApi = {
    */
   getNearbySuppliers: async (params: NearbyParams): Promise<Supplier[]> => {
     const query = new URLSearchParams({
+      endpoint: 'nearby',
       lat: String(params.lat),
       lng: String(params.lng),
       radius: String(params.radius || 50),
     });
 
-    const response = await fetch(`${RAWGLE_API_BASE}/nearby?${query}`);
+    const response = await fetch(`${RAWGLE_API_BASE}?${query}`);
 
     if (!response.ok) {
       throw new Error(`Nearby search failed: ${response.statusText}`);
