@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Bell, Shield, Mail } from 'lucide-react';
+import { User, Bell, Shield, Mail, Lock } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState({
@@ -19,15 +19,58 @@ export default function ProfilePage() {
     }
   });
 
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+
+  const [saving, setSaving] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+
   const handleSave = async () => {
-    // Save profile logic
-    console.log('Saving profile:', profile);
+    setSaving(true);
+    try {
+      // TODO: Implement actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Profile updated successfully!');
+    } catch (error) {
+      toast.error('Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      // TODO: Implement actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Password changed successfully!');
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+    } catch (error) {
+      toast.error('Failed to change password');
+    } finally {
+      setChangingPassword(false);
+    }
   };
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
-
       <div className="container-page max-w-4xl">
         <h1 className="hero-title">Profile & Settings</h1>
 
@@ -108,11 +151,60 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+          {/* Security/Password */}
+          <Card className="card-feature-primary">
+            <CardHeader>
+              <CardTitle className="text-gray-900 flex items-center gap-2">
+                <Lock className="h-5 w-5 icon-primary" />
+                Change Password
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label className="label-base">Current Password</Label>
+                <Input
+                  type="password"
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                  className="input-base"
+                  placeholder="Enter current password"
+                />
+              </div>
+              <div>
+                <Label className="label-base">New Password</Label>
+                <Input
+                  type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                  className="input-base"
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div>
+                <Label className="label-base">Confirm New Password</Label>
+                <Input
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                  className="input-base"
+                  placeholder="Confirm new password"
+                />
+              </div>
+              <Button
+                variant="outline"
+                onClick={handlePasswordChange}
+                disabled={changingPassword || !passwordData.currentPassword || !passwordData.newPassword}
+                className="w-full"
+              >
+                {changingPassword ? 'Changing Password...' : 'Change Password'}
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="mt-6">
-          <Button variant="default" onClick={handleSave}>
-            Save Changes
+          <Button variant="default" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </div>

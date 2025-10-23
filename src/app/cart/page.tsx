@@ -22,6 +22,7 @@ export default function CartPage() {
   const router = useRouter();
   const { items, summary, removeFromCart, updateQuantity, clearCart, isLoading } = useCart();
   const [couponCode, setCouponCode] = useState('');
+  const [checkingOut, setCheckingOut] = useState(false);
 
   const handleIncrement = async (productId: string, sizeOption: string, currentQty: number) => {
     await updateQuantity(productId, sizeOption, currentQty + 1);
@@ -46,6 +47,43 @@ export default function CartPage() {
   const handleApplyCoupon = () => {
     // TODO: Implement coupon functionality
     alert(`Coupon "${couponCode}" functionality coming soon!`);
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setCheckingOut(true);
+
+      // Store order data for success page
+      localStorage.setItem('lastOrder', JSON.stringify(items));
+      localStorage.setItem('lastOrderTotal', summary.total.toString());
+
+      // Create Stripe checkout session
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': 'demo-user',
+        },
+        body: JSON.stringify({ items }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        alert(`Checkout error: ${data.error}`);
+        setCheckingOut(false);
+        return;
+      }
+
+      // Redirect to Stripe checkout
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to initiate checkout. Please try again.');
+      setCheckingOut(false);
+    }
   };
 
   return (
@@ -310,11 +348,12 @@ export default function CartPage() {
 
                     {/* Checkout button */}
                     <Button
-                      onClick={() => router.push('/checkout')}
+                      onClick={handleCheckout}
+                      disabled={checkingOut || isLoading}
                       className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold"
                       size="lg"
                     >
-                      Proceed to Checkout
+                      {checkingOut ? 'Processing...' : 'Proceed to Checkout'}
                     </Button>
                   </CardContent>
                 </Card>

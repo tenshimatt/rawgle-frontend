@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { OrderHistory } from '@/components/orders/order-history';
 import {
   Activity,
   Heart,
@@ -85,7 +85,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
 
       <div className="container-page">
         <div className="max-w-7xl mx-auto">
@@ -293,6 +292,11 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Order History */}
+              <div className="mt-8">
+                <OrderHistory />
+              </div>
             </div>
           ) : (
             <div className="text-center py-20">
