@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { MainNav } from '@/components/navigation/main-nav';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ShareButton } from '@/components/blog/share-button';
 import { blogArticles, blogCategories } from '@/data/blog/articles';
-import { Calendar, Clock, User, ArrowLeft, Tag, Share2 } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft, Tag } from 'lucide-react';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -91,24 +92,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   <Clock className="h-5 w-5" />
                   <span>{article.readTime} min read</span>
                 </div>
-                <button
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator.share({
-                        title: article.title,
-                        text: article.excerpt,
-                        url: window.location.href,
-                      });
-                    } else {
-                      navigator.clipboard.writeText(window.location.href);
-                      alert('Link copied to clipboard!');
-                    }
-                  }}
-                  className="flex items-center gap-2 text-teal-600 hover:text-teal-600/80 transition-colors ml-auto"
-                >
-                  <Share2 className="h-5 w-5" />
-                  <span>Share</span>
-                </button>
+                <ShareButton title={article.title} excerpt={article.excerpt} />
               </div>
 
               {/* Tags */}
