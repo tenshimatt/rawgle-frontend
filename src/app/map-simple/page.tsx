@@ -82,7 +82,7 @@ export default function SimpleMapPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Find Raw Dog Food Suppliers Near You
           </h1>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-lg text-gray-700 mb-6">
             {stats?.total_suppliers ? `Showing ${suppliers?.length || 0} of ${stats.total_suppliers.toLocaleString()} suppliers` : 'Loading...'}
           </p>
 
@@ -133,7 +133,7 @@ export default function SimpleMapPage() {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <Loader2 className="h-8 w-8 animate-spin text-teal-600 mx-auto mb-3" />
-              <p className="text-gray-600">
+              <p className="text-gray-700">
                 {locationLoading ? 'Detecting location...' : 'Loading suppliers...'}
               </p>
             </div>
@@ -175,7 +175,7 @@ export default function SimpleMapPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {/* Location */}
-                  <div className="flex items-start gap-2 text-sm text-gray-600">
+                  <div className="flex items-start gap-2 text-sm text-gray-700">
                     <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
                     <div>
                       {supplier.address && <p>{supplier.address}</p>}
@@ -222,7 +222,7 @@ export default function SimpleMapPage() {
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
               No suppliers found
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-600">
               Try increasing your search radius or browsing all suppliers
             </p>
           </div>

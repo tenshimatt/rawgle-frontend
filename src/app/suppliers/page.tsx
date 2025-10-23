@@ -103,7 +103,7 @@ export default function SuppliersPage() {
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
                   Find Raw Dog Food Near You
                 </h1>
-                <p className="text-muted text-sm mt-1">
+                <p className="text-gray-700 text-sm mt-1">
                   Rawgle - Your #1 source for finding raw dog food stores, BARF diet suppliers, and natural pet nutrition near you
                 </p>
               </div>
@@ -171,7 +171,7 @@ export default function SuppliersPage() {
             <h2 className="text-xl font-bold text-gray-900">
               Top 5 Closest Suppliers
             </h2>
-            <p className="text-muted text-sm">
+            <p className="text-gray-700 text-sm">
               Showing your nearest raw dog food suppliers - you won't need to travel further
             </p>
           </div>
@@ -304,7 +304,7 @@ export default function SuppliersPage() {
               <div className="text-center p-6">
                 <div className="text-5xl mb-4">🥩</div>
                 <h3 className="font-bold text-burnt-sienna text-lg mb-3">Raw Dog Food Basics</h3>
-                <p className="text-sm text-muted leading-relaxed">
+                <p className="text-sm text-gray-700 leading-relaxed">
                   Raw dog food, also known as BARF (Biologically Appropriate Raw Food), provides dogs with natural
                   nutrition closest to their ancestral diet. Find verified suppliers offering premium raw meat, bones, and organs.
                 </p>
@@ -313,7 +313,7 @@ export default function SuppliersPage() {
               <div className="text-center p-6">
                 <div className="text-5xl mb-4">📍</div>
                 <h3 className="font-bold text-burnt-sienna text-lg mb-3">Local Store Finder</h3>
-                <p className="text-sm text-muted leading-relaxed">
+                <p className="text-sm text-gray-700 leading-relaxed">
                   Search our database of 8,844+ verified raw dog food suppliers near you. Use our interactive map to find stores
                   offering frozen raw meals, BARF diets, and natural pet nutrition products.
                 </p>
@@ -322,7 +322,7 @@ export default function SuppliersPage() {
               <div className="text-center p-6">
                 <div className="text-5xl mb-4">⭐</div>
                 <h3 className="font-bold text-burnt-sienna text-lg mb-3">Quality Assurance</h3>
-                <p className="text-sm text-muted leading-relaxed">
+                <p className="text-sm text-gray-700 leading-relaxed">
                   All suppliers in our network are verified for quality, safety, and reliability. Read reviews, check ratings,
                   and find the best raw dog food stores with delivery, pickup, and bulk ordering options.
                 </p>
@@ -330,7 +330,7 @@ export default function SuppliersPage() {
             </div>
 
             <div className="bg-gray-900/5 rounded-lg p-6 text-center">
-              <p className="text-sm text-muted leading-relaxed">
+              <p className="text-sm text-gray-700 leading-relaxed">
                 <strong className="text-gray-900">Popular Searches:</strong> Raw dog food near me | BARF diet suppliers |
                 Natural dog food stores | Frozen raw dog food | Raw pet food delivery | Raw dog food bulk buying |
                 Premium raw meat for dogs

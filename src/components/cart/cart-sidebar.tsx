@@ -90,7 +90,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               <h2 id="cart-sidebar-title" className="text-2xl font-bold text-gray-900">
                 Shopping Cart
               </h2>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-700">
                 {summary.itemCount} {summary.itemCount === 1 ? 'item' : 'items'}
               </p>
             </div>
@@ -127,7 +127,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   Your cart is empty
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-700 mb-6">
                   Add some products to get started!
                 </p>
                 <Button
@@ -173,7 +173,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         <h4 className="font-semibold text-gray-900 truncate">
                           {item.productSnapshot.name}
                         </h4>
-                        <p className="text-sm text-gray-600 mb-2">
+                        <p className="text-sm text-gray-700 mb-2">
                           {item.sizeOption}
                         </p>
 

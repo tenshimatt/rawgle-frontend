@@ -56,7 +56,7 @@ export default function CartPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
-              <p className="text-gray-600">
+              <p className="text-gray-700">
                 {summary.itemCount} {summary.itemCount === 1 ? 'item' : 'items'} in your cart
               </p>
             </div>
@@ -84,7 +84,7 @@ export default function CartPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 Your cart is empty
               </h2>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-700 mb-8">
                 Looks like you haven't added any items to your cart yet.
               </p>
               <Button
@@ -173,7 +173,7 @@ export default function CartPage() {
                             <h3 className="font-bold text-lg text-gray-900">
                               {item.productSnapshot.name}
                             </h3>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-gray-700">
                               Size: {item.sizeOption}
                             </p>
                             <div className="flex gap-2 mt-2">
@@ -249,7 +249,7 @@ export default function CartPage() {
 
                           {/* Price */}
                           <div className="text-right">
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-gray-700">
                               ${item.productSnapshot.price.toFixed(2)} each
                             </p>
                             <p className="text-xl font-bold text-teal-600">

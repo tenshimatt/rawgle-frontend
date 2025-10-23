@@ -81,7 +81,7 @@ export default function ShopPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">🛍️ Supplement Shop</h1>
-          <p className="text-lg text-gray-600">Premium supplements for your raw-fed pets</p>
+          <p className="text-lg text-gray-700">Premium supplements for your raw-fed pets</p>
         </div>
 
         {/* Filters */}
@@ -163,7 +163,7 @@ export default function ShopPage() {
 
         {/* Results Count */}
         <div className="mb-4">
-          <p className="text-gray-600">
+          <p className="text-gray-700">
             Showing <span className="font-semibold">{filteredProducts.length}</span> products
           </p>
         </div>
@@ -184,10 +184,10 @@ export default function ShopPage() {
                     )}
                   </div>
                   <CardTitle className="text-lg">{product.name}</CardTitle>
-                  <p className="text-sm text-gray-500">{product.brand}</p>
+                  <p className="text-sm text-gray-600">{product.brand}</p>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                  <p className="text-sm text-gray-700 mb-3 line-clamp-2">{product.description}</p>
 
                   {/* Rating */}
                   <div className="flex items-center gap-2 mb-3">
@@ -203,11 +203,11 @@ export default function ShopPage() {
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-500">({product.reviews})</span>
+                    <span className="text-sm text-gray-600">({product.reviews})</span>
                   </div>
 
                   {/* Size */}
-                  <p className="text-sm text-gray-500 mb-2">Size: {product.size}</p>
+                  <p className="text-sm text-gray-600 mb-2">Size: {product.size}</p>
 
                   {/* Stock */}
                   {product.inStock ? (
@@ -251,7 +251,7 @@ export default function ShopPage() {
           <div className="text-center py-12">
             <ShoppingCart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
-            <p className="text-gray-500 mb-4">
+            <p className="text-gray-600 mb-4">
               Try adjusting your filters or search terms
             </p>
             <Button onClick={clearFilters} variant="outline">

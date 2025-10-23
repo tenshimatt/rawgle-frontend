@@ -96,7 +96,7 @@ export function MainNav() {
                     >
                       <div className="font-medium">{item.name}</div>
                       {item.description && (
-                        <div className="text-xs text-gray-500 mt-0.5">{item.description}</div>
+                        <div className="text-xs text-gray-600 mt-0.5">{item.description}</div>
                       )}
                     </Link>
                   ))}
