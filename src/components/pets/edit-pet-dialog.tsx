@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Edit2, Loader2, Trash2 } from 'lucide-react';
 import { DOG_BREEDS, CAT_BREEDS } from '@/lib/constants/breeds';
 
@@ -204,13 +205,12 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
             <Label htmlFor="birthDate" className="label-base">
               Birth Date *
             </Label>
-            <Input
-              id="birthdate"
-              type="date"
-              value={formData.birthdate}
-              onChange={(e) => handleChange('birthdate', e.target.value)}
-              className="input-base"
-              required
+            <DatePicker
+              date={formData.birthdate ? new Date(formData.birthdate) : undefined}
+              onDateChange={(date) =>
+                handleChange('birthdate', date ? date.toISOString().split('T')[0] : '')
+              }
+              placeholder="Select pet's birthdate"
             />
           </div>
 

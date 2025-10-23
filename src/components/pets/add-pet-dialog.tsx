@@ -13,6 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   Select,
   SelectContent,
@@ -284,13 +285,15 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
           {/* Birthdate */}
           <div className="space-y-2">
             <Label htmlFor="birthdate">Birthdate *</Label>
-            <Input
-              id="birthdate"
-              type="date"
-              value={formData.birthdate}
-              onChange={(e) => setFormData(prev => ({ ...prev, birthdate: e.target.value }))}
-              max={new Date().toISOString().split('T')[0]}
-              required
+            <DatePicker
+              date={formData.birthdate ? new Date(formData.birthdate) : undefined}
+              onDateChange={(date) =>
+                setFormData(prev => ({
+                  ...prev,
+                  birthdate: date ? date.toISOString().split('T')[0] : ''
+                }))
+              }
+              placeholder="Select pet's birthdate"
             />
           </div>
 
