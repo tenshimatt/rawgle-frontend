@@ -162,8 +162,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 {relatedArticles.map(related => {
                   const relatedCategory = blogCategories.find(c => c.id === related.category);
                   return (
-                    <Link href={`/education/blog/${related.slug}`} key={related.slug}>
-                      <Card className="card-feature-secondary p-6 h-full hover:shadow-lg transition-shadow cursor-pointer">
+                    <Link href={`/education/blog/${related.slug}`} key={related.slug} className="block">
+                      <div className="card-feature-secondary p-6 h-full hover:shadow-lg transition-shadow cursor-pointer rounded-lg border bg-card text-card-foreground shadow-sm">
                         {relatedCategory && (
                           <span className="inline-block px-3 py-1 bg-teal-600/20 text-teal-600 text-xs font-semibold rounded-full mb-3">
                             {relatedCategory.name}
@@ -179,7 +179,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                           <Clock className="h-3 w-3" />
                           <span>{related.readTime} min read</span>
                         </div>
-                      </Card>
+                      </div>
                     </Link>
                   );
                 })}
