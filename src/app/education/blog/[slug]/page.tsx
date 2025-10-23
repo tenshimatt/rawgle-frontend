@@ -47,12 +47,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="container-page">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
-          <Link href="/education/blog">
-            <Button variant="ghost" className="mb-6 -ml-2">
+          <Button variant="ghost" className="mb-6 -ml-2" asChild>
+            <Link href="/education/blog">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Articles
-            </Button>
-          </Link>
+            </Link>
+          </Button>
 
           {/* Article Header */}
           <article className="mb-12">
@@ -194,16 +194,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               Join thousands of pet owners who have transformed their pets' health through species-appropriate raw nutrition.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href="/pets/new">
-                <Button variant="default" size="lg">
+              <Button variant="default" size="lg" asChild>
+                <Link href="/pets/new">
                   Add Your Pet
-                </Button>
-              </Link>
-              <Link href="/community">
-                <Button variant="outline" size="lg">
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/community">
                   Join Community
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </Card>
         </div>
