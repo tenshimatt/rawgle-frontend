@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -38,7 +37,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
       <div className="container-page">
         <div className="max-w-md mx-auto pt-20">
           <div className="text-center mb-8">

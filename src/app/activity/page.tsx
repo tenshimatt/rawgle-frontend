@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AddActivityDialog } from '@/components/activity/add-activity-dialog';
 import { Activity, Clock, MapPin, Calendar, Loader2 } from 'lucide-react';
@@ -84,7 +83,7 @@ function ActivityContent() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <div className="max-w-4xl mx-auto">

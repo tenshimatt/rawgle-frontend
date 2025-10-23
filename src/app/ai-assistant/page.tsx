@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -96,7 +95,7 @@ export default function AIAssistantPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <div className="max-w-4xl mx-auto">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +17,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
       <div className="container-page">
         <div className="max-w-2xl mx-auto">
           <h1 className="hero-title">Contact Us</h1>

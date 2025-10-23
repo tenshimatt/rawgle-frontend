@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -48,7 +47,7 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
       <div className="container-page">
         <div className="max-w-7xl mx-auto">
           {/* Header */}

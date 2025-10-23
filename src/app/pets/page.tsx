@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dog, Cat, Calendar, Weight, Loader2 } from 'lucide-react';
@@ -68,7 +67,7 @@ export default function PetsPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <div className="max-w-6xl mx-auto">

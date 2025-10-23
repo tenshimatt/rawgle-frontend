@@ -1,13 +1,12 @@
 'use client';
 
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Coins, TrendingUp, Gift, Award } from 'lucide-react';
 
 export default function PAWSPage() {
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <div className="max-w-6xl mx-auto">

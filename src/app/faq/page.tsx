@@ -1,4 +1,3 @@
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card } from '@/components/ui/card';
 
 export default function FAQPage() {
@@ -11,7 +10,7 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
       <div className="container-page">
         <div className="max-w-3xl mx-auto">
           <h1 className="hero-title">Frequently Asked Questions</h1>

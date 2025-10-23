@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MainNav } from '@/components/navigation/main-nav';
 import { CreateRecipeDialog } from '@/components/community/create-recipe-dialog';
 import { RecipeCard } from '@/components/community/recipe-card';
 import { Input } from '@/components/ui/input';
@@ -84,7 +83,7 @@ export default function RecipeExchangePage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <div className="max-w-7xl mx-auto">

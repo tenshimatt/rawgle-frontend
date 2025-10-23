@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AddHealthRecordDialog } from '@/components/health/add-health-record-dialog';
@@ -92,7 +91,7 @@ export default function HealthPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <div className="max-w-4xl mx-auto">

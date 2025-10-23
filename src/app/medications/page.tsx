@@ -2,7 +2,6 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AddMedicationDialog } from '@/components/health/add-medication-dialog';
 import { Pill, Clock, Calendar, AlertCircle, Loader2, Bell } from 'lucide-react';
@@ -100,7 +99,7 @@ function MedicationsContent() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <div className="max-w-4xl mx-auto">

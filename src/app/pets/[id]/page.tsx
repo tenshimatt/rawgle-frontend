@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Calendar, Weight, Ruler, Heart, Activity, FileText } from 'lucide-react';
@@ -69,7 +68,7 @@ export default function PetProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen page-gradient">
-        <MainNav />
+        
         <div className="container-page">
           <p className="text-gray-900">Loading...</p>
         </div>
@@ -80,7 +79,7 @@ export default function PetProfilePage() {
   if (!pet) {
     return (
       <div className="min-h-screen page-gradient">
-        <MainNav />
+        
         <div className="container-page">
           <p className="text-gray-900">Pet not found</p>
         </div>
@@ -90,7 +89,7 @@ export default function PetProfilePage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <Link href="/pets">

@@ -1,10 +1,9 @@
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card } from '@/components/ui/card';
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
       <div className="container-page">
         <div className="max-w-4xl mx-auto">
           <h1 className="hero-title">About Rawgle</h1>

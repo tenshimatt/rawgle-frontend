@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -76,7 +75,7 @@ export default function RecipeDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen page-gradient">
-        <MainNav />
+        
         <div className="container-page flex justify-center items-center py-20">
           <Loader2 className="h-12 w-12 animate-spin icon-primary" />
         </div>
@@ -87,7 +86,7 @@ export default function RecipeDetailPage() {
   if (!recipe) {
     return (
       <div className="min-h-screen page-gradient">
-        <MainNav />
+        
         <div className="container-page">
           <div className="max-w-4xl mx-auto text-center py-20">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Recipe Not Found</h1>
@@ -104,7 +103,7 @@ export default function RecipeDetailPage() {
 
   return (
     <div className="min-h-screen page-gradient">
-      <MainNav />
+      
 
       <div className="container-page">
         <div className="max-w-4xl mx-auto">
