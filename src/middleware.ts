@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https://api.openai.com https://*.cloudflare.com https://rawgle.com https://*.rawgle.com https://api.stripe.com https://*.stripe.com",
+      "connect-src 'self' https://api.openai.com https://*.cloudflare.com https://static.cloudflareinsights.com https://rawgle.com https://*.rawgle.com https://api.stripe.com https://*.stripe.com",
       "frame-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
