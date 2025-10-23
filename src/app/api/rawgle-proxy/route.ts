@@ -12,10 +12,13 @@ export async function GET(request: NextRequest) {
   // Build the Rawgle API URL
   const rawgleUrl = `${RAWGLE_API_BASE}/${endpoint}?${searchParams.toString()}`;
 
+  console.log('[Rawgle Proxy] Forwarding request to:', rawgleUrl);
+
   try {
     const response = await fetch(rawgleUrl);
 
     if (!response.ok) {
+      console.error('[Rawgle Proxy] API error:', response.status, response.statusText);
       return NextResponse.json(
         { error: 'Failed to fetch from Rawgle API', status: response.status },
         { status: response.status }
@@ -23,6 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
+    console.log('[Rawgle Proxy] Success, suppliers count:', data.suppliers?.length || data.results?.length || 0);
 
     return NextResponse.json(data, {
       headers: {
@@ -32,7 +36,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error: any) {
-    console.error('Rawgle API proxy error:', error);
+    console.error('[Rawgle Proxy] Error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch suppliers', message: error.message },
       { status: 500 }
