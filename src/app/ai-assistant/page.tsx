@@ -80,7 +80,8 @@ export default function AIAssistantPage() {
     return `Hello! I\'m Dr. Raw, your veterinary nutritionist. I see you have ${petNames}! I\'m here to help with raw feeding questions for any of your pets. Which one would you like to discuss, or do you have a general question?`;
   };
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+    api: '/api/chat',
     body: {
       pets: petContext, // Send pet context with each message
     },
@@ -135,6 +136,11 @@ export default function AIAssistantPage() {
                     {msg.role === 'user' && <User className="h-8 w-8 icon-primary flex-shrink-0" />}
                   </div>
                 ))}
+                {error && (
+                  <div className="p-4 bg-red-50 border-2 border-red-200 rounded-lg text-red-900">
+                    <strong>Error:</strong> {error.message}
+                  </div>
+                )}
               </div>
 
               <form onSubmit={handleSubmit} className="flex gap-2">
