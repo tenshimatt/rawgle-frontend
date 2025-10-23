@@ -309,9 +309,9 @@ export function NutritionCalculator() {
                 <p className="text-sm text-muted">{results.totalOunces}oz</p>
               </div>
               <div className="p-4 bg-orange-500/20 border-2 border-orange-500/30 rounded-lg">
-                <p className="text-xs text-muted mb-1">Daily Calories</p>
+                <p className="text-xs text-gray-900 font-medium mb-1">Daily Calories</p>
                 <p className="text-2xl font-bold text-gray-900">{results.dailyCalories}</p>
-                <p className="text-sm text-muted">kcal</p>
+                <p className="text-sm text-gray-900 font-medium">kcal</p>
               </div>
             </div>
 
@@ -381,7 +381,7 @@ export function NutritionCalculator() {
             {/* Shopping Tips */}
             <div className="bg-seasalt p-4 rounded-lg border-2 border-gray-900/10">
               <h4 className="font-semibold text-gray-900 mb-2 text-sm">Shopping List Tips</h4>
-              <ul className="space-y-1 text-xs text-muted">
+              <ul className="space-y-1 text-xs text-gray-900">
                 <li>• Muscle Meat: Chicken, beef, turkey, lamb, or fish</li>
                 <li>• Bones: Chicken necks, wings, or beef ribs</li>
                 <li>• Organs: Liver (5%), kidney/spleen (5%)</li>
