@@ -431,11 +431,11 @@ let geocodingServiceInstance: AdvancedGeocodingService | null = null;
 
 export function getGeocodingService(): AdvancedGeocodingService {
   if (!geocodingServiceInstance) {
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY || '';
-    const backupApiKey = process.env.GOOGLE_PLACES_API_KEY_BACKUP;
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY_TENSHIMATT || '';
+    const backupApiKey = process.env.GOOGLE_PLACES_API_KEY_SAMCO;
 
     if (!apiKey) {
-      console.warn('GOOGLE_PLACES_API_KEY not configured - geocoding will not work');
+      console.warn('GOOGLE_PLACES_API_KEY_TENSHIMATT not configured - geocoding will not work');
     }
 
     geocodingServiceInstance = new AdvancedGeocodingService(apiKey, backupApiKey);

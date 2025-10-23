@@ -326,7 +326,8 @@
    ```
 3. **Set environment variables:**
    ```env
-   GOOGLE_PLACES_API_KEY=your_key_here
+   GOOGLE_PLACES_API_KEY_TENSHIMATT=your_key_here
+   GOOGLE_PLACES_API_KEY_SAMCO=your_backup_key_here
    NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=your_key_here
    ```
 4. **Run development server:**
@@ -473,7 +474,8 @@ All work done in: `/Users/mattwright/pandora/rawgle-frontend/`
 ### Environment Setup
 ```env
 # Required
-GOOGLE_PLACES_API_KEY=your_key_here
+GOOGLE_PLACES_API_KEY_TENSHIMATT=your_key_here
+GOOGLE_PLACES_API_KEY_SAMCO=your_backup_key_here
 NEXT_PUBLIC_GOOGLE_PLACES_API_KEY=your_key_here
 
 # Optional (for production)
