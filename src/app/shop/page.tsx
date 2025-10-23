@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ShoppingCart, Star, Search, X } from 'lucide-react';
 import { supplements, supplementCategories, type SupplementCategory, type PetSpecies } from '@/data/products/supplements';
 import { useCart } from '@/components/cart/cart-provider';
+import { FavoriteButton } from '@/components/favorites/favorite-button';
 import { useState, useMemo, useEffect } from 'react';
 
 export default function ShopPage() {
@@ -220,15 +221,18 @@ export default function ShopPage() {
                     </Badge>
                   )}
 
-                  {/* Price and Add to Cart */}
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="text-2xl font-bold text-green-600">
-                      ${product.price.toFixed(2)}
-                    </span>
+                  {/* Price and Buttons */}
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-2xl font-bold text-green-600">
+                        ${product.price.toFixed(2)}
+                      </span>
+                      <FavoriteButton productId={product.id} variant="icon" />
+                    </div>
                     <Button
                       onClick={() => handleAddToCart(product.id)}
                       disabled={!product.inStock || addingProduct === product.id}
-                      className="bg-green-600 hover:bg-green-700 text-white"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
                     >
                       {addingProduct === product.id ? (
                         <>
