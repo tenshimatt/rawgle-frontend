@@ -77,7 +77,7 @@ export function AddHealthRecordDialog({ petId, onRecordAdded }: AddHealthRecordD
       </DialogTrigger>
       <DialogContent className="bg-white max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-charcoal">Add Health Record</DialogTitle>
+          <DialogTitle className="text-gray-900">Add Health Record</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">

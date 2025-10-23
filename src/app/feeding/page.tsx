@@ -194,15 +194,15 @@ export default function FeedingPage() {
   const getMealTypeColor = (mealType: string) => {
     switch (mealType.toLowerCase()) {
       case 'breakfast':
-        return 'bg-maize/20 text-charcoal border-maize/30';
+        return 'bg-maize/20 text-gray-900 border-maize/30';
       case 'lunch':
-        return 'bg-persian-green/20 text-charcoal border-persian-green/30';
+        return 'bg-teal-600/20 text-gray-900 border-teal-600/30';
       case 'dinner':
-        return 'bg-burnt-sienna/20 text-charcoal border-burnt-sienna/30';
+        return 'bg-burnt-sienna/20 text-gray-900 border-burnt-sienna/30';
       case 'snack':
-        return 'bg-coral/20 text-charcoal border-coral/30';
+        return 'bg-orange-500/20 text-gray-900 border-orange-500/30';
       default:
-        return 'bg-charcoal/10 text-charcoal border-charcoal/20';
+        return 'bg-gray-900/10 text-gray-900 border-gray-900/20';
     }
   };
 
@@ -293,7 +293,7 @@ export default function FeedingPage() {
                 <UtensilsCrossed className="h-4 w-4 icon-secondary" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-charcoal">
+                <div className="text-3xl font-bold text-gray-900">
                   {todayFeedings.length}
                 </div>
                 <p className="text-xs text-muted mt-1">
@@ -310,7 +310,7 @@ export default function FeedingPage() {
                 <TrendingUp className="h-4 w-4 icon-accent" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-charcoal">
+                <div className="text-3xl font-bold text-gray-900">
                   {avgDailyAmount.toFixed(0)}g
                 </div>
                 <p className="text-xs text-muted mt-1">per day</p>
@@ -325,7 +325,7 @@ export default function FeedingPage() {
                 <Calendar className="h-4 w-4 icon-dark" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-charcoal">
+                <div className="text-3xl font-bold text-gray-900">
                   {feedings.length}
                 </div>
                 <p className="text-xs text-muted mt-1">
@@ -347,7 +347,7 @@ export default function FeedingPage() {
           {/* Feeding Schedules Section */}
           {schedules.length > 0 && (
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-charcoal mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Feeding Schedules
               </h2>
               <ScheduleList
@@ -383,7 +383,7 @@ export default function FeedingPage() {
           ) : feedings.length === 0 ? (
             <div className="text-center py-20">
               <UtensilsCrossed className="h-24 w-24 mx-auto mb-4 icon-muted" />
-              <h2 className="text-2xl font-bold text-charcoal mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 No feeding records yet
               </h2>
               <p className="text-muted mb-6">
@@ -410,7 +410,7 @@ export default function FeedingPage() {
                           >
                             {feeding.mealType}
                           </span>
-                          <span className="text-lg font-semibold text-charcoal">
+                          <span className="text-lg font-semibold text-gray-900">
                             {feeding.foodType || 'Food'}
                           </span>
                         </div>
@@ -423,7 +423,7 @@ export default function FeedingPage() {
                             <Clock className="h-4 w-4" />
                             {formatTime(feeding.date)}
                           </span>
-                          <span className="font-medium text-charcoal">
+                          <span className="font-medium text-gray-900">
                             {feeding.amount} {feeding.unit}
                           </span>
                         </div>

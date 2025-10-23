@@ -89,7 +89,7 @@ export default function SimpleMapPage() {
           {/* Location Controls */}
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-persian-green" />
+              <MapPin className="h-5 w-5 text-teal-600" />
               <span className="text-sm text-gray-700">
                 {locationDetected
                   ? `${userLocation[0].toFixed(4)}, ${userLocation[1].toFixed(4)}`
@@ -132,7 +132,7 @@ export default function SimpleMapPage() {
         {(locationLoading || suppliersLoading) && (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-persian-green mx-auto mb-3" />
+              <Loader2 className="h-8 w-8 animate-spin text-teal-600 mx-auto mb-3" />
               <p className="text-gray-600">
                 {locationLoading ? 'Detecting location...' : 'Loading suppliers...'}
               </p>
@@ -187,7 +187,7 @@ export default function SimpleMapPage() {
 
                   {/* Distance */}
                   {supplier.distance_miles && (
-                    <p className="text-sm font-semibold text-persian-green">
+                    <p className="text-sm font-semibold text-teal-600">
                       {supplier.distance_miles.toFixed(1)} miles away
                     </p>
                   )}
@@ -203,7 +203,7 @@ export default function SimpleMapPage() {
                       href={supplier.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-persian-green hover:underline"
+                      className="flex items-center gap-2 text-sm text-teal-600 hover:underline"
                     >
                       Visit Website
                       <ExternalLink className="h-3 w-3" />

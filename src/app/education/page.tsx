@@ -30,12 +30,12 @@ export default function EducationPage() {
                 <Card key={idx} className="card-feature-primary cursor-pointer">
                   <CardHeader>
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 bg-persian-green/10 rounded-lg flex items-center justify-center">
+                      <div className="h-12 w-12 bg-teal-600/10 rounded-lg flex items-center justify-center">
                         <Icon className="h-6 w-6 icon-primary" />
                       </div>
                       <div>
-                        <span className="text-sm text-persian-green font-semibold">{guide.type}</span>
-                        <CardTitle className="text-lg text-charcoal">{guide.title}</CardTitle>
+                        <span className="text-sm text-teal-600 font-semibold">{guide.type}</span>
+                        <CardTitle className="text-lg text-gray-900">{guide.title}</CardTitle>
                       </div>
                     </div>
                   </CardHeader>

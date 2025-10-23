@@ -82,7 +82,7 @@ export function CreateRecipeDialog({ onRecipeCreated }: CreateRecipeDialogProps)
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px] bg-white max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal flex items-center gap-2">
+          <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <ChefHat className="h-6 w-6 icon-secondary" />
             Share Your Recipe
           </DialogTitle>

@@ -90,7 +90,7 @@ export default function RecipeDetailPage() {
         <MainNav />
         <div className="container-page">
           <div className="max-w-4xl mx-auto text-center py-20">
-            <h1 className="text-2xl font-bold text-charcoal mb-4">Recipe Not Found</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Recipe Not Found</h1>
             <p className="text-muted mb-6">The recipe you're looking for doesn't exist.</p>
             <Button onClick={() => router.push('/community/recipes')} className="btn-secondary">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -112,7 +112,7 @@ export default function RecipeDetailPage() {
           <Button
             variant="ghost"
             onClick={() => router.push('/community/recipes')}
-            className="mb-6 text-muted hover:text-persian-green"
+            className="mb-6 text-muted hover:text-teal-600"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Recipes
@@ -138,7 +138,7 @@ export default function RecipeDetailPage() {
                           onClick={() => setSelectedPhotoIndex(index)}
                           className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                             selectedPhotoIndex === index
-                              ? 'border-persian-green'
+                              ? 'border-teal-600'
                               : 'border-transparent opacity-60 hover:opacity-100'
                           }`}
                         >
@@ -158,11 +158,11 @@ export default function RecipeDetailPage() {
                 {/* Header */}
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="h-12 w-12 bg-persian-green rounded-full flex items-center justify-center text-charcoal font-bold">
+                    <div className="h-12 w-12 bg-teal-600 rounded-full flex items-center justify-center text-gray-900 font-bold">
                       {recipe.userName[0]}
                     </div>
                     <div>
-                      <p className="font-semibold text-charcoal">{recipe.userName}</p>
+                      <p className="font-semibold text-gray-900">{recipe.userName}</p>
                       <p className="text-sm text-muted">{formatTimestamp(recipe.createdAt)}</p>
                     </div>
                     <div className="flex-1" />
@@ -172,11 +172,11 @@ export default function RecipeDetailPage() {
                     </Button>
                   </div>
 
-                  <h1 className="text-3xl font-bold text-charcoal mb-3 flex items-center gap-2">
-                    <ChefHat className="h-8 w-8 text-persian-green" />
+                  <h1 className="text-3xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <ChefHat className="h-8 w-8 text-teal-600" />
                     {recipe.title}
                   </h1>
-                  <p className="text-charcoal mb-4">{recipe.description}</p>
+                  <p className="text-gray-900 mb-4">{recipe.description}</p>
 
                   {/* Recipe Meta */}
                   <div className="flex items-center gap-6 text-muted">
@@ -193,14 +193,14 @@ export default function RecipeDetailPage() {
 
                 {/* Ingredients */}
                 <div>
-                  <h2 className="text-2xl font-bold text-charcoal mb-4">Ingredients</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Ingredients</h2>
                   <ul className="space-y-2">
                     {recipe.ingredients.map((ingredient, index) => (
                       <li key={index} className="flex items-start gap-3">
-                        <div className="h-6 w-6 bg-persian-green/20 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <div className="h-2 w-2 bg-persian-green rounded-full" />
+                        <div className="h-6 w-6 bg-teal-600/20 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <div className="h-2 w-2 bg-teal-600 rounded-full" />
                         </div>
-                        <span className="text-charcoal">{ingredient}</span>
+                        <span className="text-gray-900">{ingredient}</span>
                       </li>
                     ))}
                   </ul>
@@ -208,26 +208,26 @@ export default function RecipeDetailPage() {
 
                 {/* Instructions */}
                 <div>
-                  <h2 className="text-2xl font-bold text-charcoal mb-4">Instructions</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Instructions</h2>
                   <ol className="space-y-4">
                     {recipe.instructions.map((instruction, index) => (
                       <li key={index} className="flex gap-4">
                         <div className="flex-shrink-0">
                           <Badge
                             variant="outline"
-                            className="bg-maize/20 border-maize/30 text-charcoal font-bold w-8 h-8 rounded-full flex items-center justify-center"
+                            className="bg-maize/20 border-maize/30 text-gray-900 font-bold w-8 h-8 rounded-full flex items-center justify-center"
                           >
                             {index + 1}
                           </Badge>
                         </div>
-                        <p className="text-charcoal pt-1 flex-1">{instruction}</p>
+                        <p className="text-gray-900 pt-1 flex-1">{instruction}</p>
                       </li>
                     ))}
                   </ol>
                 </div>
 
                 {/* Social Actions */}
-                <div className="pt-6 border-t-2 border-charcoal/10">
+                <div className="pt-6 border-t-2 border-gray-900/10">
                   <SocialActions
                     itemId={recipe.id}
                     itemType="recipe"

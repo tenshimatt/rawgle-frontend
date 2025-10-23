@@ -79,7 +79,7 @@ export function CommentSection({ itemId, itemType, initialCommentCount = 0 }: Co
       {/* Comment Toggle Button */}
       <button
         onClick={handleToggleComments}
-        className="flex items-center gap-2 text-muted hover:text-persian-green transition-colors"
+        className="flex items-center gap-2 text-muted hover:text-teal-600 transition-colors"
       >
         <MessageCircle className="h-5 w-5" />
         <span className="text-sm">
@@ -89,7 +89,7 @@ export function CommentSection({ itemId, itemType, initialCommentCount = 0 }: Co
 
       {/* Comments Section */}
       {showComments && (
-        <div className="space-y-4 pl-4 border-l-2 border-charcoal/10">
+        <div className="space-y-4 pl-4 border-l-2 border-gray-900/10">
           {/* Comment Input */}
           <CommentInput
             itemId={itemId}
@@ -115,7 +115,7 @@ export function CommentSection({ itemId, itemType, initialCommentCount = 0 }: Co
             <div key={comment.id} className="space-y-2">
               <div className="flex items-start gap-3">
                 {/* User Avatar */}
-                <div className="h-8 w-8 bg-persian-green rounded-full flex items-center justify-center text-charcoal font-bold text-sm flex-shrink-0">
+                <div className="h-8 w-8 bg-teal-600 rounded-full flex items-center justify-center text-gray-900 font-bold text-sm flex-shrink-0">
                   {comment.userName[0]}
                 </div>
 
@@ -123,14 +123,14 @@ export function CommentSection({ itemId, itemType, initialCommentCount = 0 }: Co
                 <div className="flex-1 min-w-0">
                   <div className="bg-seasalt rounded-lg p-3">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold text-charcoal text-sm">
+                      <p className="font-semibold text-gray-900 text-sm">
                         {comment.userName}
                       </p>
                       <span className="text-xs text-muted">
                         {formatTimestamp(comment.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm text-charcoal">{comment.content}</p>
+                    <p className="text-sm text-gray-900">{comment.content}</p>
                   </div>
 
                   {/* Comment Actions */}
@@ -152,19 +152,19 @@ export function CommentSection({ itemId, itemType, initialCommentCount = 0 }: Co
                 <div className="ml-11 space-y-2">
                   {comment.replies.map((reply) => (
                     <div key={reply.id} className="flex items-start gap-2">
-                      <div className="h-6 w-6 bg-moss-green rounded-full flex items-center justify-center text-charcoal font-bold text-xs flex-shrink-0">
+                      <div className="h-6 w-6 bg-teal-700 rounded-full flex items-center justify-center text-gray-900 font-bold text-xs flex-shrink-0">
                         {reply.userName[0]}
                       </div>
                       <div className="flex-1 bg-seasalt/60 rounded-lg p-2">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="font-semibold text-charcoal text-xs">
+                          <p className="font-semibold text-gray-900 text-xs">
                             {reply.userName}
                           </p>
                           <span className="text-xs text-muted">
                             {formatTimestamp(reply.createdAt)}
                           </span>
                         </div>
-                        <p className="text-xs text-charcoal">{reply.content}</p>
+                        <p className="text-xs text-gray-900">{reply.content}</p>
                       </div>
                     </div>
                   ))}

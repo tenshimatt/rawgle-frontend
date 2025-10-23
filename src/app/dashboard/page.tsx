@@ -128,11 +128,11 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-baseline justify-between">
-                      <div className="text-3xl font-bold text-charcoal">
+                      <div className="text-3xl font-bold text-gray-900">
                         {dashboardData.totalActivities}
                       </div>
                       {dashboardData.activityTrend === 'up' && (
-                        <div className="flex items-center gap-1 text-persian-green text-sm">
+                        <div className="flex items-center gap-1 text-teal-600 text-sm">
                           <ArrowUp className="h-4 w-4" />
                           <span>+12%</span>
                         </div>
@@ -150,7 +150,7 @@ export default function DashboardPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-charcoal">
+                    <div className="text-3xl font-bold text-gray-900">
                       {dashboardData.totalActivityMinutes}
                     </div>
                     <p className="text-sm text-muted mt-1">Minutes this week</p>
@@ -165,7 +165,7 @@ export default function DashboardPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-charcoal">
+                    <div className="text-3xl font-bold text-gray-900">
                       {dashboardData.healthRecords}
                     </div>
                     <p className="text-sm text-muted mt-1">Total records</p>
@@ -180,7 +180,7 @@ export default function DashboardPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-charcoal">
+                    <div className="text-3xl font-bold text-gray-900">
                       {dashboardData.feedingStreak}
                     </div>
                     <p className="text-sm text-muted mt-1">Days in a row</p>
@@ -193,7 +193,7 @@ export default function DashboardPage() {
                 {/* Weight Tracking */}
                 <Card className="card-feature-primary">
                   <CardHeader>
-                    <CardTitle className="text-charcoal flex items-center gap-2">
+                    <CardTitle className="text-gray-900 flex items-center gap-2">
                       <Weight className="h-5 w-5 icon-primary" />
                       Weight History
                     </CardTitle>
@@ -208,11 +208,11 @@ export default function DashboardPage() {
                               const height = (record.weight / maxWeight) * 100;
                               return (
                                 <div key={index} className="flex-1 flex flex-col items-center gap-2">
-                                  <div className="text-xs font-semibold text-charcoal">
+                                  <div className="text-xs font-semibold text-gray-900">
                                     {record.weight}kg
                                   </div>
                                   <div
-                                    className="w-full bg-persian-green rounded-t"
+                                    className="w-full bg-teal-600 rounded-t"
                                     style={{ height: `${height}%` }}
                                   />
                                   <div className="text-xs text-muted">
@@ -222,8 +222,8 @@ export default function DashboardPage() {
                               );
                             })}
                           </div>
-                          <div className="p-3 bg-persian-green/10 rounded-lg">
-                            <p className="text-sm text-charcoal">
+                          <div className="p-3 bg-teal-600/10 rounded-lg">
+                            <p className="text-sm text-gray-900">
                               <span className="font-semibold">Current: </span>
                               {dashboardData.weightHistory[dashboardData.weightHistory.length - 1].weight}kg
                             </p>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
                 {/* Recent Activities */}
                 <Card className="card-feature-secondary">
                   <CardHeader>
-                    <CardTitle className="text-charcoal flex items-center gap-2">
+                    <CardTitle className="text-gray-900 flex items-center gap-2">
                       <TrendingUp className="h-5 w-5 icon-secondary" />
                       Recent Activities
                     </CardTitle>
@@ -253,13 +253,13 @@ export default function DashboardPage() {
                         dashboardData.recentActivities.map((activity, index) => (
                           <div key={index} className="flex items-center justify-between p-3 bg-seasalt rounded-lg">
                             <div>
-                              <p className="font-semibold text-charcoal capitalize">{activity.type}</p>
+                              <p className="font-semibold text-gray-900 capitalize">{activity.type}</p>
                               <p className="text-sm text-muted">
                                 {new Date(activity.date).toLocaleDateString()}
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="font-semibold text-charcoal">{activity.duration} min</p>
+                              <p className="font-semibold text-gray-900">{activity.duration} min</p>
                             </div>
                           </div>
                         ))
@@ -283,7 +283,7 @@ export default function DashboardPage() {
                         <Heart className="h-6 w-6 icon-accent" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-bold text-charcoal mb-1">Upcoming Vaccinations</h3>
+                        <h3 className="font-bold text-gray-900 mb-1">Upcoming Vaccinations</h3>
                         <p className="text-muted">
                           You have {dashboardData.upcomingVaccinations} vaccination(s) due soon
                         </p>
@@ -297,7 +297,7 @@ export default function DashboardPage() {
           ) : (
             <div className="text-center py-20">
               <Activity className="h-24 w-24 mx-auto mb-4 icon-muted" />
-              <h2 className="text-2xl font-bold text-charcoal mb-2">No data available</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">No data available</h2>
               <p className="text-muted mb-6">Start tracking {selectedPetName}'s health and activities</p>
             </div>
           )}

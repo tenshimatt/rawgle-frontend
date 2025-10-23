@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Trash2, Calendar, Pizza } from 'lucide-react';
+import { EditScheduleDialog } from './edit-schedule-dialog';
 
 interface Schedule {
   id: string;
@@ -52,15 +53,15 @@ export function ScheduleList({ schedules, onDelete, onRefresh }: ScheduleListPro
   const getMealTypeColor = (mealType: string) => {
     switch (mealType.toLowerCase()) {
       case 'breakfast':
-        return 'bg-maize text-charcoal';
+        return 'bg-maize text-gray-900';
       case 'lunch':
-        return 'bg-fawn text-charcoal';
+        return 'bg-amber-100 text-gray-900';
       case 'dinner':
-        return 'bg-coral text-white';
+        return 'bg-orange-500 text-white';
       case 'snack':
-        return 'bg-persian-green text-white';
+        return 'bg-teal-600 text-white';
       default:
-        return 'bg-charcoal/10 text-charcoal';
+        return 'bg-gray-900/10 text-gray-900';
     }
   };
 
@@ -81,11 +82,11 @@ export function ScheduleList({ schedules, onDelete, onRefresh }: ScheduleListPro
     return (
       <Card className="border-dashed">
         <CardContent className="py-12 text-center">
-          <Calendar className="h-12 w-12 mx-auto mb-4 text-charcoal/40" />
-          <h3 className="text-lg font-semibold text-charcoal mb-2">
+          <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-900/40" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
             No Feeding Schedules
           </h3>
-          <p className="text-charcoal/70 mb-4">
+          <p className="text-gray-900/70 mb-4">
             Set up automatic meal logging by creating a feeding schedule
           </p>
         </CardContent>
@@ -100,35 +101,41 @@ export function ScheduleList({ schedules, onDelete, onRefresh }: ScheduleListPro
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <Pizza className="h-5 w-5 text-persian-green" />
+                <Pizza className="h-5 w-5 text-teal-600" />
                 <div>
-                  <CardTitle className="text-lg text-charcoal">
+                  <CardTitle className="text-lg text-gray-900">
                     <Badge className={getMealTypeColor(schedule.mealType)}>
                       {schedule.mealType}
                     </Badge>
                   </CardTitle>
-                  <p className="text-sm text-charcoal/70 mt-1 flex items-center gap-2">
+                  <p className="text-sm text-gray-900/70 mt-1 flex items-center gap-2">
                     <Clock className="h-3 w-3" />
                     {getFrequencyText(schedule.frequency)}
                   </p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDelete(schedule.id)}
-                disabled={deleting === schedule.id}
-                className="text-burnt-sienna hover:bg-burnt-sienna/10"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center gap-1">
+                <EditScheduleDialog
+                  schedule={schedule}
+                  onScheduleUpdated={onRefresh}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDelete(schedule.id)}
+                  disabled={deleting === schedule.id}
+                  className="text-burnt-sienna hover:bg-burnt-sienna/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {/* Ingredients */}
             {schedule.ingredients.filter(i => i.type === 'ingredient').length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-charcoal mb-2">Ingredients:</h4>
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">Ingredients:</h4>
                 <div className="flex flex-wrap gap-2">
                   {schedule.ingredients
                     .filter(i => i.type === 'ingredient')
@@ -136,7 +143,7 @@ export function ScheduleList({ schedules, onDelete, onRefresh }: ScheduleListPro
                       <Badge
                         key={idx}
                         variant="outline"
-                        className="bg-white border-charcoal/20"
+                        className="bg-white border-gray-900/20"
                       >
                         {ing.name}: {ing.amount}{ing.unit}
                       </Badge>
@@ -148,7 +155,7 @@ export function ScheduleList({ schedules, onDelete, onRefresh }: ScheduleListPro
             {/* Supplements */}
             {schedule.ingredients.filter(i => i.type === 'supplement').length > 0 && (
               <div>
-                <h4 className="text-sm font-semibold text-charcoal mb-2">Supplements:</h4>
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">Supplements:</h4>
                 <div className="flex flex-wrap gap-2">
                   {schedule.ingredients
                     .filter(i => i.type === 'supplement')
@@ -156,7 +163,7 @@ export function ScheduleList({ schedules, onDelete, onRefresh }: ScheduleListPro
                       <Badge
                         key={idx}
                         variant="outline"
-                        className="bg-persian-green/10 border-persian-green/30 text-charcoal"
+                        className="bg-teal-600/10 border-teal-600/30 text-gray-900"
                       >
                         {sup.name}: {sup.amount}{sup.unit}
                       </Badge>
@@ -167,7 +174,7 @@ export function ScheduleList({ schedules, onDelete, onRefresh }: ScheduleListPro
 
             {/* Notes */}
             {schedule.notes && (
-              <p className="text-sm text-charcoal/70 italic">{schedule.notes}</p>
+              <p className="text-sm text-gray-900/70 italic">{schedule.notes}</p>
             )}
           </CardContent>
         </Card>

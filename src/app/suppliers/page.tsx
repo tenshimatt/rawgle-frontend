@@ -100,7 +100,7 @@ export default function SuppliersPage() {
             <div className="flex items-center justify-center gap-3 mb-4">
               <Dog className="h-12 w-12 icon-accent" />
               <div className="text-left">
-                <h1 className="text-3xl md:text-4xl font-bold text-charcoal">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
                   Find Raw Dog Food Near You
                 </h1>
                 <p className="text-muted text-sm mt-1">
@@ -168,7 +168,7 @@ export default function SuppliersPage() {
       <div className="container-page">
         <div className="max-w-6xl mx-auto">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-charcoal">
+            <h2 className="text-xl font-bold text-gray-900">
               Top 5 Closest Suppliers
             </h2>
             <p className="text-muted text-sm">
@@ -179,7 +179,7 @@ export default function SuppliersPage() {
           {loading ? (
             <div className="text-center py-12">
               <Loader2 className="h-16 w-16 icon-accent mx-auto mb-4 animate-spin" />
-              <h3 className="text-xl font-semibold text-charcoal mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Loading suppliers...
               </h3>
             </div>
@@ -193,7 +193,7 @@ export default function SuppliersPage() {
                       <div className="text-sm text-burnt-sienna font-semibold mb-1">
                         #{index + 1} Closest
                       </div>
-                      <CardTitle className="text-xl mb-2 text-charcoal">{supplier.business_name || supplier.name}</CardTitle>
+                      <CardTitle className="text-xl mb-2 text-gray-900">{supplier.business_name || supplier.name}</CardTitle>
                       {supplier.rating && (
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
@@ -208,7 +208,7 @@ export default function SuppliersPage() {
                               />
                             ))}
                           </div>
-                          <span className="text-sm font-semibold text-charcoal">
+                          <span className="text-sm font-semibold text-gray-900">
                             {supplier.rating} ({supplier.user_ratings_total || 0} reviews)
                           </span>
                         </div>
@@ -221,7 +221,7 @@ export default function SuppliersPage() {
                   {(supplier.address || supplier.city) && (
                     <div className="flex items-start gap-2">
                       <MapPin className="h-5 w-5 icon-dark mt-0.5 flex-shrink-0" />
-                      <div className="text-sm text-charcoal">
+                      <div className="text-sm text-gray-900">
                         {supplier.address && <p>{supplier.address}</p>}
                         {(supplier.city || supplier.state || supplier.zip) && (
                           <p>{[supplier.city, supplier.state, supplier.zip].filter(Boolean).join(', ')}</p>
@@ -235,7 +235,7 @@ export default function SuppliersPage() {
                   {(supplier.phone || supplier.phone_number) && (
                     <div className="flex items-center gap-2">
                       <Phone className="h-5 w-5 icon-dark" />
-                      <a href={`tel:${supplier.phone || supplier.phone_number}`} className="text-sm text-persian-green hover:underline">
+                      <a href={`tel:${supplier.phone || supplier.phone_number}`} className="text-sm text-teal-600 hover:underline">
                         {supplier.phone || supplier.phone_number}
                       </a>
                     </div>
@@ -249,7 +249,7 @@ export default function SuppliersPage() {
                         href={supplier.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-persian-green hover:underline flex items-center gap-1"
+                        className="text-sm text-teal-600 hover:underline flex items-center gap-1"
                       >
                         {supplier.website.replace('https://', '')}
                         <ExternalLink className="h-3 w-3" />
@@ -281,7 +281,7 @@ export default function SuppliersPage() {
           {!loading && filteredSuppliers.length === 0 && (
             <div className="text-center py-12">
               <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-charcoal mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 No suppliers found
               </h3>
               <p className="text-muted">
@@ -329,9 +329,9 @@ export default function SuppliersPage() {
               </div>
             </div>
 
-            <div className="bg-charcoal/5 rounded-lg p-6 text-center">
+            <div className="bg-gray-900/5 rounded-lg p-6 text-center">
               <p className="text-sm text-muted leading-relaxed">
-                <strong className="text-charcoal">Popular Searches:</strong> Raw dog food near me | BARF diet suppliers |
+                <strong className="text-gray-900">Popular Searches:</strong> Raw dog food near me | BARF diet suppliers |
                 Natural dog food stores | Frozen raw dog food | Raw pet food delivery | Raw dog food bulk buying |
                 Premium raw meat for dogs
               </p>

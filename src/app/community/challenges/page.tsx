@@ -82,21 +82,21 @@ export default function ChallengesPage() {
 
   const getStatusColor = (status: string) => {
     if (status === 'upcoming') return 'bg-blue-100 text-blue-800';
-    if (status === 'active') return 'bg-persian-green/10 text-persian-green';
-    return 'bg-charcoal/10 text-charcoal';
+    if (status === 'active') return 'bg-teal-600/10 text-teal-600';
+    return 'bg-gray-900/10 text-gray-900';
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sea-salt via-white to-sea-salt">
       {/* Header */}
-      <div className="bg-gradient-to-r from-persian-green to-moss-green text-white py-12">
+      <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold mb-2">Community Challenges</h1>
               <p className="text-sea-salt text-lg">Join challenges, earn rewards, and grow together</p>
             </div>
-            <Button className="bg-white text-persian-green hover:bg-sea-salt">
+            <Button className="bg-white text-teal-600 hover:bg-sea-salt">
               <Plus className="h-4 w-4 mr-2" />
               Suggest Challenge
             </Button>
@@ -109,7 +109,7 @@ export default function ChallengesPage() {
         <div className="bg-white rounded-lg p-6 shadow-md mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-charcoal/40" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-900/40" />
               <Input
                 type="text"
                 placeholder="Search challenges..."
@@ -150,19 +150,19 @@ export default function ChallengesPage() {
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold text-charcoal mb-2">{challenge.title}</h3>
-              <p className="text-charcoal/70 text-sm mb-4">{challenge.description}</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{challenge.title}</h3>
+              <p className="text-gray-900/70 text-sm mb-4">{challenge.description}</p>
 
               {/* Progress (if active and joined) */}
               {challenge.progress !== undefined && (
                 <div className="mb-4">
                   <div className="flex items-center justify-between text-sm mb-2">
-                    <span className="text-charcoal/60">Your Progress</span>
-                    <span className="font-semibold text-persian-green">{challenge.progress}%</span>
+                    <span className="text-gray-900/60">Your Progress</span>
+                    <span className="font-semibold text-teal-600">{challenge.progress}%</span>
                   </div>
-                  <div className="w-full bg-charcoal/10 rounded-full h-2">
+                  <div className="w-full bg-gray-900/10 rounded-full h-2">
                     <div
-                      className="bg-persian-green h-2 rounded-full transition-all"
+                      className="bg-teal-600 h-2 rounded-full transition-all"
                       style={{ width: `${challenge.progress}%` }}
                     />
                   </div>
@@ -171,27 +171,27 @@ export default function ChallengesPage() {
 
               {/* Goals */}
               <div className="mb-4">
-                <h4 className="text-sm font-semibold text-charcoal mb-2">Goals:</h4>
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">Goals:</h4>
                 <ul className="space-y-1">
                   {challenge.goals.slice(0, 3).map((goal, index) => (
-                    <li key={index} className="flex items-center gap-2 text-sm text-charcoal/70">
-                      <CheckCircle2 className="h-4 w-4 text-moss-green" />
+                    <li key={index} className="flex items-center gap-2 text-sm text-gray-900/70">
+                      <CheckCircle2 className="h-4 w-4 text-teal-700" />
                       <span>{goal}</span>
                     </li>
                   ))}
                   {challenge.goals.length > 3 && (
-                    <li className="text-sm text-charcoal/50">+{challenge.goals.length - 3} more goals</li>
+                    <li className="text-sm text-gray-900/50">+{challenge.goals.length - 3} more goals</li>
                   )}
                 </ul>
               </div>
 
               {/* Meta */}
               <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                <div className="flex items-center gap-2 text-charcoal/60">
+                <div className="flex items-center gap-2 text-gray-900/60">
                   <Calendar className="h-4 w-4" />
                   <span>{challenge.duration}</span>
                 </div>
-                <div className="flex items-center gap-2 text-charcoal/60">
+                <div className="flex items-center gap-2 text-gray-900/60">
                   <Users className="h-4 w-4" />
                   <span>{challenge.participants} joined</span>
                 </div>
@@ -201,7 +201,7 @@ export default function ChallengesPage() {
               <div className="bg-maize/10 rounded-lg p-3 mb-4">
                 <div className="flex items-center gap-2">
                   <Target className="h-4 w-4 text-maize" />
-                  <span className="text-sm font-semibold text-charcoal">{challenge.rewards}</span>
+                  <span className="text-sm font-semibold text-gray-900">{challenge.rewards}</span>
                 </div>
               </div>
 

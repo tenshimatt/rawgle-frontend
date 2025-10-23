@@ -70,7 +70,7 @@ export function AddFeedingScheduleDialog({ petId, onScheduleAdded }: AddFeedingS
       </DialogTrigger>
       <DialogContent className="bg-white">
         <DialogHeader>
-          <DialogTitle className="text-charcoal">Add Feeding Schedule</DialogTitle>
+          <DialogTitle className="text-gray-900">Add Feeding Schedule</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

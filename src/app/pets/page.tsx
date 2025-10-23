@@ -94,7 +94,7 @@ export default function PetsPage() {
           ) : pets.length === 0 ? (
             <div className="text-center py-20">
               <Dog className="h-24 w-24 mx-auto mb-4 icon-muted" />
-              <h2 className="text-2xl font-bold text-charcoal mb-2">No pets yet</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">No pets yet</h2>
               <p className="text-muted mb-6">Add your first pet to get started with health tracking</p>
               <AddPetDialog onPetAdded={fetchPets} />
             </div>
@@ -117,7 +117,7 @@ export default function PetsPage() {
                           <Cat className="h-16 w-16 icon-secondary" />
                         )}
                         <div>
-                          <CardTitle className="text-2xl text-charcoal">{pet.name}</CardTitle>
+                          <CardTitle className="text-2xl text-gray-900">{pet.name}</CardTitle>
                           <p className="text-muted">{pet.breed}</p>
                           <p className="text-sm text-muted capitalize">{pet.gender}</p>
                         </div>
@@ -131,7 +131,7 @@ export default function PetsPage() {
                         <Calendar className="h-5 w-5 icon-dark" />
                         <div>
                           <p className="text-sm text-muted">Age</p>
-                          <p className="font-semibold text-charcoal">
+                          <p className="font-semibold text-gray-900">
                             {calculateAge(pet.birthdate)} years
                           </p>
                         </div>
@@ -140,15 +140,15 @@ export default function PetsPage() {
                         <Weight className="h-5 w-5 icon-dark" />
                         <div>
                           <p className="text-sm text-muted">Weight</p>
-                          <p className="font-semibold text-charcoal">{pet.weight} kg</p>
+                          <p className="font-semibold text-gray-900">{pet.weight} kg</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="p-3 bg-persian-green/10 rounded-lg">
+                    <div className="p-3 bg-teal-600/10 rounded-lg">
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-muted">Born:</span>
-                        <span className="font-semibold text-charcoal">
+                        <span className="font-semibold text-gray-900">
                           {new Date(pet.birthdate).toLocaleDateString()}
                         </span>
                       </div>

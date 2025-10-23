@@ -56,7 +56,7 @@ export function ProductRecommendations({ petId, petData }: ProductRecommendation
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="h-5 w-5 icon-primary" />
-        <h3 className="text-lg font-semibold text-charcoal">AI-Powered Recommendations</h3>
+        <h3 className="text-lg font-semibold text-gray-900">AI-Powered Recommendations</h3>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -70,7 +70,7 @@ export function ProductRecommendations({ petId, petData }: ProductRecommendation
                   <ShoppingCart className="h-16 w-16 text-sandy-brown" />
                 )}
               </div>
-              <CardTitle className="text-base text-charcoal">{product.name}</CardTitle>
+              <CardTitle className="text-base text-gray-900">{product.name}</CardTitle>
               <p className="text-sm text-muted">{product.category}</p>
             </CardHeader>
             <CardContent>
@@ -78,14 +78,14 @@ export function ProductRecommendations({ petId, petData }: ProductRecommendation
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${i < product.rating ? 'text-maize fill-maize' : 'text-charcoal/20'}`}
+                    className={`h-4 w-4 ${i < product.rating ? 'text-maize fill-maize' : 'text-gray-900/20'}`}
                   />
                 ))}
                 <span className="text-sm text-muted ml-1">({product.rating})</span>
               </div>
-              <p className="text-2xl font-bold text-persian-green mb-2">${product.price}</p>
+              <p className="text-2xl font-bold text-teal-600 mb-2">${product.price}</p>
               {product.aiReason && (
-                <div className="mb-3 p-2 bg-persian-green/10 rounded text-sm text-charcoal">
+                <div className="mb-3 p-2 bg-teal-600/10 rounded text-sm text-gray-900">
                   <Sparkles className="h-3 w-3 inline mr-1" />
                   {product.aiReason}
                 </div>

@@ -118,7 +118,7 @@ function ActivityContent() {
           ) : activities.length === 0 ? (
             <div className="text-center py-20">
               <Activity className="h-24 w-24 mx-auto mb-4 icon-muted" />
-              <h2 className="text-2xl font-bold text-charcoal mb-2">No activities logged yet</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">No activities logged yet</h2>
               <p className="text-muted mb-6">Start tracking {selectedPetName}'s activities</p>
               {selectedPet && <AddActivityDialog petId={selectedPet} onActivityAdded={fetchActivities} />}
             </div>
@@ -131,7 +131,7 @@ function ActivityContent() {
                       <div className="flex items-center gap-3">
                         {getActivityIcon(activity.type)}
                         <div>
-                          <CardTitle className="text-xl text-charcoal capitalize">
+                          <CardTitle className="text-xl text-gray-900 capitalize">
                             {activity.type}
                           </CardTitle>
                           <div className="flex items-center gap-4 mt-1">
@@ -150,14 +150,14 @@ function ActivityContent() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-3 bg-persian-green/10 rounded-lg">
+                      <div className="p-3 bg-teal-600/10 rounded-lg">
                         <p className="text-sm text-muted">Duration</p>
-                        <p className="text-lg font-semibold text-charcoal">{activity.duration} min</p>
+                        <p className="text-lg font-semibold text-gray-900">{activity.duration} min</p>
                       </div>
                       {activity.distance && (
-                        <div className="p-3 bg-moss-green/10 rounded-lg">
+                        <div className="p-3 bg-teal-700/10 rounded-lg">
                           <p className="text-sm text-muted">Distance</p>
-                          <p className="text-lg font-semibold text-charcoal flex items-center gap-1">
+                          <p className="text-lg font-semibold text-gray-900 flex items-center gap-1">
                             <MapPin className="h-4 w-4" />
                             {activity.distance} km
                           </p>
@@ -167,7 +167,7 @@ function ActivityContent() {
                     {activity.notes && (
                       <div className="p-3 bg-seasalt rounded-lg">
                         <p className="text-sm text-muted mb-1">Notes</p>
-                        <p className="text-charcoal">{activity.notes}</p>
+                        <p className="text-gray-900">{activity.notes}</p>
                       </div>
                     )}
                   </CardContent>

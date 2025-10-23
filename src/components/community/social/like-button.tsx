@@ -76,13 +76,13 @@ export function LikeButton({
       size="sm"
       onClick={handleLike}
       className={`flex items-center gap-2 transition-all hover:bg-transparent ${
-        liked ? 'text-coral' : 'text-muted hover:text-coral'
+        liked ? 'text-orange-500' : 'text-muted hover:text-orange-500'
       }`}
     >
       <Heart
         className={`${sizeClasses[size]} transition-all ${
           isAnimating ? 'scale-125' : 'scale-100'
-        } ${liked ? 'fill-coral' : ''}`}
+        } ${liked ? 'fill-orange-500' : ''}`}
       />
       {showCount && <span className={textSize[size]}>{likes}</span>}
     </Button>

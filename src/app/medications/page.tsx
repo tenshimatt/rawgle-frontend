@@ -134,7 +134,7 @@ function MedicationsContent() {
           ) : medications.length === 0 ? (
             <div className="text-center py-20">
               <Pill className="h-24 w-24 mx-auto mb-4 icon-muted" />
-              <h2 className="text-2xl font-bold text-charcoal mb-2">No medications yet</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">No medications yet</h2>
               <p className="text-muted mb-6">Start tracking medications for {selectedPetName}</p>
               {selectedPet && <AddMedicationDialog petId={selectedPet} onMedicationAdded={fetchMedications} />}
             </div>
@@ -151,7 +151,7 @@ function MedicationsContent() {
                             <Pill className={`h-6 w-6 ${active ? 'icon-accent' : 'text-gray-400'}`} />
                           </div>
                           <div>
-                            <CardTitle className="text-xl text-charcoal flex items-center gap-2">
+                            <CardTitle className="text-xl text-gray-900 flex items-center gap-2">
                               {medication.name}
                               {!active && <span className="text-xs px-2 py-1 bg-gray-300 text-gray-600 rounded">Ended</span>}
                             </CardTitle>
@@ -159,7 +159,7 @@ function MedicationsContent() {
                           </div>
                         </div>
                         {medication.reminderEnabled && active && (
-                          <div className="flex items-center gap-1 text-persian-green text-sm">
+                          <div className="flex items-center gap-1 text-teal-600 text-sm">
                             <Bell className="h-4 w-4" />
                             <span>Reminders On</span>
                           </div>
@@ -173,21 +173,21 @@ function MedicationsContent() {
                             <Clock className="h-4 w-4 text-muted" />
                             <p className="text-xs text-muted">Frequency</p>
                           </div>
-                          <p className="text-sm font-semibold text-charcoal">{getFrequencyDisplay(medication.frequency)}</p>
+                          <p className="text-sm font-semibold text-gray-900">{getFrequencyDisplay(medication.frequency)}</p>
                         </div>
                         <div className="p-3 bg-seasalt rounded-lg">
                           <div className="flex items-center gap-2 mb-1">
                             <Clock className="h-4 w-4 text-muted" />
                             <p className="text-xs text-muted">Time</p>
                           </div>
-                          <p className="text-sm font-semibold text-charcoal">{medication.timeOfDay}</p>
+                          <p className="text-sm font-semibold text-gray-900">{medication.timeOfDay}</p>
                         </div>
                         <div className="p-3 bg-seasalt rounded-lg">
                           <div className="flex items-center gap-2 mb-1">
                             <Calendar className="h-4 w-4 text-muted" />
                             <p className="text-xs text-muted">Started</p>
                           </div>
-                          <p className="text-sm font-semibold text-charcoal">
+                          <p className="text-sm font-semibold text-gray-900">
                             {new Date(medication.startDate).toLocaleDateString()}
                           </p>
                         </div>
@@ -197,7 +197,7 @@ function MedicationsContent() {
                         <div className="flex items-center gap-2 p-3 bg-maize/10 rounded-lg">
                           <AlertCircle className="h-5 w-5 icon-dark" />
                           <div className="text-sm">
-                            <span className="font-semibold text-charcoal">End Date: </span>
+                            <span className="font-semibold text-gray-900">End Date: </span>
                             <span className="text-muted">{new Date(medication.endDate).toLocaleDateString()}</span>
                           </div>
                         </div>
@@ -206,7 +206,7 @@ function MedicationsContent() {
                       {medication.notes && (
                         <div className="p-3 bg-seasalt rounded-lg">
                           <p className="text-xs text-muted mb-1">Notes</p>
-                          <p className="text-sm text-charcoal">{medication.notes}</p>
+                          <p className="text-sm text-gray-900">{medication.notes}</p>
                         </div>
                       )}
                     </CardContent>

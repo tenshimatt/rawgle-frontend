@@ -65,7 +65,7 @@ export function PhotoUpload({ photos, onPhotosChange, maxPhotos = 5, label = 'Ph
       {photos.length > 0 && (
         <div className="grid grid-cols-3 gap-3">
           {photos.map((photo, index) => (
-            <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border-2 border-persian-green/20">
+            <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border-2 border-teal-600/20">
               <img
                 src={photo}
                 alt={`Photo ${index + 1}`}
@@ -85,7 +85,7 @@ export function PhotoUpload({ photos, onPhotosChange, maxPhotos = 5, label = 'Ph
 
       {/* Upload Button */}
       {photos.length < maxPhotos && (
-        <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-persian-green/30 rounded-lg cursor-pointer hover:border-persian-green/60 transition-colors bg-seasalt">
+        <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-teal-600/30 rounded-lg cursor-pointer hover:border-teal-600/60 transition-colors bg-seasalt">
           <input
             type="file"
             accept="image/*"
@@ -102,7 +102,7 @@ export function PhotoUpload({ photos, onPhotosChange, maxPhotos = 5, label = 'Ph
           ) : (
             <>
               <Upload className="h-10 w-10 icon-primary mb-2" />
-              <p className="text-sm font-medium text-charcoal mb-1">
+              <p className="text-sm font-medium text-gray-900 mb-1">
                 Click to upload photos
               </p>
               <p className="text-xs text-muted">

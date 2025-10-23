@@ -197,9 +197,9 @@ export function SetupScheduleDialog({
             </div>
 
             {ingredients.map((ingredient, index) => (
-              <div key={`ing-${index}`} className="space-y-2 p-4 border border-charcoal/20 rounded-lg bg-white">
+              <div key={`ing-${index}`} className="space-y-2 p-4 border border-gray-900/20 rounded-lg bg-white">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-charcoal">
+                  <span className="text-sm font-semibold text-gray-900">
                     Ingredient {index + 1}
                   </span>
                   {ingredients.length > 1 && (
@@ -292,9 +292,9 @@ export function SetupScheduleDialog({
             </div>
 
             {supplements.map((supplement, index) => (
-              <div key={`sup-${index}`} className="space-y-2 p-4 border border-persian-green/30 rounded-lg bg-persian-green/5">
+              <div key={`sup-${index}`} className="space-y-2 p-4 border border-teal-600/30 rounded-lg bg-teal-600/5">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-charcoal">
+                  <span className="text-sm font-semibold text-gray-900">
                     Supplement {index + 1}
                   </span>
                   <Button

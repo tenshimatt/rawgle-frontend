@@ -92,7 +92,7 @@ export function EditFeedingScheduleDialog({ schedule, onScheduleUpdated, onSched
       </DialogTrigger>
       <DialogContent className="bg-white">
         <DialogHeader>
-          <DialogTitle className="text-charcoal">Edit Feeding Schedule</DialogTitle>
+          <DialogTitle className="text-gray-900">Edit Feeding Schedule</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

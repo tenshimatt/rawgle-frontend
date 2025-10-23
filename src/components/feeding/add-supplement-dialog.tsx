@@ -72,7 +72,7 @@ export function AddSupplementDialog({ petId, onSupplementAdded }: AddSupplementD
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px] bg-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal flex items-center gap-2">
+          <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Sparkles className="h-6 w-6 icon-secondary" />
             Add Supplement
           </DialogTitle>

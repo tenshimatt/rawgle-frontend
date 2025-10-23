@@ -132,7 +132,7 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
                   <img
                     src={imagePreview}
                     alt="Pet preview"
-                    className="w-24 h-24 rounded-full object-cover border-2 border-persian-green"
+                    className="w-24 h-24 rounded-full object-cover border-2 border-teal-600"
                   />
                   <button
                     type="button"
@@ -182,7 +182,7 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
               className="grid grid-cols-2 gap-4"
             >
               <div>
-                <div className="flex items-center space-x-2 border-2 rounded-lg p-4 cursor-pointer hover:border-persian-green transition-colors"
+                <div className="flex items-center space-x-2 border-2 rounded-lg p-4 cursor-pointer hover:border-teal-600 transition-colors"
                   style={{
                     borderColor: formData.species === 'dog' ? '#2A9D8F' : '#E5E7EB'
                   }}>
@@ -197,7 +197,7 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
                 </div>
               </div>
               <div>
-                <div className="flex items-center space-x-2 border-2 rounded-lg p-4 cursor-pointer hover:border-persian-green transition-colors"
+                <div className="flex items-center space-x-2 border-2 rounded-lg p-4 cursor-pointer hover:border-teal-600 transition-colors"
                   style={{
                     borderColor: formData.species === 'cat' ? '#2A9D8F' : '#E5E7EB'
                   }}>
@@ -246,7 +246,7 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
               className="grid grid-cols-2 gap-4"
             >
               <div>
-                <div className="flex items-center space-x-2 border-2 rounded-lg p-3 cursor-pointer hover:border-persian-green transition-colors"
+                <div className="flex items-center space-x-2 border-2 rounded-lg p-3 cursor-pointer hover:border-teal-600 transition-colors"
                   style={{
                     borderColor: formData.gender === 'male' ? '#2A9D8F' : '#E5E7EB'
                   }}>
@@ -257,7 +257,7 @@ export function AddPetDialog({ onPetAdded }: AddPetDialogProps) {
                 </div>
               </div>
               <div>
-                <div className="flex items-center space-x-2 border-2 rounded-lg p-3 cursor-pointer hover:border-persian-green transition-colors"
+                <div className="flex items-center space-x-2 border-2 rounded-lg p-3 cursor-pointer hover:border-teal-600 transition-colors"
                   style={{
                     borderColor: formData.gender === 'female' ? '#2A9D8F' : '#E5E7EB'
                   }}>

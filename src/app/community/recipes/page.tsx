@@ -100,7 +100,7 @@ export default function RecipeExchangePage() {
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-white rounded-lg p-4 mb-6 shadow-sm border-2 border-charcoal/10">
+          <div className="bg-white rounded-lg p-4 mb-6 shadow-sm border-2 border-gray-900/10">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Search */}
               <div className="relative md:col-span-1">
@@ -145,7 +145,7 @@ export default function RecipeExchangePage() {
 
             {/* Active Filters */}
             {(searchQuery || sortBy !== 'recent' || filterDiet !== 'all') && (
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-charcoal/10">
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-900/10">
                 <Filter className="h-4 w-4 text-muted" />
                 <p className="text-sm text-muted">
                   Showing {filteredRecipes.length} of {recipes.length} recipes
@@ -158,7 +158,7 @@ export default function RecipeExchangePage() {
                     setSortBy('recent');
                     setFilterDiet('all');
                   }}
-                  className="text-xs text-persian-green hover:bg-persian-green/10"
+                  className="text-xs text-teal-600 hover:bg-teal-600/10"
                 >
                   Clear filters
                 </Button>
@@ -179,7 +179,7 @@ export default function RecipeExchangePage() {
               <div className="w-20 h-20 bg-seasalt rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="h-10 w-10 text-muted" />
               </div>
-              <h3 className="text-xl font-semibold text-charcoal mb-2">No recipes found</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No recipes found</h3>
               <p className="text-muted mb-6">
                 {searchQuery
                   ? `No recipes match "${searchQuery}". Try a different search term.`
@@ -193,7 +193,13 @@ export default function RecipeExchangePage() {
           {!loading && filteredRecipes.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredRecipes.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
+                <RecipeCard
+                  key={recipe.id}
+                  recipe={recipe}
+                  onRecipeUpdated={fetchRecipes}
+                  onRecipeDeleted={fetchRecipes}
+                  currentUserId="demo-user"
+                />
               ))}
             </div>
           )}

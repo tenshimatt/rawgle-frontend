@@ -69,7 +69,7 @@ export default async function ForumThreadPage({ params }: PageProps) {
         {/* Back Button */}
         <Link
           href="/community/forums"
-          className="inline-flex items-center gap-2 text-persian-green hover:text-moss-green mb-6"
+          className="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Forums
@@ -86,23 +86,23 @@ export default async function ForumThreadPage({ params }: PageProps) {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 {thread.isPinned && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-persian-green text-white rounded">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-teal-600 text-white rounded">
                     <Pin className="h-3 w-3" />
                     PINNED
                   </span>
                 )}
                 {thread.isLocked && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-charcoal text-white rounded">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-gray-900 text-white rounded">
                     <Lock className="h-3 w-3" />
                     LOCKED
                   </span>
                 )}
-                <span className="px-2 py-1 text-xs font-semibold bg-moss-green/10 text-moss-green rounded">
+                <span className="px-2 py-1 text-xs font-semibold bg-teal-700/10 text-teal-700 rounded">
                   {thread.category}
                 </span>
               </div>
-              <h1 className="text-3xl font-bold text-charcoal mb-2">{thread.title}</h1>
-              <div className="flex items-center gap-4 text-sm text-charcoal/60">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{thread.title}</h1>
+              <div className="flex items-center gap-4 text-sm text-gray-900/60">
                 <span className="font-medium">by {thread.author}</span>
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
@@ -121,12 +121,12 @@ export default async function ForumThreadPage({ params }: PageProps) {
           </div>
 
           {/* Thread Content */}
-          <div className="prose prose-charcoal max-w-none mb-6">
+          <div className="prose prose-gray max-w-none mb-6">
             <div dangerouslySetInnerHTML={{ __html: thread.content.replace(/\n/g, '<br/>') }} />
           </div>
 
           {/* Social Actions */}
-          <div className="border-t border-charcoal/10 pt-4">
+          <div className="border-t border-gray-900/10 pt-4">
             <SocialActions
               itemId={thread.id}
               itemType="post"
@@ -142,7 +142,7 @@ export default async function ForumThreadPage({ params }: PageProps) {
 
         {/* Replies Section */}
         <div className="bg-white rounded-lg p-6 shadow-md">
-          <h2 className="text-2xl font-bold text-charcoal mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Replies ({thread.replyCount})
           </h2>
 
@@ -159,9 +159,9 @@ export default async function ForumThreadPage({ params }: PageProps) {
           )}
 
           {thread.isLocked && (
-            <div className="bg-charcoal/5 border border-charcoal/10 rounded-lg p-4 mb-6 text-center">
-              <Lock className="h-8 w-8 text-charcoal/40 mx-auto mb-2" />
-              <p className="text-charcoal/60">This thread has been locked by moderators</p>
+            <div className="bg-gray-900/5 border border-gray-900/10 rounded-lg p-4 mb-6 text-center">
+              <Lock className="h-8 w-8 text-gray-900/40 mx-auto mb-2" />
+              <p className="text-gray-900/60">This thread has been locked by moderators</p>
             </div>
           )}
 

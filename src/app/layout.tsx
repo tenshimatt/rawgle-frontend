@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Poppins } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { Providers } from '@/components/providers'
+import { CartIcon } from '@/components/cart/cart-icon'
+import { MainNav } from '@/components/navigation/main-nav'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 
@@ -82,7 +84,9 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
         <Providers>
+          <MainNav />
           {children}
+          <CartIcon />
           <Toaster
             position="bottom-right"
             toastOptions={{

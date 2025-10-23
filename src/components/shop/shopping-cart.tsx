@@ -89,7 +89,7 @@ export function ShoppingCartDialog() {
       </DialogTrigger>
       <DialogContent className="bg-white max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-charcoal">Shopping Cart</DialogTitle>
+          <DialogTitle className="text-gray-900">Shopping Cart</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 max-h-[500px] overflow-y-auto">
@@ -101,8 +101,8 @@ export function ShoppingCartDialog() {
                     <ShoppingCart className="h-8 w-8 text-sandy-brown" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-charcoal">{item.name}</h4>
-                    <p className="text-lg text-persian-green font-bold">${item.price}</p>
+                    <h4 className="font-semibold text-gray-900">{item.name}</h4>
+                    <p className="text-lg text-teal-600 font-bold">${item.price}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -114,7 +114,7 @@ export function ShoppingCartDialog() {
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
-                    <span className="w-8 text-center text-charcoal font-semibold">{item.quantity}</span>
+                    <span className="w-8 text-center text-gray-900 font-semibold">{item.quantity}</span>
                     <Button
                       size="sm"
                       variant="outline"
@@ -145,8 +145,8 @@ export function ShoppingCartDialog() {
         {cartItems.length > 0 && (
           <div className="border-t pt-4">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-semibold text-charcoal">Total:</span>
-              <span className="text-2xl font-bold text-persian-green">${total.toFixed(2)}</span>
+              <span className="text-lg font-semibold text-gray-900">Total:</span>
+              <span className="text-2xl font-bold text-teal-600">${total.toFixed(2)}</span>
             </div>
             <Button className="btn-primary w-full">
               Proceed to Checkout

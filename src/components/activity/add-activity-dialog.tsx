@@ -82,7 +82,7 @@ export function AddActivityDialog({ petId, onActivityAdded }: AddActivityDialogP
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal">Log Activity</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">Log Activity</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Activity Type */}

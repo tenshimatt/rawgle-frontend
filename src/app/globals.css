@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Leaflet CSS - required for map functionality */
+@import 'leaflet/dist/leaflet.css';
+
 @layer base {
   :root {
     /* Extended brand color palette - Light theme only */

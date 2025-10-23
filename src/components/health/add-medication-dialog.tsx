@@ -84,7 +84,7 @@ export function AddMedicationDialog({ petId, onMedicationAdded }: AddMedicationD
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px] bg-white max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal flex items-center gap-2">
+          <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Pill className="h-6 w-6 icon-accent" />
             Add Medication Schedule
           </DialogTitle>
@@ -186,15 +186,15 @@ export function AddMedicationDialog({ petId, onMedicationAdded }: AddMedicationD
           </div>
 
           {/* Reminder Toggle */}
-          <div className="flex items-center gap-3 p-3 bg-persian-green/10 rounded-lg">
+          <div className="flex items-center gap-3 p-3 bg-teal-600/10 rounded-lg">
             <input
               type="checkbox"
               id="reminderEnabled"
               checked={formData.reminderEnabled}
               onChange={(e) => handleChange('reminderEnabled', e.target.checked)}
-              className="h-4 w-4 text-persian-green focus:ring-persian-green border-gray-300 rounded"
+              className="h-4 w-4 text-teal-600 focus:ring-teal-600 border-gray-300 rounded"
             />
-            <Label htmlFor="reminderEnabled" className="text-sm font-medium text-charcoal cursor-pointer flex-1">
+            <Label htmlFor="reminderEnabled" className="text-sm font-medium text-gray-900 cursor-pointer flex-1">
               Enable medication reminders
             </Label>
           </div>

@@ -71,7 +71,7 @@ export function CreatePostDialog({ onPostCreated }: CreatePostDialogProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] bg-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal">Create Community Post</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">Create Community Post</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}

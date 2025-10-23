@@ -102,7 +102,7 @@ export function ShareButton({
           variant="ghost"
           size="sm"
           onClick={handleNativeShare}
-          className="flex items-center gap-2 text-muted hover:text-persian-green transition-colors hover:bg-transparent"
+          className="flex items-center gap-2 text-muted hover:text-teal-600 transition-colors hover:bg-transparent"
         >
           <Share2 className={sizeClasses[size]} />
           {showText && <span className={textSize[size]}>Share</span>}
@@ -110,7 +110,7 @@ export function ShareButton({
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-white">
         <DialogHeader>
-          <DialogTitle className="text-charcoal">Share {itemType}</DialogTitle>
+          <DialogTitle className="text-gray-900">Share {itemType}</DialogTitle>
         </DialogHeader>
         <div className="space-y-3 py-4">
           {/* Copy Link */}
@@ -121,7 +121,7 @@ export function ShareButton({
           >
             {copied ? (
               <>
-                <Check className="h-4 w-4 mr-3 text-persian-green" />
+                <Check className="h-4 w-4 mr-3 text-teal-600" />
                 <span>Copied to clipboard!</span>
               </>
             ) : (

@@ -155,14 +155,14 @@ export default function ForumsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sea-salt via-white to-sea-salt">
       {/* Header */}
-      <div className="bg-gradient-to-r from-persian-green to-moss-green text-white py-12">
+      <div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold mb-2">Community Forums</h1>
               <p className="text-sea-salt text-lg">Connect, learn, and share with fellow raw feeding enthusiasts</p>
             </div>
-            <Button className="bg-white text-persian-green hover:bg-sea-salt">
+            <Button className="bg-white text-teal-600 hover:bg-sea-salt">
               <Plus className="h-4 w-4 mr-2" />
               New Thread
             </Button>
@@ -173,20 +173,20 @@ export default function ForumsPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Categories Grid */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-charcoal mb-4">Browse Categories</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Browse Categories</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((category) => (
               <Link
                 key={category.id}
                 href={`/community/forums?category=${category.id}`}
-                className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border border-charcoal/10"
+                className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-900/10"
               >
                 <div className="flex items-start gap-4">
                   <div className="text-4xl">{category.icon}</div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-charcoal mb-1">{category.name}</h3>
-                    <p className="text-sm text-charcoal/70 mb-3">{category.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-charcoal/60">
+                    <h3 className="font-bold text-gray-900 mb-1">{category.name}</h3>
+                    <p className="text-sm text-gray-900/70 mb-3">{category.description}</p>
+                    <div className="flex items-center gap-4 text-sm text-gray-900/60">
                       <div className="flex items-center gap-1">
                         <MessageSquare className="h-4 w-4" />
                         <span>{category.threadCount} threads</span>
@@ -207,7 +207,7 @@ export default function ForumsPage() {
         <div className="bg-white rounded-lg p-6 shadow-md mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-charcoal/40" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-900/40" />
               <Input
                 type="text"
                 placeholder="Search threads..."
@@ -246,7 +246,7 @@ export default function ForumsPage() {
             <Link
               key={thread.id}
               href={`/community/forums/${thread.id}`}
-              className="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border border-charcoal/10"
+              className="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-900/10"
             >
               <div className="flex gap-4">
                 <img
@@ -258,17 +258,17 @@ export default function ForumsPage() {
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       {thread.isPinned && (
-                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-persian-green text-white rounded mr-2">
+                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-teal-600 text-white rounded mr-2">
                           PINNED
                         </span>
                       )}
-                      <h3 className="text-lg font-bold text-charcoal hover:text-persian-green inline">
+                      <h3 className="text-lg font-bold text-gray-900 hover:text-teal-600 inline">
                         {thread.title}
                       </h3>
                     </div>
                   </div>
-                  <p className="text-charcoal/70 text-sm mb-3 line-clamp-2">{thread.content}</p>
-                  <div className="flex items-center gap-4 text-sm text-charcoal/60">
+                  <p className="text-gray-900/70 text-sm mb-3 line-clamp-2">{thread.content}</p>
+                  <div className="flex items-center gap-4 text-sm text-gray-900/60">
                     <span className="font-medium">by {thread.author}</span>
                     <div className="flex items-center gap-1">
                       <MessageSquare className="h-4 w-4" />
@@ -290,8 +290,8 @@ export default function ForumsPage() {
 
           {filteredThreads.length === 0 && (
             <div className="text-center py-12 bg-white rounded-lg shadow-md">
-              <MessageSquare className="h-16 w-16 text-charcoal/20 mx-auto mb-4" />
-              <p className="text-charcoal/60 text-lg">No threads found matching your criteria</p>
+              <MessageSquare className="h-16 w-16 text-gray-900/20 mx-auto mb-4" />
+              <p className="text-gray-900/60 text-lg">No threads found matching your criteria</p>
             </div>
           )}
         </div>

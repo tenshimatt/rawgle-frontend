@@ -105,7 +105,7 @@ export function NotificationCenter() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal">Notifications</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">Notifications</DialogTitle>
         </DialogHeader>
         <div className="max-h-[500px] overflow-y-auto space-y-3">
           {notifications.length === 0 ? (
@@ -118,14 +118,14 @@ export function NotificationCenter() {
               <Card
                 key={notification.id}
                 className={`${
-                  notification.read ? 'bg-white' : 'bg-persian-green/5'
+                  notification.read ? 'bg-white' : 'bg-teal-600/5'
                 } border-l-4 ${
                   notification.type === 'feeding'
-                    ? 'border-l-persian-green'
+                    ? 'border-l-teal-600'
                     : notification.type === 'health'
                     ? 'border-l-burnt-sienna'
                     : notification.type === 'community'
-                    ? 'border-l-moss-green'
+                    ? 'border-l-teal-700'
                     : 'border-l-sandy-brown'
                 }`}
               >
@@ -134,7 +134,7 @@ export function NotificationCenter() {
                     <div className="flex items-start gap-3 flex-1">
                       <div className="mt-1">{getIcon(notification.type)}</div>
                       <div className="flex-1">
-                        <p className="font-semibold text-charcoal mb-1">{notification.title}</p>
+                        <p className="font-semibold text-gray-900 mb-1">{notification.title}</p>
                         <p className="text-sm text-muted mb-2">{notification.message}</p>
                         <p className="text-xs text-muted">{formatTimestamp(notification.timestamp)}</p>
                       </div>

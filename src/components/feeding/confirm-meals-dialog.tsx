@@ -116,8 +116,8 @@ export function ConfirmMealsDialog({
 
   const getMealTypeColor = (mealType: string) => {
     const colors: Record<string, string> = {
-      breakfast: 'bg-maize/20 text-charcoal',
-      lunch: 'bg-persian-green/20 text-persian-green',
+      breakfast: 'bg-maize/20 text-gray-900',
+      lunch: 'bg-teal-600/20 text-teal-600',
       dinner: 'bg-burnt-sienna/20 text-burnt-sienna',
       snack: 'bg-sandy-brown/20 text-sandy-brown',
     };
@@ -129,7 +129,7 @@ export function ConfirmMealsDialog({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-persian-green" />
+            <Calendar className="h-5 w-5 text-teal-600" />
             Confirm Auto-Logged Meals
           </DialogTitle>
           <DialogDescription>
@@ -140,9 +140,9 @@ export function ConfirmMealsDialog({
 
         <div className="space-y-4 py-4">
           {Object.entries(unconfirmedData.byDate).map(([date, records]: [string, any]) => (
-            <Card key={date} className="bg-seasalt border border-charcoal/10">
+            <Card key={date} className="bg-seasalt border border-gray-900/10">
               <CardContent className="p-4">
-                <h4 className="font-semibold text-charcoal mb-3">
+                <h4 className="font-semibold text-gray-900 mb-3">
                   {new Date(date).toLocaleDateString('en-US', {
                     weekday: 'long',
                     month: 'short',
@@ -171,7 +171,7 @@ export function ConfirmMealsDialog({
                             })}
                           </span>
                         </div>
-                        <p className="text-sm text-charcoal mt-1">
+                        <p className="text-sm text-gray-900 mt-1">
                           {record.foodType} - {record.amount} {record.unit}
                         </p>
                       </div>
@@ -195,7 +195,7 @@ export function ConfirmMealsDialog({
           </Button>
           <Button
             onClick={handleConfirmAll}
-            className="flex-1 bg-persian-green text-white hover:bg-persian-green-600"
+            className="flex-1 bg-teal-600 text-white hover:bg-teal-600-600"
             disabled={confirming}
           >
             {confirming ? (

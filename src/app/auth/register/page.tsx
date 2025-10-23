@@ -44,14 +44,14 @@ export default function RegisterPage() {
       <div className="container-page">
         <div className="max-w-md mx-auto pt-20">
           <div className="text-center mb-8">
-            <Dog className="h-16 w-16 mx-auto mb-4 text-persian-green" />
+            <Dog className="h-16 w-16 mx-auto mb-4 text-teal-600" />
             <h1 className="hero-title">Join Rawgle</h1>
             <p className="hero-description">Create your account to get started</p>
           </div>
 
           <Card className="card-feature-primary">
             <CardHeader>
-              <CardTitle className="text-2xl text-charcoal">Sign Up</CardTitle>
+              <CardTitle className="text-2xl text-gray-900">Sign Up</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -75,7 +75,7 @@ export default function RegisterPage() {
                   {loading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Creating account...</> : 'Create Account'}
                 </Button>
                 <div className="text-center text-sm text-muted">
-                  Already have an account? <Link href="/auth/login" className="text-persian-green hover:underline font-semibold">Sign in</Link>
+                  Already have an account? <Link href="/auth/login" className="text-teal-600 hover:underline font-semibold">Sign in</Link>
                 </div>
               </form>
             </CardContent>

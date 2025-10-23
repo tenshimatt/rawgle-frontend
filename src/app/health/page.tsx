@@ -5,6 +5,7 @@ import { MainNav } from '@/components/navigation/main-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AddHealthRecordDialog } from '@/components/health/add-health-record-dialog';
+import { EditHealthRecordDialog } from '@/components/health/edit-health-record-dialog';
 import { FileText, Calendar, DollarSign, Image as ImageIcon, Loader2 } from 'lucide-react';
 
 interface HealthRecord {
@@ -125,7 +126,7 @@ export default function HealthPage() {
           ) : records.length === 0 ? (
             <div className="text-center py-20">
               <FileText className="h-24 w-24 mx-auto mb-4 icon-muted" />
-              <h2 className="text-2xl font-bold text-charcoal mb-2">No health records yet</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">No health records yet</h2>
               <p className="text-muted mb-6">Start tracking medical history for {selectedPetName}</p>
               {selectedPet && <AddHealthRecordDialog petId={selectedPet} onRecordAdded={fetchRecords} />}
             </div>
@@ -135,19 +136,26 @@ export default function HealthPage() {
                 <Card key={record.id} className="card-feature-accent">
                   <CardHeader>
                     <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-xl text-charcoal flex items-center gap-2">
+                      <div className="flex-1">
+                        <CardTitle className="text-xl text-gray-900 flex items-center gap-2">
                           {record.title}
-                          <span className="text-xs px-2 py-1 bg-persian-green/10 text-persian-green rounded">
+                          <span className="text-xs px-2 py-1 bg-teal-600/10 text-teal-600 rounded">
                             {getRecordTypeDisplay(record.type)}
                           </span>
                         </CardTitle>
                         <p className="text-sm text-muted mt-1">{record.provider}</p>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm text-muted">
-                          {new Date(record.date).toLocaleDateString()}
+                      <div className="flex items-center gap-2">
+                        <div className="text-right mr-2">
+                          <div className="text-sm text-muted">
+                            {new Date(record.date).toLocaleDateString()}
+                          </div>
                         </div>
+                        <EditHealthRecordDialog
+                          record={record}
+                          onRecordUpdated={fetchRecords}
+                          onRecordDeleted={fetchRecords}
+                        />
                       </div>
                     </div>
                   </CardHeader>
@@ -155,7 +163,7 @@ export default function HealthPage() {
                     {record.notes && (
                       <div className="p-3 bg-seasalt rounded-lg">
                         <p className="text-xs text-muted mb-1">Notes</p>
-                        <p className="text-sm text-charcoal">{record.notes}</p>
+                        <p className="text-sm text-gray-900">{record.notes}</p>
                       </div>
                     )}
 
@@ -166,7 +174,7 @@ export default function HealthPage() {
                             <Calendar className="h-4 w-4 text-muted" />
                             <p className="text-xs text-muted">Next Due</p>
                           </div>
-                          <p className="text-sm font-semibold text-charcoal">
+                          <p className="text-sm font-semibold text-gray-900">
                             {new Date(record.nextDueDate).toLocaleDateString()}
                           </p>
                         </div>
@@ -178,7 +186,7 @@ export default function HealthPage() {
                             <DollarSign className="h-4 w-4 text-muted" />
                             <p className="text-xs text-muted">Cost</p>
                           </div>
-                          <p className="text-sm font-semibold text-charcoal">${record.cost.toFixed(2)}</p>
+                          <p className="text-sm font-semibold text-gray-900">${record.cost.toFixed(2)}</p>
                         </div>
                       )}
                     </div>

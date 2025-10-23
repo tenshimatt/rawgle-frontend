@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Users, ChefHat } from 'lucide-react';
 import { SocialActions } from './social/social-actions';
+import { EditRecipeDialog } from './edit-recipe-dialog';
 
 interface Recipe {
   id: string;
@@ -11,10 +12,13 @@ interface Recipe {
   userName: string;
   title: string;
   description: string;
+  ingredients: string[];
+  instructions: string[];
   photos?: string[];
   prepTime: string;
   servings: string;
   likes: number;
+  saves: number;
   liked?: boolean;
   saved?: boolean;
   comments?: number;
@@ -24,9 +28,18 @@ interface Recipe {
 interface RecipeCardProps {
   recipe: Recipe;
   onClick?: () => void;
+  onRecipeUpdated?: () => void;
+  onRecipeDeleted?: () => void;
+  currentUserId?: string;
 }
 
-export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
+export function RecipeCard({
+  recipe,
+  onClick,
+  onRecipeUpdated,
+  onRecipeDeleted,
+  currentUserId = 'demo-user'
+}: RecipeCardProps) {
   const formatTimestamp = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -40,6 +53,9 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
   };
+
+  // Check if current user owns this recipe
+  const isOwner = recipe.userId === currentUserId;
 
   return (
     <Card className="card-feature-primary hover:shadow-lg transition-shadow overflow-hidden">
@@ -59,19 +75,26 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
       <CardContent className="p-4 space-y-3">
         {/* Author Info */}
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-persian-green rounded-full flex items-center justify-center text-charcoal font-bold text-sm">
+          <div className="h-8 w-8 bg-teal-600 rounded-full flex items-center justify-center text-gray-900 font-bold text-sm">
             {recipe.userName[0]}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-charcoal text-sm">{recipe.userName}</p>
+            <p className="font-semibold text-gray-900 text-sm">{recipe.userName}</p>
             <p className="text-xs text-muted">{formatTimestamp(recipe.createdAt)}</p>
           </div>
+          {isOwner && (
+            <EditRecipeDialog
+              recipe={recipe}
+              onRecipeUpdated={onRecipeUpdated}
+              onRecipeDeleted={onRecipeDeleted}
+            />
+          )}
         </div>
 
         {/* Recipe Title & Description */}
         <Link href={`/community/recipes/${recipe.id}`} onClick={onClick}>
           <div className="cursor-pointer">
-            <h3 className="font-bold text-lg text-charcoal mb-1 hover:text-persian-green transition-colors flex items-center gap-2">
+            <h3 className="font-bold text-lg text-gray-900 mb-1 hover:text-teal-600 transition-colors flex items-center gap-2">
               <ChefHat className="h-4 w-4" />
               {recipe.title}
             </h3>
@@ -92,7 +115,7 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
         </div>
 
         {/* Social Actions */}
-        <div className="pt-2 border-t border-charcoal/10">
+        <div className="pt-2 border-t border-gray-900/10">
           <SocialActions
             itemId={recipe.id}
             itemType="recipe"

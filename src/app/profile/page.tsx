@@ -35,7 +35,7 @@ export default function ProfilePage() {
           {/* Profile Information */}
           <Card className="card-feature-primary">
             <CardHeader>
-              <CardTitle className="text-charcoal flex items-center gap-2">
+              <CardTitle className="text-gray-900 flex items-center gap-2">
                 <User className="h-5 w-5 icon-primary" />
                 Personal Information
               </CardTitle>
@@ -64,14 +64,14 @@ export default function ProfilePage() {
           {/* Notification Preferences */}
           <Card className="card-feature-secondary">
             <CardHeader>
-              <CardTitle className="text-charcoal flex items-center gap-2">
+              <CardTitle className="text-gray-900 flex items-center gap-2">
                 <Bell className="h-5 w-5 icon-secondary" />
                 Notifications
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-charcoal">Feeding Reminders</Label>
+                <Label className="text-gray-900">Feeding Reminders</Label>
                 <input
                   type="checkbox"
                   checked={profile.notifications.feeding}
@@ -83,7 +83,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-charcoal">Health Alerts</Label>
+                <Label className="text-gray-900">Health Alerts</Label>
                 <input
                   type="checkbox"
                   checked={profile.notifications.health}
@@ -95,7 +95,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-charcoal">Community Updates</Label>
+                <Label className="text-gray-900">Community Updates</Label>
                 <input
                   type="checkbox"
                   checked={profile.notifications.community}

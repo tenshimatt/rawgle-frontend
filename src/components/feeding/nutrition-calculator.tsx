@@ -163,7 +163,7 @@ export function NutritionCalculator() {
       <Card className="card-feature-secondary">
         <CardContent className="py-8 text-center">
           <Calculator className="h-12 w-12 mx-auto mb-3 icon-muted" />
-          <h3 className="text-lg font-semibold text-charcoal mb-2">No Pets Found</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Pets Found</h3>
           <p className="text-sm text-muted">Add a pet to use the nutrition calculator</p>
         </CardContent>
       </Card>
@@ -184,7 +184,7 @@ export function NutritionCalculator() {
       <CardContent className="space-y-6">
         {/* Pet Selection */}
         <div>
-          <Label className="text-charcoal font-semibold mb-2">Select Pet</Label>
+          <Label className="text-gray-900 font-semibold mb-2">Select Pet</Label>
           <div className="flex flex-wrap gap-2 mt-2">
             {pets.map((pet) => (
               <Button
@@ -201,7 +201,7 @@ export function NutritionCalculator() {
 
         {/* Activity Level */}
         <div>
-          <Label className="text-charcoal font-semibold mb-2">Activity Level</Label>
+          <Label className="text-gray-900 font-semibold mb-2">Activity Level</Label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
             {(['sedentary', 'moderate', 'active', 'very_active'] as const).map((level) => (
               <Button
@@ -219,7 +219,7 @@ export function NutritionCalculator() {
 
         {/* Life Stage */}
         <div>
-          <Label className="text-charcoal font-semibold mb-2">Life Stage</Label>
+          <Label className="text-gray-900 font-semibold mb-2">Life Stage</Label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
             {selectedPet?.species === 'dog' && (
               <>
@@ -288,11 +288,11 @@ export function NutritionCalculator() {
 
         {/* Results */}
         {results && selectedPet && (
-          <div className="space-y-4 pt-4 border-t-2 border-charcoal/10">
-            <div className="flex items-start gap-2 bg-persian-green/10 p-3 rounded-lg border-2 border-persian-green/30">
+          <div className="space-y-4 pt-4 border-t-2 border-gray-900/10">
+            <div className="flex items-start gap-2 bg-teal-600/10 p-3 rounded-lg border-2 border-teal-600/30">
               <Info className="h-5 w-5 icon-secondary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold text-charcoal">
+                <p className="text-sm font-semibold text-gray-900">
                   Daily food for {selectedPet.name}
                 </p>
                 <p className="text-xs text-muted">
@@ -305,72 +305,72 @@ export function NutritionCalculator() {
             <div className="grid grid-cols-2 gap-3">
               <div className="p-4 bg-maize/20 border-2 border-maize/30 rounded-lg">
                 <p className="text-xs text-muted mb-1">Total Daily</p>
-                <p className="text-2xl font-bold text-charcoal">{results.totalGrams}g</p>
+                <p className="text-2xl font-bold text-gray-900">{results.totalGrams}g</p>
                 <p className="text-sm text-muted">{results.totalOunces}oz</p>
               </div>
-              <div className="p-4 bg-coral/20 border-2 border-coral/30 rounded-lg">
+              <div className="p-4 bg-orange-500/20 border-2 border-orange-500/30 rounded-lg">
                 <p className="text-xs text-muted mb-1">Daily Calories</p>
-                <p className="text-2xl font-bold text-charcoal">{results.dailyCalories}</p>
+                <p className="text-2xl font-bold text-gray-900">{results.dailyCalories}</p>
                 <p className="text-sm text-muted">kcal</p>
               </div>
             </div>
 
             {/* BARF Breakdown */}
             <div>
-              <h4 className="font-semibold text-charcoal mb-3 flex items-center gap-2">
+              <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
                 BARF Daily Breakdown
               </h4>
               <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-charcoal/10">
+                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-900/10">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="bg-burnt-sienna/20 border-burnt-sienna/30">
                       {selectedPet.species === 'dog' ? '70%' : '80%'}
                     </Badge>
-                    <span className="text-sm font-medium text-charcoal">Muscle Meat</span>
+                    <span className="text-sm font-medium text-gray-900">Muscle Meat</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-charcoal">{results.muscleMeat}g</p>
+                    <p className="text-sm font-bold text-gray-900">{results.muscleMeat}g</p>
                     <p className="text-xs text-muted">{results.muscleMeatOz}oz</p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-charcoal/10">
+                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-900/10">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-charcoal/20 border-charcoal/30">
+                    <Badge variant="outline" className="bg-gray-900/20 border-gray-900/30">
                       10%
                     </Badge>
-                    <span className="text-sm font-medium text-charcoal">Raw Meaty Bones</span>
+                    <span className="text-sm font-medium text-gray-900">Raw Meaty Bones</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-charcoal">{results.bone}g</p>
+                    <p className="text-sm font-bold text-gray-900">{results.bone}g</p>
                     <p className="text-xs text-muted">{results.boneOz}oz</p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-charcoal/10">
+                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-900/10">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-coral/20 border-coral/30">
+                    <Badge variant="outline" className="bg-orange-500/20 border-orange-500/30">
                       10%
                     </Badge>
-                    <span className="text-sm font-medium text-charcoal">Organ Meat</span>
+                    <span className="text-sm font-medium text-gray-900">Organ Meat</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-charcoal">{results.organ}g</p>
+                    <p className="text-sm font-bold text-gray-900">{results.organ}g</p>
                     <p className="text-xs text-muted">{results.organOz}oz</p>
                   </div>
                 </div>
 
                 {selectedPet.species === 'dog' && (
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-charcoal/10">
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-900/10">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="bg-persian-green/20 border-persian-green/30">
+                      <Badge variant="outline" className="bg-teal-600/20 border-teal-600/30">
                         10%
                       </Badge>
-                      <span className="text-sm font-medium text-charcoal">Vegetables</span>
+                      <span className="text-sm font-medium text-gray-900">Vegetables</span>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-charcoal">{results.vegetables}g</p>
+                      <p className="text-sm font-bold text-gray-900">{results.vegetables}g</p>
                       <p className="text-xs text-muted">{results.vegetablesOz}oz</p>
                     </div>
                   </div>
@@ -379,8 +379,8 @@ export function NutritionCalculator() {
             </div>
 
             {/* Shopping Tips */}
-            <div className="bg-seasalt p-4 rounded-lg border-2 border-charcoal/10">
-              <h4 className="font-semibold text-charcoal mb-2 text-sm">Shopping List Tips</h4>
+            <div className="bg-seasalt p-4 rounded-lg border-2 border-gray-900/10">
+              <h4 className="font-semibold text-gray-900 mb-2 text-sm">Shopping List Tips</h4>
               <ul className="space-y-1 text-xs text-muted">
                 <li>• Muscle Meat: Chicken, beef, turkey, lamb, or fish</li>
                 <li>• Bones: Chicken necks, wings, or beef ribs</li>

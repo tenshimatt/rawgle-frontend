@@ -42,14 +42,14 @@ export default function LoginPage() {
       <div className="container-page">
         <div className="max-w-md mx-auto pt-20">
           <div className="text-center mb-8">
-            <Dog className="h-16 w-16 mx-auto mb-4 text-persian-green" />
+            <Dog className="h-16 w-16 mx-auto mb-4 text-teal-600" />
             <h1 className="hero-title">Welcome Back</h1>
             <p className="hero-description">Sign in to your Rawgle account</p>
           </div>
 
           <Card className="card-feature-primary">
             <CardHeader>
-              <CardTitle className="text-2xl text-charcoal">Sign In</CardTitle>
+              <CardTitle className="text-2xl text-gray-900">Sign In</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,9 +82,9 @@ export default function LoginPage() {
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2">
                     <input type="checkbox" className="rounded border-gray-300" />
-                    <span className="text-sm text-charcoal">Remember me</span>
+                    <span className="text-sm text-gray-900">Remember me</span>
                   </label>
-                  <Link href="/auth/forgot-password" className="text-sm text-persian-green hover:underline">
+                  <Link href="/auth/forgot-password" className="text-sm text-teal-600 hover:underline">
                     Forgot password?
                   </Link>
                 </div>
@@ -95,7 +95,7 @@ export default function LoginPage() {
 
                 <div className="text-center text-sm text-muted">
                   Don't have an account?{' '}
-                  <Link href="/auth/register" className="text-persian-green hover:underline font-semibold">
+                  <Link href="/auth/register" className="text-teal-600 hover:underline font-semibold">
                     Sign up
                   </Link>
                 </div>

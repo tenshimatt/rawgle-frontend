@@ -71,7 +71,7 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal flex items-center gap-2">
+          <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Scan className="h-6 w-6 icon-primary" />
             Scan Product Barcode
           </DialogTitle>
@@ -100,19 +100,19 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
           {/* Error Message */}
           {error && (
             <div className="p-3 bg-burnt-sienna/10 border border-burnt-sienna/30 rounded-lg">
-              <p className="text-sm text-charcoal">{error}</p>
+              <p className="text-sm text-gray-900">{error}</p>
             </div>
           )}
 
           {/* Sample Barcodes */}
           <div className="p-4 bg-seasalt rounded-lg">
-            <p className="text-sm font-semibold text-charcoal mb-2">Try these demo barcodes:</p>
+            <p className="text-sm font-semibold text-gray-900 mb-2">Try these demo barcodes:</p>
             <div className="space-y-1">
               {['123456789012', '987654321098', '555666777888'].map((code) => (
                 <button
                   key={code}
                   onClick={() => setBarcode(code)}
-                  className="block text-sm text-persian-green hover:underline font-mono"
+                  className="block text-sm text-teal-600 hover:underline font-mono"
                 >
                   {code}
                 </button>

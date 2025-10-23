@@ -25,6 +25,27 @@ export async function PUT(
   return NextResponse.json({ data: feedingSchedules[scheduleIndex] });
 }
 
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const body = await request.json();
+  const scheduleIndex = feedingSchedules.findIndex(s => s.id === id);
+
+  if (scheduleIndex === -1) {
+    return NextResponse.json({ error: 'Schedule not found' }, { status: 404 });
+  }
+
+  feedingSchedules[scheduleIndex] = {
+    ...feedingSchedules[scheduleIndex],
+    ...body,
+    updatedAt: new Date().toISOString(),
+  };
+
+  return NextResponse.json({ data: feedingSchedules[scheduleIndex] });
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

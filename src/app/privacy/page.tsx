@@ -4,7 +4,7 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen page-gradient">
       <MainNav />
-      <div className="container-page max-w-4xl mx-auto prose prose-charcoal">
+      <div className="container-page max-w-4xl mx-auto prose prose-gray">
         <h1>Privacy Policy</h1>
         <p className="text-muted">Last updated: {new Date().toLocaleDateString()}</p>
         <h2>Data Collection</h2>

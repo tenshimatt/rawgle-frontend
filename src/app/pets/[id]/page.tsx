@@ -71,7 +71,7 @@ export default function PetProfilePage() {
       <div className="min-h-screen page-gradient">
         <MainNav />
         <div className="container-page">
-          <p className="text-charcoal">Loading...</p>
+          <p className="text-gray-900">Loading...</p>
         </div>
       </div>
     );
@@ -82,7 +82,7 @@ export default function PetProfilePage() {
       <div className="min-h-screen page-gradient">
         <MainNav />
         <div className="container-page">
-          <p className="text-charcoal">Pet not found</p>
+          <p className="text-gray-900">Pet not found</p>
         </div>
       </div>
     );
@@ -104,14 +104,14 @@ export default function PetProfilePage() {
           {/* Profile Card */}
           <Card className="lg:col-span-1 card-feature-primary">
             <CardHeader>
-              <div className="w-full aspect-square bg-persian-green/10 rounded-lg mb-4 flex items-center justify-center">
+              <div className="w-full aspect-square bg-teal-600/10 rounded-lg mb-4 flex items-center justify-center">
                 {pet.image ? (
                   <img src={pet.image} alt={pet.name} className="w-full h-full object-cover rounded-lg" />
                 ) : (
-                  <Heart className="h-24 w-24 text-persian-green" />
+                  <Heart className="h-24 w-24 text-teal-600" />
                 )}
               </div>
-              <CardTitle className="text-2xl text-charcoal">{pet.name}</CardTitle>
+              <CardTitle className="text-2xl text-gray-900">{pet.name}</CardTitle>
               <p className="text-muted">{pet.breed}</p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -119,21 +119,21 @@ export default function PetProfilePage() {
                 <Calendar className="h-5 w-5 icon-primary" />
                 <div>
                   <p className="text-sm text-muted">Age</p>
-                  <p className="font-semibold text-charcoal">{calculateAge(pet.birthDate)} years old</p>
+                  <p className="font-semibold text-gray-900">{calculateAge(pet.birthDate)} years old</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Weight className="h-5 w-5 icon-secondary" />
                 <div>
                   <p className="text-sm text-muted">Weight</p>
-                  <p className="font-semibold text-charcoal">{pet.weight} lbs</p>
+                  <p className="font-semibold text-gray-900">{pet.weight} lbs</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Activity className="h-5 w-5 icon-accent" />
                 <div>
                   <p className="text-sm text-muted">Gender</p>
-                  <p className="font-semibold text-charcoal capitalize">{pet.gender}</p>
+                  <p className="font-semibold text-gray-900 capitalize">{pet.gender}</p>
                 </div>
               </div>
             </CardContent>
@@ -144,20 +144,20 @@ export default function PetProfilePage() {
             {/* Health Records */}
             <Card className="card-feature-primary">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-charcoal">Health Records</CardTitle>
+                <CardTitle className="text-gray-900">Health Records</CardTitle>
                 <AddHealthRecordDialog petId={petId} onRecordAdded={fetchPetData} />
               </CardHeader>
               <CardContent>
                 {healthRecords.length > 0 ? (
                   <div className="space-y-4">
                     {healthRecords.map((record) => (
-                      <div key={record.id} className="p-4 bg-white rounded-lg border border-charcoal/10">
+                      <div key={record.id} className="p-4 bg-white rounded-lg border border-gray-900/10">
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-semibold text-charcoal">{record.title}</h4>
+                          <h4 className="font-semibold text-gray-900">{record.title}</h4>
                           <span className="badge-primary">{record.type}</span>
                         </div>
                         <p className="text-sm text-muted">{new Date(record.date).toLocaleDateString()}</p>
-                        <p className="text-sm text-charcoal mt-2">{record.provider}</p>
+                        <p className="text-sm text-gray-900 mt-2">{record.provider}</p>
                         {record.notes && (
                           <p className="text-sm text-muted mt-2">{record.notes}</p>
                         )}
@@ -173,19 +173,19 @@ export default function PetProfilePage() {
             {/* Feeding Schedule */}
             <Card className="card-feature-secondary">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-charcoal">Feeding Schedule</CardTitle>
+                <CardTitle className="text-gray-900">Feeding Schedule</CardTitle>
                 <AddFeedingScheduleDialog petId={petId} onScheduleAdded={fetchPetData} />
               </CardHeader>
               <CardContent>
                 {feedingSchedules.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {feedingSchedules.map((schedule) => (
-                      <div key={schedule.id} className="p-4 bg-white rounded-lg border border-charcoal/10">
+                      <div key={schedule.id} className="p-4 bg-white rounded-lg border border-gray-900/10">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-charcoal">{schedule.time}</span>
+                          <span className="font-semibold text-gray-900">{schedule.time}</span>
                           <span className="text-sm text-muted">{schedule.amount} {schedule.unit}</span>
                         </div>
-                        <p className="text-sm text-charcoal">{schedule.foodType}</p>
+                        <p className="text-sm text-gray-900">{schedule.foodType}</p>
                       </div>
                     ))}
                   </div>

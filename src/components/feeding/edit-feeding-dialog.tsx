@@ -139,7 +139,7 @@ export function EditFeedingDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal">Edit Feeding</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">Edit Feeding</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Pet Selection */}

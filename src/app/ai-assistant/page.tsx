@@ -107,12 +107,12 @@ export default function AIAssistantPage() {
 
           {/* Pet Context Display */}
           {pets.length > 0 && (
-            <div className="mb-4 p-4 bg-persian-green/10 border-2 border-persian-green/30 rounded-lg">
-              <div className="flex items-center gap-2 text-sm text-charcoal">
-                <Bot className="h-5 w-5 text-persian-green" />
+            <div className="mb-4 p-4 bg-teal-600/10 border-2 border-teal-600/30 rounded-lg">
+              <div className="flex items-center gap-2 text-sm text-gray-900">
+                <Bot className="h-5 w-5 text-teal-600" />
                 <span className="font-semibold">Dr. Raw knows about:</span>
                 {pets.map((pet, index) => (
-                  <span key={pet.id} className="px-2 py-1 bg-white rounded-md border border-persian-green/20">
+                  <span key={pet.id} className="px-2 py-1 bg-white rounded-md border border-teal-600/20">
                     {pet.name} ({pet.species}, {pet.weight}lbs)
                   </span>
                 ))}
@@ -128,8 +128,8 @@ export default function AIAssistantPage() {
                     {msg.role === 'assistant' && <Bot className="h-8 w-8 icon-primary flex-shrink-0" />}
                     <div className={`max-w-[80%] p-4 rounded-lg ${
                       msg.role === 'user'
-                        ? 'bg-persian-green text-white'
-                        : 'bg-white border-2 border-charcoal/10 text-charcoal'
+                        ? 'bg-teal-600 text-white'
+                        : 'bg-white border-2 border-gray-900/10 text-gray-900'
                     }`}>
                       {msg.content}
                     </div>
@@ -164,19 +164,19 @@ export default function AIAssistantPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="card-feature-primary">
               <CardContent className="p-4 text-center">
-                <h3 className="font-semibold mb-2 text-charcoal">Portion Calculator</h3>
+                <h3 className="font-semibold mb-2 text-gray-900">Portion Calculator</h3>
                 <p className="text-sm text-muted">Calculate ideal portions for your pet</p>
               </CardContent>
             </Card>
             <Card className="card-feature-secondary">
               <CardContent className="p-4 text-center">
-                <h3 className="font-semibold mb-2 text-charcoal">Food Safety</h3>
+                <h3 className="font-semibold mb-2 text-gray-900">Food Safety</h3>
                 <p className="text-sm text-muted">Learn safe handling practices</p>
               </CardContent>
             </Card>
             <Card className="card-feature-accent">
               <CardContent className="p-4 text-center">
-                <h3 className="font-semibold mb-2 text-charcoal">Meal Planning</h3>
+                <h3 className="font-semibold mb-2 text-gray-900">Meal Planning</h3>
                 <p className="text-sm text-muted">Get personalized meal plans</p>
               </CardContent>
             </Card>

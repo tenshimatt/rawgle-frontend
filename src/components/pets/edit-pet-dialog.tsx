@@ -130,7 +130,7 @@ export function EditPetDialog({ pet, onPetUpdated, onPetDeleted }: EditPetDialog
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-charcoal">Edit {pet.name}</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-gray-900">Edit {pet.name}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}

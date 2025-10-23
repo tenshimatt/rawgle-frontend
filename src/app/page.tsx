@@ -1,28 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { MainNav } from '@/components/navigation/main-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dog, MapPin, MessageSquare, Calendar, Heart, ShoppingBag, BookOpen, Users, Award } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-seasalt">
-      <MainNav />
+    <div className="min-h-screen bg-gray-50">
 
       {/* Hero Section */}
-      <div className="relative py-24 px-4 overflow-hidden">
-        {/* Subtle gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-persian-green/5 via-fawn/5 to-burnt-sienna/5"></div>
+      <div className="relative py-24 px-4 overflow-hidden bg-gradient-to-br from-green-50 to-orange-50">
         <div className="relative">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-charcoal">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900">
                 🐾 Raw Pet Food
               </h1>
-              <p className="text-2xl mb-4 text-charcoal/90">Your AI-Assisted Pet Health Companion</p>
-              <p className="text-lg mb-8 text-charcoal/70">
+              <p className="text-2xl mb-4 text-gray-800">Your AI-Assisted Pet Health Companion</p>
+              <p className="text-lg mb-8 text-gray-600">
                 Expert nutrition guidance, local supplier discovery, and complete health tracking for raw-fed pets
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
@@ -44,17 +40,17 @@ export default function HomePage() {
 
       {/* Features Grid */}
       <div className="container mx-auto px-4 py-16">
-        <h2 className="text-4xl font-bold text-center mb-12 text-charcoal">
+        <h2 className="text-4xl font-bold text-center mb-12 text-gray-900">
           Everything You Need for Raw Pet Nutrition
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link href="/ai-assistant">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-fawn h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-orange-400 h-full bg-white">
               <CardContent className="p-6 text-center">
-                <MessageSquare className="h-16 w-16 text-fawn mx-auto mb-4" />
+                <MessageSquare className="h-16 w-16 text-orange-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">AI Assistant</h3>
-                <p className="text-charcoal/70 text-sm">
+                <p className="text-gray-600 text-sm">
                   Get expert answers on raw nutrition, portions, safety, and meal planning
                 </p>
               </CardContent>
@@ -62,11 +58,11 @@ export default function HomePage() {
           </Link>
 
           <Link href="/pets">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-persian-green h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-green-400 h-full bg-white">
               <CardContent className="p-6 text-center">
-                <Heart className="h-16 w-16 text-persian-green mx-auto mb-4" />
+                <Heart className="h-16 w-16 text-green-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Pet Management</h3>
-                <p className="text-charcoal/70 text-sm">
+                <p className="text-gray-600 text-sm">
                   Manage profiles, health records, and track your pet's well-being
                 </p>
               </CardContent>
@@ -74,47 +70,47 @@ export default function HomePage() {
           </Link>
 
           <Link href="/feeding">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-maize h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-yellow-400 h-full bg-white">
               <CardContent className="p-6 text-center">
-                <Calendar className="h-16 w-16 text-maize-700 mx-auto mb-4" />
+                <Calendar className="h-16 w-16 text-yellow-600 mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Smart Feeding</h3>
-                <p className="text-charcoal/70 text-sm">
+                <p className="text-gray-600 text-sm">
                   Calculate portions, track meals, and monitor digestion patterns
                 </p>
               </CardContent>
             </Card>
           </Link>
 
-          <Link href="/suppliers">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-burnt-sienna h-full bg-white/80 backdrop-blur">
+          <Link href="/map">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-red-400 h-full bg-white">
               <CardContent className="p-6 text-center">
-                <MapPin className="h-16 w-16 text-burnt-sienna mx-auto mb-4" />
+                <MapPin className="h-16 w-16 text-red-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Find Suppliers</h3>
-                <p className="text-charcoal/70 text-sm">
-                  Discover 9,190+ verified raw pet food suppliers near you
+                <p className="text-gray-600 text-sm">
+                  Discover verified raw pet food suppliers near you on interactive map
                 </p>
               </CardContent>
             </Card>
           </Link>
 
           <Link href="/health">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-persian-green h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-green-400 h-full bg-white">
               <CardContent className="p-6 text-center">
-                <Heart className="h-16 w-16 text-persian-green mx-auto mb-4" />
+                <Heart className="h-16 w-16 text-green-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Health & Wellness</h3>
-                <p className="text-charcoal/70 text-sm">
+                <p className="text-gray-600 text-sm">
                   Track symptoms, monitor progress, and share with your vet
                 </p>
               </CardContent>
             </Card>
           </Link>
 
-          <Link href="/community">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-burnt-sienna h-full bg-white/80 backdrop-blur">
+          <Link href="/community/forums">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-purple-400 h-full bg-white">
               <CardContent className="p-6 text-center">
-                <Users className="h-16 w-16 text-burnt-sienna mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Community</h3>
-                <p className="text-charcoal/70 text-sm">
+                <Users className="h-16 w-16 text-purple-500 mx-auto mb-4" />
+                <h3 className="text-xl font-bold mb-2">Community Forums</h3>
+                <p className="text-gray-600 text-sm">
                   Connect with other raw feeders, share tips, and learn together
                 </p>
               </CardContent>
@@ -122,23 +118,23 @@ export default function HomePage() {
           </Link>
 
           <Link href="/shop">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-fawn h-full bg-white/80 backdrop-blur">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-blue-400 h-full bg-white">
               <CardContent className="p-6 text-center">
-                <ShoppingBag className="h-16 w-16 text-fawn mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Shop & Marketplace</h3>
-                <p className="text-charcoal/70 text-sm">
-                  Browse products, supplements, and essential feeding supplies
+                <ShoppingBag className="h-16 w-16 text-blue-500 mx-auto mb-4" />
+                <h3 className="text-xl font-bold mb-2">Shop Supplements</h3>
+                <p className="text-gray-600 text-sm">
+                  Browse premium supplements and essential feeding supplies
                 </p>
               </CardContent>
             </Card>
           </Link>
 
-          <Link href="/education">
-            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-coral h-full bg-white/80 backdrop-blur">
+          <Link href="/education/blog">
+            <Card className="hover:shadow-xl transition-all cursor-pointer border-2 hover:border-pink-400 h-full bg-white">
               <CardContent className="p-6 text-center">
-                <BookOpen className="h-16 w-16 text-coral mx-auto mb-4" />
+                <BookOpen className="h-16 w-16 text-pink-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold mb-2">Education</h3>
-                <p className="text-charcoal/70 text-sm">
+                <p className="text-gray-600 text-sm">
                   Guides, tutorials, and expert advice on raw pet nutrition
                 </p>
               </CardContent>
@@ -148,7 +144,7 @@ export default function HomePage() {
       </div>
 
       {/* Stats Section */}
-      <div className="bg-gradient-to-r from-persian-green to-persian-green-700 text-white py-16">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             <div>
@@ -174,10 +170,10 @@ export default function HomePage() {
       {/* CTA Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6 text-charcoal">
+          <h2 className="text-4xl font-bold mb-6 text-gray-900">
             Ready to Transform Your Pet's Health?
           </h2>
-          <p className="text-xl text-charcoal/70 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Join thousands of pet parents who've switched to raw feeding with confidence
           </p>
           <div className="flex gap-4 justify-center">

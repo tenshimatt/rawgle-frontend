@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
       <div className="container-page">
         <div className="max-w-md mx-auto pt-20">
           <div className="text-center mb-8">
-            <Mail className="h-16 w-16 mx-auto mb-4 text-persian-green" />
+            <Mail className="h-16 w-16 mx-auto mb-4 text-teal-600" />
             <h1 className="hero-title">Reset Password</h1>
             <p className="hero-description">Enter your email to receive reset instructions</p>
           </div>
@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
             <CardContent className="pt-6">
               {sent ? (
                 <div className="text-center space-y-4">
-                  <p className="text-charcoal">Check your email for reset instructions</p>
+                  <p className="text-gray-900">Check your email for reset instructions</p>
                   <Link href="/auth/login" className="btn-primary inline-block">Back to Login</Link>
                 </div>
               ) : (
@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
                     {loading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sending...</> : 'Send Reset Link'}
                   </Button>
                   <div className="text-center text-sm text-muted">
-                    Remember your password? <Link href="/auth/login" className="text-persian-green hover:underline">Sign in</Link>
+                    Remember your password? <Link href="/auth/login" className="text-teal-600 hover:underline">Sign in</Link>
                   </div>
                 </form>
               )}
