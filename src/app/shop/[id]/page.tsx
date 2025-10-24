@@ -8,12 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select } from '@/components/ui/select';
-import { ProductCard } from '@/components/supplements/product-card';
 import {
   getProductById,
-  getProductsByCategory,
   type SupplementProduct,
-} from '@/data/products/supplements';
+} from '@/data/products/shop-products';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -23,14 +21,6 @@ export default function ProductDetailPage() {
   const product = getProductById(productId);
   const [selectedSize, setSelectedSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
-
-  // Get related products (same category, excluding current product)
-  const relatedProducts = useMemo(() => {
-    if (!product) return [];
-    return getProductsByCategory(product.category)
-      .filter(p => p.id !== product.id)
-      .slice(0, 4);
-  }, [product]);
 
   if (!product) {
     return (
@@ -366,27 +356,6 @@ export default function ProductDetailPage() {
             </p>
           </CardContent>
         </Card>
-
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold text-charcoal mb-6">
-              Related Products
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map(relatedProduct => (
-                <ProductCard
-                  key={relatedProduct.id}
-                  product={relatedProduct}
-                  onAddToCart={(p) => {
-                    console.log('Adding related product to cart:', p.name);
-                    alert(`Added ${p.name} to cart!`);
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

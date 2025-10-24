@@ -512,3 +512,8 @@ export const supplementCategories = [
 export function getAllCategories(): SupplementCategory[] {
   return Array.from(new Set(supplements.map(s => s.category)));
 }
+
+// Helper function to get a product by ID
+export function getProductById(id: string): Supplement | undefined {
+  return supplements.find(s => s.id === id);
+}
