@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 import { supplements } from '@/data/products/supplements';
 import { mockProducts } from '@/lib/mock-data';
 
@@ -18,8 +19,18 @@ export interface CartItem {
   };
 }
 
-// Cart storage (in-memory - will be replaced with database/session storage)
-const cartStore = new Map<string, CartItem[]>();
+// Storage key prefix for KV
+const CART_KEY_PREFIX = 'cart:';
+
+// Helper functions for KV storage
+async function getUserCart(userId: string): Promise<CartItem[]> {
+  const cart = await kv.get<CartItem[]>(`${CART_KEY_PREFIX}${userId}`);
+  return cart || [];
+}
+
+async function saveUserCart(userId: string, cartItems: CartItem[]): Promise<void> {
+  await kv.set(`${CART_KEY_PREFIX}${userId}`, cartItems);
+}
 
 /**
  * GET /api/cart
@@ -27,12 +38,8 @@ const cartStore = new Map<string, CartItem[]>();
  */
 export async function GET(req: NextRequest) {
   try {
-    // TODO: Get user ID from session/auth
     const userId = req.headers.get('x-user-id') || 'demo-user';
-
-    const cartItems = cartStore.get(userId) || [];
-
-    // Calculate cart totals
+    const cartItems = await getUserCart(userId);
     const cartSummary = calculateCartSummary(cartItems);
 
     return NextResponse.json({
@@ -132,7 +139,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user's cart
-    const cartItems = cartStore.get(userId) || [];
+    const cartItems = await getUserCart(userId);
 
     // Check if item already exists in cart
     const existingItemIndex = cartItems.findIndex(
@@ -181,8 +188,7 @@ export async function POST(req: NextRequest) {
       cartItems.push(newCartItem);
     }
 
-    cartStore.set(userId, cartItems);
-
+    await saveUserCart(userId, cartItems);
     const cartSummary = calculateCartSummary(cartItems);
 
     return NextResponse.json({
@@ -239,7 +245,7 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const cartItems = cartStore.get(userId) || [];
+    const cartItems = await getUserCart(userId);
     const itemIndex = cartItems.findIndex(
       item => item.productId === productId && item.sizeOption === sizeOption
     );
@@ -274,8 +280,7 @@ export async function PATCH(req: NextRequest) {
       cartItems[itemIndex].quantity = quantity;
     }
 
-    cartStore.set(userId, cartItems);
-
+    await saveUserCart(userId, cartItems);
     const cartSummary = calculateCartSummary(cartItems);
 
     return NextResponse.json({
@@ -310,7 +315,7 @@ export async function DELETE(req: NextRequest) {
     const productId = searchParams.get('productId');
     const sizeOption = searchParams.get('sizeOption');
 
-    const cartItems = cartStore.get(userId) || [];
+    const cartItems = await getUserCart(userId);
 
     // If productId and sizeOption provided, remove specific item
     if (productId && sizeOption) {
@@ -329,7 +334,7 @@ export async function DELETE(req: NextRequest) {
       }
 
       cartItems.splice(itemIndex, 1);
-      cartStore.set(userId, cartItems);
+      await saveUserCart(userId, cartItems);
 
       return NextResponse.json({
         success: true,
@@ -342,7 +347,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Otherwise, clear entire cart
-    cartStore.set(userId, []);
+    await saveUserCart(userId, []);
 
     return NextResponse.json({
       success: true,

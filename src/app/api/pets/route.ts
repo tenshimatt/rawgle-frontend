@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 
 interface Pet {
   id: string;
@@ -14,33 +15,49 @@ interface Pet {
   createdAt: string;
 }
 
-// In-memory storage (replace with database later)
-const pets: Pet[] = [
-  {
-    id: '1',
-    userId: 'demo-user',
-    name: 'Max',
-    species: 'dog',
-    breed: 'Golden Retriever',
-    birthdate: '2021-03-15',
-    weight: 65,
-    gender: 'male',
-    active: true,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    userId: 'demo-user',
-    name: 'Luna',
-    species: 'dog',
-    breed: 'Labrador Retriever',
-    birthdate: '2022-06-20',
-    weight: 55,
-    gender: 'female',
-    active: true,
-    createdAt: new Date().toISOString(),
-  },
-];
+// Storage key for KV
+const PETS_KEY = 'pets:all';
+
+// Helper functions for KV storage
+async function getAllPets(): Promise<Pet[]> {
+  const pets = await kv.get<Pet[]>(PETS_KEY);
+  if (!pets) {
+    // Initialize with demo data
+    const demoPets: Pet[] = [
+      {
+        id: '1',
+        userId: 'demo-user',
+        name: 'Max',
+        species: 'dog',
+        breed: 'Golden Retriever',
+        birthdate: '2021-03-15',
+        weight: 65,
+        gender: 'male',
+        active: true,
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        userId: 'demo-user',
+        name: 'Luna',
+        species: 'dog',
+        breed: 'Labrador Retriever',
+        birthdate: '2022-06-20',
+        weight: 55,
+        gender: 'female',
+        active: true,
+        createdAt: new Date().toISOString(),
+      },
+    ];
+    await kv.set(PETS_KEY, demoPets);
+    return demoPets;
+  }
+  return pets;
+}
+
+async function savePets(pets: Pet[]): Promise<void> {
+  await kv.set(PETS_KEY, pets);
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -56,7 +73,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const activeOnly = searchParams.get('active') === 'true';
 
-    let userPets = pets.filter(pet => pet.userId === userId);
+    const allPets = await getAllPets();
+    let userPets = allPets.filter(pet => pet.userId === userId);
 
     // Filter by active status if requested
     if (activeOnly) {
@@ -122,11 +140,13 @@ export async function POST(request: NextRequest) {
       weight: Number(weight),
       gender,
       image,
-      active: true, // New pets are active by default
+      active: true,
       createdAt: new Date().toISOString(),
     };
 
-    pets.push(newPet);
+    const allPets = await getAllPets();
+    allPets.push(newPet);
+    await savePets(allPets);
 
     return NextResponse.json({
       success: true,
@@ -162,7 +182,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const petIndex = pets.findIndex(p => p.id === id && p.userId === userId);
+    const allPets = await getAllPets();
+    const petIndex = allPets.findIndex(p => p.id === id && p.userId === userId);
 
     if (petIndex === -1) {
       return NextResponse.json(
@@ -171,20 +192,22 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    pets[petIndex] = {
-      ...pets[petIndex],
-      name: name || pets[petIndex].name,
-      species: species || pets[petIndex].species,
-      breed: breed || pets[petIndex].breed,
-      birthdate: birthdate || pets[petIndex].birthdate,
-      weight: weight !== undefined ? Number(weight) : pets[petIndex].weight,
-      gender: gender || pets[petIndex].gender,
-      image: image !== undefined ? image : pets[petIndex].image,
+    allPets[petIndex] = {
+      ...allPets[petIndex],
+      name: name || allPets[petIndex].name,
+      species: species || allPets[petIndex].species,
+      breed: breed || allPets[petIndex].breed,
+      birthdate: birthdate || allPets[petIndex].birthdate,
+      weight: weight !== undefined ? Number(weight) : allPets[petIndex].weight,
+      gender: gender || allPets[petIndex].gender,
+      image: image !== undefined ? image : allPets[petIndex].image,
     };
+
+    await savePets(allPets);
 
     return NextResponse.json({
       success: true,
-      data: pets[petIndex],
+      data: allPets[petIndex],
     });
   } catch (error) {
     console.error('Error updating pet:', error);
@@ -216,7 +239,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const petIndex = pets.findIndex(p => p.id === id && p.userId === userId);
+    const allPets = await getAllPets();
+    const petIndex = allPets.findIndex(p => p.id === id && p.userId === userId);
 
     if (petIndex === -1) {
       return NextResponse.json(
@@ -225,7 +249,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    pets.splice(petIndex, 1);
+    allPets.splice(petIndex, 1);
+    await savePets(allPets);
 
     return NextResponse.json({
       success: true,
