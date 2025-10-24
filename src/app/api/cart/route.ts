@@ -1,7 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
 import { supplements } from '@/data/products/supplements';
 import { mockProducts } from '@/lib/mock-data';
+
+// Lazy import KV to handle missing environment variables
+let kv: any = null;
+let kvAvailable = false;
+
+async function getKV() {
+  if (kv === null) {
+    try {
+      // Check if KV environment variables are available
+      if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+        const { kv: kvClient } = await import('@vercel/kv');
+        kv = kvClient;
+        kvAvailable = true;
+      } else {
+        console.warn('[Cart API] Vercel KV not configured, using in-memory storage');
+        kvAvailable = false;
+      }
+    } catch (error) {
+      console.error('[Cart API] Failed to initialize KV:', error);
+      kvAvailable = false;
+    }
+  }
+  return kv;
+}
+
+// In-memory fallback storage (only used if KV is not available)
+const memoryStorage = new Map<string, CartItem[]>();
 
 // Cart item interface
 export interface CartItem {
@@ -22,14 +48,36 @@ export interface CartItem {
 // Storage key prefix for KV
 const CART_KEY_PREFIX = 'cart:';
 
-// Helper functions for KV storage
+// Helper functions for storage (KV or in-memory fallback)
 async function getUserCart(userId: string): Promise<CartItem[]> {
-  const cart = await kv.get<CartItem[]>(`${CART_KEY_PREFIX}${userId}`);
-  return cart || [];
+  const kvClient = await getKV();
+
+  if (kvAvailable && kvClient) {
+    try {
+      const cart = await kvClient.get<CartItem[]>(`${CART_KEY_PREFIX}${userId}`);
+      return cart || [];
+    } catch (error) {
+      console.error('[Cart API] KV get failed, falling back to memory:', error);
+      return memoryStorage.get(userId) || [];
+    }
+  }
+
+  return memoryStorage.get(userId) || [];
 }
 
 async function saveUserCart(userId: string, cartItems: CartItem[]): Promise<void> {
-  await kv.set(`${CART_KEY_PREFIX}${userId}`, cartItems);
+  const kvClient = await getKV();
+
+  if (kvAvailable && kvClient) {
+    try {
+      await kvClient.set(`${CART_KEY_PREFIX}${userId}`, cartItems);
+      return;
+    } catch (error) {
+      console.error('[Cart API] KV set failed, falling back to memory:', error);
+    }
+  }
+
+  memoryStorage.set(userId, cartItems);
 }
 
 /**
