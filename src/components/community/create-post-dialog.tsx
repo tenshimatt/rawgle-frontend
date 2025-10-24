@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Loader2, Image as ImageIcon } from 'lucide-react';
+import { FileUpload } from '@/components/ui/file-upload';
+import { Plus, Loader2 } from 'lucide-react';
 
 interface CreatePostDialogProps {
   onPostCreated?: () => void;
@@ -104,21 +105,18 @@ export function CreatePostDialog({ onPostCreated }: CreatePostDialogProps) {
             />
           </div>
 
-          {/* Image URL (optional) */}
-          <div className="space-y-2">
-            <Label htmlFor="image" className="label-base flex items-center gap-2">
-              <ImageIcon className="h-4 w-4" />
-              Image URL (optional)
-            </Label>
-            <Input
-              id="image"
-              type="url"
-              value={formData.image}
-              onChange={(e) => handleChange('image', e.target.value)}
-              className="input-base"
-              placeholder="https://example.com/photo.jpg"
-            />
-          </div>
+          {/* Image Upload (optional) */}
+          <FileUpload
+            value={formData.image}
+            onChange={(value) => handleChange('image', value as string)}
+            accept="image/*"
+            multiple={false}
+            maxFiles={1}
+            maxSizeMB={5}
+            label="Image (optional)"
+            description="PNG, JPG, GIF up to 5MB"
+            showPreview={true}
+          />
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4">

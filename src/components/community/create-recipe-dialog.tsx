@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { PhotoUpload } from '../health/photo-upload';
+import { FileUpload } from '@/components/ui/file-upload';
 import { Plus, Loader2, ChefHat } from 'lucide-react';
 
 interface CreateRecipeDialogProps {
@@ -179,11 +179,16 @@ export function CreateRecipeDialog({ onRecipeCreated }: CreateRecipeDialogProps)
           </div>
 
           {/* Photos */}
-          <PhotoUpload
-            photos={formData.photos}
-            onPhotosChange={(photos) => handleChange('photos', photos)}
+          <FileUpload
+            value={formData.photos}
+            onChange={(photos) => handleChange('photos', photos as string[])}
+            accept="image/*"
+            multiple={true}
+            maxFiles={3}
+            maxSizeMB={5}
             label="Recipe Photos"
-            maxPhotos={3}
+            description="PNG, JPG, GIF up to 5MB each"
+            showPreview={true}
           />
 
           {/* Action Buttons */}
