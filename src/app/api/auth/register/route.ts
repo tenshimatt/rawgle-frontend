@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   User,
+  Session,
   hashPassword,
   isValidEmail,
   isValidPassword,
-  toPublicUser
+  toPublicUser,
+  generateToken,
+  generateRandomToken,
+  JWT_EXPIRES_IN,
+  REFRESH_TOKEN_EXPIRES_IN
 } from '@/lib/jwt-auth';
 import {
   createUser,
-  getUserByEmail
+  getUserByEmail,
+  createSession
 } from '@/lib/auth-storage';
 
 /**
@@ -137,17 +143,72 @@ export async function POST(req: NextRequest) {
     // Log registration event
     console.log(`[AUTH] User registered: ${newUser.email} (${newUser.id})`);
 
-    // Return public user data (without password hash)
-    return NextResponse.json(
+    // Generate JWT token for auto-login
+    const tokenPayload = {
+      userId: newUser.id,
+      email: newUser.email,
+      role: newUser.role
+    };
+    const token = generateToken(tokenPayload, JWT_EXPIRES_IN);
+    const refreshToken = generateRandomToken();
+
+    // Get request metadata
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const userAgent = req.headers.get('user-agent') || undefined;
+
+    // Create session for auto-login
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + JWT_EXPIRES_IN);
+    const refreshExpiresAt = new Date(now.getTime() + REFRESH_TOKEN_EXPIRES_IN);
+
+    const session: Session = {
+      id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      userId: newUser.id,
+      token,
+      refreshToken,
+      expiresAt: expiresAt.toISOString(),
+      refreshExpiresAt: refreshExpiresAt.toISOString(),
+      ipAddress: ip,
+      userAgent,
+      createdAt: now.toISOString()
+    };
+
+    createSession(session);
+
+    // Create response with tokens for auto-login
+    const response = NextResponse.json(
       {
         success: true,
         data: {
-          user: toPublicUser(newUser)
+          user: toPublicUser(newUser),
+          token,
+          refreshToken,
+          expiresIn: JWT_EXPIRES_IN,
+          expiresAt: expiresAt.toISOString()
         },
-        message: 'Account created successfully. Please log in.'
+        message: 'Account created successfully. You are now logged in.'
       },
       { status: 201 }
     );
+
+    // Set HTTP-only cookies
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: JWT_EXPIRES_IN / 1000,
+      path: '/'
+    });
+
+    response.cookies.set('refresh-token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: REFRESH_TOKEN_EXPIRES_IN / 1000,
+      path: '/'
+    });
+
+    return response;
   } catch (error) {
     console.error('[AUTH] Registration error:', error);
     return NextResponse.json(
