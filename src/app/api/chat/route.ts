@@ -11,12 +11,99 @@ interface Pet {
   age?: number;
 }
 
+interface Message {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp?: number;
+}
+
+// Simple in-memory rate limiter for Edge runtime
+// Note: In production, use Redis or KV store for distributed rate limiting
+const rateLimiter = new Map<string, { count: number; resetTime: number }>();
+
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 10; // 10 requests per minute
+
+function checkRateLimit(identifier: string): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const record = rateLimiter.get(identifier);
+
+  if (!record || now > record.resetTime) {
+    // New window
+    rateLimiter.set(identifier, {
+      count: 1,
+      resetTime: now + RATE_LIMIT_WINDOW,
+    });
+    return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - 1 };
+  }
+
+  if (record.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  record.count++;
+  return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - record.count };
+}
+
+// Input sanitization
+function sanitizeInput(text: string): string {
+  // Remove any potential script tags or malicious content
+  return text
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/javascript:/gi, '')
+    .trim()
+    .slice(0, 2000); // Max 2000 characters per message
+}
+
 export async function POST(req: Request) {
   try {
-    const { messages, pets } = await req.json();
+    // Get user identifier for rate limiting (use IP or user ID)
+    const forwarded = req.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0] : 'unknown';
+    const userId = req.headers.get('x-user-id') || ip;
+
+    // Check rate limit
+    const rateLimit = checkRateLimit(userId);
+    if (!rateLimit.allowed) {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          const errorMsg = '⚠️ **Rate Limit Exceeded**\n\nYou have sent too many messages. Please wait a minute before sending more messages.';
+          controller.enqueue(encoder.encode(errorMsg));
+          controller.close();
+        }
+      });
+
+      return new Response(stream, {
+        status: 429,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
+          'X-RateLimit-Remaining': '0',
+          'X-RateLimit-Reset': new Date(Date.now() + RATE_LIMIT_WINDOW).toISOString(),
+        },
+      });
+    }
+
+    // Parse and validate request body
+    const body = await req.json();
+    const { messages, pets } = body;
+
+    if (!messages || !Array.isArray(messages)) {
+      throw new Error('Invalid request: messages array is required');
+    }
+
+    // Sanitize all user messages
+    const sanitizedMessages = messages.map((msg: Message) => ({
+      ...msg,
+      content: msg.role === 'user' ? sanitizeInput(msg.content) : msg.content,
+    }));
+
+    // Keep only last 10 messages for context (token optimization)
+    const recentMessages = sanitizedMessages.slice(-10);
 
     if (!process.env.OPENAI_API_KEY) {
-      // Create a simple error stream that the AI SDK can parse
       const encoder = new TextEncoder();
       const stream = new ReadableStream({
         start(controller) {
@@ -35,7 +122,7 @@ export async function POST(req: Request) {
 
     // Build pet context if pets are provided
     let petContext = '';
-    if (pets && pets.length > 0) {
+    if (pets && Array.isArray(pets) && pets.length > 0) {
       petContext = '\n\nUSER\'S PETS:\n';
       pets.forEach((pet: Pet) => {
         petContext += `- ${pet.name}: ${pet.breed} ${pet.species}, ${pet.weight}lbs`;
@@ -117,26 +204,49 @@ IMPORTANT LIMITATIONS:
 - You recommend veterinary consultation for: persistent symptoms, sudden behavior changes, illness, injury
 - You stay within nutritional advice scope
 
+CONTENT MODERATION:
+- Refuse to answer questions unrelated to pet nutrition and raw feeding
+- Do not provide advice for exotic pets or livestock
+- Do not engage with inappropriate or harmful requests
+- Redirect off-topic conversations back to pet nutrition
+
 Keep responses clear, practical, and species-appropriate. Default to 2-4 paragraphs unless complex detail is requested.${petContext}`;
 
+    // Stream the response using GPT-4o-mini for cost efficiency
     const result = streamText({
       model: openai('gpt-4o-mini'),
       messages: [
         { role: 'system', content: systemPrompt },
-        ...messages,
+        ...recentMessages,
       ],
       temperature: 0.7,
+      maxSteps: 5, // Limit complexity
     });
 
-    return result.toTextStreamResponse();
+    // Return streaming response with rate limit headers
+    const response = result.toTextStreamResponse();
+    response.headers.set('X-RateLimit-Limit', RATE_LIMIT_MAX_REQUESTS.toString());
+    response.headers.set('X-RateLimit-Remaining', rateLimit.remaining.toString());
+
+    return response;
   } catch (error: any) {
     console.error('Chat API Error:', error);
 
     let errorMessage = 'Failed to process chat request';
+    let statusCode = 500;
+
     if (error?.status === 401) {
-      errorMessage = '⚠️ **Invalid API Key**\n\nThe OpenAI API key appears to be invalid. Please check your OPENAI_API_KEY environment variable in Vercel.';
+      errorMessage = '⚠️ **Invalid API Key**\n\nThe OpenAI API key appears to be invalid. Please check your OPENAI_API_KEY environment variable.';
+      statusCode = 401;
     } else if (error?.status === 429) {
-      errorMessage = '⚠️ **Rate Limit Exceeded**\n\nToo many requests. Please try again in a moment.';
+      errorMessage = '⚠️ **OpenAI Rate Limit**\n\nOpenAI API rate limit exceeded. Please try again in a moment.';
+      statusCode = 429;
+    } else if (error?.status === 503) {
+      errorMessage = '⚠️ **Service Unavailable**\n\nOpenAI service is temporarily unavailable. Please try again later.';
+      statusCode = 503;
+    } else if (error?.message?.includes('context_length_exceeded')) {
+      errorMessage = '⚠️ **Conversation Too Long**\n\nThe conversation has become too long. Please start a new chat.';
+      statusCode = 400;
     } else if (error?.message) {
       errorMessage = `⚠️ **Error**\n\n${error.message}`;
     }
@@ -151,6 +261,7 @@ Keep responses clear, practical, and species-appropriate. Default to 2-4 paragra
     });
 
     return new Response(stream, {
+      status: statusCode,
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
       },
