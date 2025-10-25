@@ -2,32 +2,39 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supplements } from '@/data/products/supplements';
 import { mockProducts } from '@/lib/mock-data';
 
-// Lazy import KV to handle missing environment variables
-let kv: any = null;
-let kvAvailable = false;
+// In-memory fallback storage
+const memoryStorage = new Map<string, CartItem[]>();
 
-async function getKV() {
-  if (kv === null) {
-    try {
-      // Check if KV environment variables are available
-      if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-        const { kv: kvClient } = await import('@vercel/kv');
-        kv = kvClient;
-        kvAvailable = true;
-      } else {
-        console.warn('[Cart API] Vercel KV not configured, using in-memory storage');
-        kvAvailable = false;
-      }
-    } catch (error) {
-      console.error('[Cart API] Failed to initialize KV:', error);
+// KV availability flag
+let kvAvailable = false;
+let kv: any = null;
+
+// Check KV availability once at module load
+const initKV = async () => {
+  try {
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      const { kv: kvClient } = await import('@vercel/kv');
+      kv = kvClient;
+      kvAvailable = true;
+      console.log('[Cart API] Vercel KV initialized successfully');
+    } else {
+      console.warn('[Cart API] Vercel KV environment variables not found, using in-memory storage');
       kvAvailable = false;
     }
+  } catch (error) {
+    console.error('[Cart API] Failed to initialize KV, using in-memory storage:', error);
+    kvAvailable = false;
   }
-  return kv;
-}
+};
 
-// In-memory fallback storage (only used if KV is not available)
-const memoryStorage = new Map<string, CartItem[]>();
+// Initialize KV on first request
+let kvInitPromise: Promise<void> | null = null;
+const ensureKVInitialized = async () => {
+  if (kvInitPromise === null) {
+    kvInitPromise = initKV();
+  }
+  await kvInitPromise;
+};
 
 // Cart item interface
 export interface CartItem {
@@ -50,14 +57,23 @@ const CART_KEY_PREFIX = 'cart:';
 
 // Helper functions for storage (KV or in-memory fallback)
 async function getUserCart(userId: string): Promise<CartItem[]> {
-  const kvClient = await getKV();
+  await ensureKVInitialized();
 
-  if (kvAvailable && kvClient) {
+  if (kvAvailable && kv) {
     try {
-      const cart = await kvClient.get<CartItem[]>(`${CART_KEY_PREFIX}${userId}`);
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<null>((_, reject) =>
+        setTimeout(() => reject(new Error('KV timeout')), 5000)
+      );
+
+      const kvPromise = kv.get<CartItem[]>(`${CART_KEY_PREFIX}${userId}`);
+      const cart = await Promise.race([kvPromise, timeoutPromise]);
+
       return cart || [];
     } catch (error) {
-      console.error('[Cart API] KV get failed, falling back to memory:', error);
+      console.warn('[Cart API] KV get failed, using in-memory fallback:', error instanceof Error ? error.message : error);
+      // Mark KV as unavailable for this session
+      kvAvailable = false;
       return memoryStorage.get(userId) || [];
     }
   }
@@ -66,14 +82,23 @@ async function getUserCart(userId: string): Promise<CartItem[]> {
 }
 
 async function saveUserCart(userId: string, cartItems: CartItem[]): Promise<void> {
-  const kvClient = await getKV();
+  await ensureKVInitialized();
 
-  if (kvAvailable && kvClient) {
+  if (kvAvailable && kv) {
     try {
-      await kvClient.set(`${CART_KEY_PREFIX}${userId}`, cartItems);
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<void>((_, reject) =>
+        setTimeout(() => reject(new Error('KV timeout')), 5000)
+      );
+
+      const kvPromise = kv.set(`${CART_KEY_PREFIX}${userId}`, cartItems);
+      await Promise.race([kvPromise, timeoutPromise]);
+
       return;
     } catch (error) {
-      console.error('[Cart API] KV set failed, falling back to memory:', error);
+      console.warn('[Cart API] KV set failed, using in-memory fallback:', error instanceof Error ? error.message : error);
+      // Mark KV as unavailable for this session
+      kvAvailable = false;
     }
   }
 
