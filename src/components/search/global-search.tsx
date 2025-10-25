@@ -165,6 +165,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         key={item.id}
                         value={item.title}
                         onSelect={() => handleSelect(item.url)}
+                        onClick={() => handleSelect(item.url)}
                         className="flex items-center gap-3 cursor-pointer"
                       >
                         <Icon className="h-4 w-4 text-teal-600" />
@@ -198,6 +199,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         key={item.id}
                         value={item.title}
                         onSelect={() => handleSelect(item.url)}
+                        onClick={() => handleSelect(item.url)}
                         className="flex items-center gap-3 cursor-pointer"
                       >
                         <Icon className="h-4 w-4 text-teal-600" />
@@ -231,6 +233,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         key={item.id}
                         value={item.title}
                         onSelect={() => handleSelect(item.url)}
+                        onClick={() => handleSelect(item.url)}
                         className="flex items-center gap-3 cursor-pointer"
                       >
                         <Icon className="h-4 w-4 text-teal-600" />
@@ -264,6 +267,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         key={item.id}
                         value={item.title}
                         onSelect={() => handleSelect(item.url)}
+                        onClick={() => handleSelect(item.url)}
                         className="flex items-center gap-3 cursor-pointer"
                       >
                         <Icon className="h-4 w-4 text-teal-600" />
@@ -297,6 +301,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         key={item.id}
                         value={item.title}
                         onSelect={() => handleSelect(item.url)}
+                        onClick={() => handleSelect(item.url)}
                         className="flex items-center gap-3 cursor-pointer"
                       >
                         <Icon className="h-4 w-4 text-teal-600" />
