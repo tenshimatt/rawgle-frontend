@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { Providers } from '@/components/providers'
 import { CartIcon } from '@/components/cart/cart-icon'
 import { MainNav } from '@/components/navigation/main-nav'
+import { SearchProvider } from '@/components/search/search-provider'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 
@@ -84,19 +85,21 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
         <Providers>
-          <MainNav />
-          {children}
-          <CartIcon />
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: 'var(--background)',
-                color: 'var(--foreground)',
-                border: '1px solid var(--border)',
-              },
-            }}
-          />
+          <SearchProvider>
+            <MainNav />
+            {children}
+            <CartIcon />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: 'var(--background)',
+                  color: 'var(--foreground)',
+                  border: '1px solid var(--border)',
+                },
+              }}
+            />
+          </SearchProvider>
         </Providers>
       </body>
     </html>

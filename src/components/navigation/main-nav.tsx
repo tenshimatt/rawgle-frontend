@@ -2,12 +2,15 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Dog, Menu, X, ChevronDown } from 'lucide-react';
+import { Dog, Menu, X, ChevronDown, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NotificationCenter } from '@/components/notifications/notification-center';
+import { SearchButton } from '@/components/search/search-button';
+import { useGlobalSearch } from '@/components/search/global-search';
 
 export function MainNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { setOpen: setSearchOpen } = useGlobalSearch();
 
   const navItems = [
     { name: 'Home', href: '/' },
@@ -107,7 +110,14 @@ export function MainNav() {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex lg:items-center lg:space-x-3">
+            <SearchButton onClick={() => setSearchOpen(true)} showLabel />
             <NotificationCenter />
+            <Link href="/wishlist">
+              <Button variant="ghost" size="sm">
+                <Heart className="h-4 w-4 mr-2" />
+                Wishlist
+              </Button>
+            </Link>
             <Link href="/profile">
               <Button variant="ghost" size="sm">
                 Profile
@@ -138,6 +148,19 @@ export function MainNav() {
       {mobileMenuOpen && (
         <div className="lg:hidden border-t bg-white">
           <div className="container mx-auto px-4 py-4 space-y-1">
+            {/* Mobile Search */}
+            <div className="mb-3">
+              <SearchButton
+                onClick={() => {
+                  setSearchOpen(true);
+                  setMobileMenuOpen(false);
+                }}
+                variant="outline"
+                className="w-full justify-start"
+                showLabel
+              />
+            </div>
+
             {navItems.map((item) => (
               <Link
                 key={item.href}
