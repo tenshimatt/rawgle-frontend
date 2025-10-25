@@ -47,7 +47,8 @@ export async function GET(request: Request) {
     }
 
     // Sort by popularity (lower number = more popular)
-    filteredBreeds.sort((a, b) => a.popularity - b.popularity);
+    // Add safety check for undefined popularity values
+    filteredBreeds.sort((a, b) => (a.popularity || 999) - (b.popularity || 999));
 
     return NextResponse.json({
       breeds: filteredBreeds,

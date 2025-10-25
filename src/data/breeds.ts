@@ -1617,7 +1617,7 @@ export const breeds: Breed[] = [
 ];
 
 // Add breeds 61-150 to reach 150+ total
-for (let i = 61; i <= 150; i++) {
+for (let i = 61; i <= 149; i++) {
   const breedNames = [
     'Coton de Tulear', 'Lhasa Apso', 'Tibetan Terrier', 'Afghan Hound', 'Saluki', 'Irish Wolfhound', 'Scottish Deerhound',
     'Pharaoh Hound', 'Ibizan Hound', 'Norwegian Elkhound', 'American Eskimo Dog', 'Finnish Spitz', 'Keeshond',
@@ -1703,9 +1703,9 @@ export function getFeaturedBreeds(): Breed[] {
 export function searchBreeds(query: string): Breed[] {
   const lowerQuery = query.toLowerCase();
   return breeds.filter(breed =>
-    breed.name.toLowerCase().includes(lowerQuery) ||
-    breed.alternateNames?.some(name => name.toLowerCase().includes(lowerQuery)) ||
-    breed.temperament.some(trait => trait.toLowerCase().includes(lowerQuery)) ||
-    breed.group.toLowerCase().includes(lowerQuery)
+    breed.name?.toLowerCase().includes(lowerQuery) ||
+    breed.alternateNames?.some(name => name?.toLowerCase().includes(lowerQuery)) ||
+    breed.temperament?.some(trait => trait?.toLowerCase().includes(lowerQuery)) ||
+    breed.group?.toLowerCase().includes(lowerQuery)
   );
 }
