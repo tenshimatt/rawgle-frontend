@@ -115,6 +115,22 @@ export default function WishlistPage() {
     }
   };
 
+  // Add all items to cart sequentially to avoid race conditions
+  const handleAddAllToCart = async () => {
+    const inStockItems = wishlistItems.filter(item => item.product.inStock);
+
+    for (const item of inStockItems) {
+      try {
+        await addToCart(item.productId, 1, item.product.size);
+      } catch (error) {
+        console.error('Error adding item to cart:', error);
+        toast.error(`Failed to add ${item.product.name}`);
+      }
+    }
+
+    toast.success(`Added ${inStockItems.length} items to cart`);
+  };
+
   // Share wishlist
   const handleShareWishlist = async () => {
     const wishlistUrl = `${window.location.origin}/wishlist`;
@@ -238,8 +254,8 @@ export default function WishlistPage() {
               </div>
               <div className="flex gap-3">
                 <Button
-                  onClick={() => wishlistItems.forEach(item => handleAddToCart(item))}
-                  disabled={wishlistItems.some(item => !item.product.inStock)}
+                  onClick={handleAddAllToCart}
+                  disabled={wishlistItems.every(item => !item.product.inStock)}
                   className="bg-teal-600 hover:bg-teal-700 text-white"
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
