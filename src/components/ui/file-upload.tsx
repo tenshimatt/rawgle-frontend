@@ -110,7 +110,7 @@ export function FileUpload({
         <div className="flex items-center justify-between">
           {label && <label className="text-sm font-medium text-gray-900">{label}</label>}
           {multiple && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-600">
               {files.length}/{maxFiles} file{maxFiles > 1 ? 's' : ''}
             </span>
           )}
@@ -186,9 +186,9 @@ export function FileUpload({
                 Click to upload {multiple ? 'files' : 'a file'}
               </p>
               {description ? (
-                <p className="text-xs text-gray-500">{description}</p>
+                <p className="text-xs text-gray-600">{description}</p>
               ) : (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-600">
                   {accept === 'image/*' ? 'PNG, JPG, GIF' : 'Any file type'} up to {maxSizeMB}MB
                   {multiple && ` (max ${maxFiles} files)`}
                 </p>

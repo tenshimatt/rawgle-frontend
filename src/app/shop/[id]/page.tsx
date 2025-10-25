@@ -351,7 +351,7 @@ export default function ProductDetailPage() {
             <div className="bg-sea-salt rounded-lg p-4">
               <p className="text-gray-700 leading-relaxed">{product.dosageInstructions}</p>
             </div>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-600 mt-4">
               <strong>Note:</strong> Always consult with your veterinarian before starting any new supplement regimen.
             </p>
           </CardContent>

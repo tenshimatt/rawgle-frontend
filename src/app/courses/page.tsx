@@ -217,7 +217,7 @@ export default function CoursesPage() {
                   <div className="border-t pt-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs text-gray-500">Instructor</p>
+                        <p className="text-xs text-gray-600">Instructor</p>
                         <p className="font-medium text-gray-900">{course.instructor}</p>
                       </div>
                       <div className="text-right">

@@ -204,7 +204,7 @@ export default function ShopPage() {
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600">({product.reviews})</span>
+                    <span className="text-sm text-gray-700">({product.reviews})</span>
                   </div>
 
                   {/* Size */}

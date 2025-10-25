@@ -193,7 +193,7 @@ export default function SimpleMapPage() {
                   )}
 
                   {/* Coordinates */}
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-600">
                     {supplier.latitude.toFixed(4)}, {supplier.longitude.toFixed(4)}
                   </p>
 

@@ -199,7 +199,7 @@ export default function MentorProfilePage() {
                     <div className="text-3xl font-bold text-teal-600">
                       ${mentor.hourlyRate}
                     </div>
-                    <div className="text-sm text-gray-500">per hour</div>
+                    <div className="text-sm text-gray-600">per hour</div>
                   </div>
                 </div>
 
@@ -221,7 +221,7 @@ export default function MentorProfilePage() {
                     <span className="font-semibold text-gray-900">
                       {mentor.rating.toFixed(1)}
                     </span>
-                    <span className="text-gray-500">
+                    <span className="text-gray-600">
                       ({mentor.totalReviews} reviews)
                     </span>
                   </div>
@@ -321,7 +321,7 @@ export default function MentorProfilePage() {
                         </div>
                       </div>
                       <p className="text-gray-700 mb-2">{review.comment}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-600">
                         {new Date(review.date).toLocaleDateString()}
                       </p>
                     </div>
@@ -375,7 +375,7 @@ export default function MentorProfilePage() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-600">
                         No times available for this date
                       </p>
                     )}
@@ -406,7 +406,7 @@ export default function MentorProfilePage() {
                   {booking ? 'Booking...' : 'Book Session'}
                 </Button>
 
-                <p className="text-xs text-gray-500 text-center mt-4">
+                <p className="text-xs text-gray-600 text-center mt-4">
                   Session duration: 60 minutes • Total: ${mentor.hourlyRate}
                 </p>
               </CardContent>

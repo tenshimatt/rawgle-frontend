@@ -267,7 +267,7 @@ export default function BreedGuidesPage() {
                             Pets
                           </div>
                         )}
-                        <div className="ml-auto text-xs text-gray-500">
+                        <div className="ml-auto text-xs text-gray-600">
                           {breed.lifeSpan}
                         </div>
                       </div>

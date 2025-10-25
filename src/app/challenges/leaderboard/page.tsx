@@ -135,7 +135,7 @@ export default function LeaderboardPage() {
                   </div>
                   <div className="space-y-1">
                     <p className="text-2xl font-bold text-gray-700">{topThree[1].points.toLocaleString()}</p>
-                    <p className="text-xs text-gray-500">points</p>
+                    <p className="text-xs text-gray-600">points</p>
                     <Badge variant="outline" className="mt-2">
                       <Award className="w-3 h-3 mr-1" />
                       {topThree[1].badges} badges
@@ -168,7 +168,7 @@ export default function LeaderboardPage() {
                   </div>
                   <div className="space-y-1">
                     <p className="text-3xl font-bold text-yellow-600">{topThree[0].points.toLocaleString()}</p>
-                    <p className="text-xs text-gray-500">points</p>
+                    <p className="text-xs text-gray-600">points</p>
                     <Badge className="mt-2 bg-yellow-500 hover:bg-yellow-600">
                       <Award className="w-3 h-3 mr-1" />
                       {topThree[0].badges} badges
@@ -201,7 +201,7 @@ export default function LeaderboardPage() {
                   </div>
                   <div className="space-y-1">
                     <p className="text-2xl font-bold text-orange-600">{topThree[2].points.toLocaleString()}</p>
-                    <p className="text-xs text-gray-500">points</p>
+                    <p className="text-xs text-gray-600">points</p>
                     <Badge variant="outline" className="mt-2 border-orange-400 text-orange-600">
                       <Award className="w-3 h-3 mr-1" />
                       {topThree[2].badges} badges

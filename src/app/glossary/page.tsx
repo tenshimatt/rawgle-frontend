@@ -287,7 +287,7 @@ export default function GlossaryPage() {
                       {letter}
                     </div>
                     <div className="ml-4 flex-grow border-b-2 border-teal-200"></div>
-                    <span className="ml-4 text-sm text-gray-500 font-medium">
+                    <span className="ml-4 text-sm text-gray-600 font-medium">
                       {groupedTerms[letter].length} term{groupedTerms[letter].length !== 1 ? 's' : ''}
                     </span>
                   </div>

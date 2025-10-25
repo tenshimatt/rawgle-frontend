@@ -408,7 +408,7 @@ export default function MySessionsPage() {
               </strong>{' '}
               at <strong>{selectedSession?.time}</strong>?
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-600">
               This action cannot be undone. You can rebook with this mentor at a later time.
             </p>
             <div className="flex gap-3">

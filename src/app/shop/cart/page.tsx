@@ -40,7 +40,7 @@ export default function CartPage() {
           <CardContent className="p-12 text-center">
             <ShoppingBag className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">Your cart is empty</h3>
-            <p className="text-gray-500 mb-6">Add some supplements to get started</p>
+            <p className="text-gray-600 mb-6">Add some supplements to get started</p>
             <Link href="/shop">
               <Button className="bg-teal-600 hover:bg-teal-700 text-white">
                 Browse Supplements
@@ -82,7 +82,7 @@ export default function CartPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-bold text-charcoal mb-1">{item.productSnapshot.name}</h3>
                     <p className="text-sm text-gray-600 mb-1">{item.productSnapshot.category}</p>
-                    <p className="text-sm text-gray-500">{item.sizeOption}</p>
+                    <p className="text-sm text-gray-600">{item.sizeOption}</p>
 
                     <div className="flex items-center gap-4 mt-4">
                       {/* Quantity Controls */}
@@ -135,7 +135,7 @@ export default function CartPage() {
                     <div className="text-2xl font-bold text-teal-600">
                       ${(item.productSnapshot.price * item.quantity).toFixed(2)}
                     </div>
-                    <div className="text-sm text-gray-500 mt-1">
+                    <div className="text-sm text-gray-600 mt-1">
                       ${item.productSnapshot.price.toFixed(2)} each
                     </div>
                   </div>
@@ -168,7 +168,7 @@ export default function CartPage() {
                   <p className="text-sm text-teal-600">Free shipping on orders over ${summary.freeShippingThreshold}!</p>
                 )}
                 {!summary.qualifiesForFreeShipping && summary.amountToFreeShipping > 0 && (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-600">
                     Add ${summary.amountToFreeShipping.toFixed(2)} more for free shipping!
                   </p>
                 )}

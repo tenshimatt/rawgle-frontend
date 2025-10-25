@@ -40,7 +40,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const TOKEN_KEY = 'auth_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const USER_KEY = 'auth_user';
-const API_URL = process.env.NEXT_PUBLIC_RAWGLE_API_URL || 'https://api.rawgle.workers.dev';
+// Use local API for now - will switch to Cloudflare Worker in production
+const API_URL = process.env.NEXT_PUBLIC_RAWGLE_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3005');
 
 // Token Management Utilities
 export const setAuthToken = (token: string) => {
@@ -340,9 +341,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   }, []);
 
-  // Check auth on mount
+  // Check auth on mount and auto-login in development
   useEffect(() => {
-    checkAuth();
+    const initAuth = async () => {
+      await checkAuth();
+
+      // Auto-login as demo user if not authenticated (development only)
+      if (!user && !getAuthToken() && process.env.NODE_ENV === 'development') {
+        try {
+          console.log('[AUTH] Auto-logging in as demo user for development');
+          await login('demo@rawgle.com', 'Demo1234');
+        } catch (error) {
+          console.log('[AUTH] Auto-login failed, user can login manually');
+        }
+      }
+    };
+
+    initAuth();
   }, [checkAuth]);
 
   const value: AuthContextType = {

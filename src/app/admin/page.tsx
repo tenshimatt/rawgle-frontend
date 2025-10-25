@@ -226,7 +226,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">{activity.action}</p>
-                  <p className="text-xs text-gray-500">{activity.user}</p>
+                  <p className="text-xs text-gray-600">{activity.user}</p>
                 </div>
               </div>
               <p className="text-xs text-gray-400">{activity.time}</p>

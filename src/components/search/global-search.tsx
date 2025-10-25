@@ -141,7 +141,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
       />
       <CommandList>
         {isLoading && query.length >= 2 && (
-          <div className="py-6 text-center text-sm text-gray-500">
+          <div className="py-6 text-center text-sm text-gray-600">
             Searching...
           </div>
         )}
@@ -171,7 +171,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         <div className="flex flex-col flex-1">
                           <span className="font-medium">{item.title}</span>
                           {item.description && (
-                            <span className="text-xs text-gray-500 line-clamp-1">
+                            <span className="text-xs text-gray-600 line-clamp-1">
                               {item.description}
                             </span>
                           )}
@@ -204,7 +204,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         <div className="flex flex-col flex-1">
                           <span className="font-medium">{item.title}</span>
                           {item.description && (
-                            <span className="text-xs text-gray-500 line-clamp-1">
+                            <span className="text-xs text-gray-600 line-clamp-1">
                               {item.description}
                             </span>
                           )}
@@ -237,7 +237,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         <div className="flex flex-col flex-1">
                           <span className="font-medium">{item.title}</span>
                           {item.description && (
-                            <span className="text-xs text-gray-500 line-clamp-1">
+                            <span className="text-xs text-gray-600 line-clamp-1">
                               {item.description}
                             </span>
                           )}
@@ -270,7 +270,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         <div className="flex flex-col flex-1">
                           <span className="font-medium">{item.title}</span>
                           {item.description && (
-                            <span className="text-xs text-gray-500 line-clamp-1">
+                            <span className="text-xs text-gray-600 line-clamp-1">
                               {item.description}
                             </span>
                           )}
@@ -303,7 +303,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                         <div className="flex flex-col flex-1">
                           <span className="font-medium">{item.title}</span>
                           {item.description && (
-                            <span className="text-xs text-gray-500 line-clamp-1">
+                            <span className="text-xs text-gray-600 line-clamp-1">
                               {item.description}
                             </span>
                           )}
@@ -335,7 +335,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                       <div className="flex flex-col flex-1">
                         <span className="font-medium">{item.title}</span>
                         {item.description && (
-                          <span className="text-xs text-gray-500 line-clamp-1">
+                          <span className="text-xs text-gray-600 line-clamp-1">
                             {item.description}
                           </span>
                         )}
@@ -353,7 +353,7 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
 
         {/* Empty state when no query */}
         {!query && (
-          <div className="py-6 text-center text-sm text-gray-500">
+          <div className="py-6 text-center text-sm text-gray-700">
             <div className="mb-2">
               <FileText className="h-8 w-8 mx-auto text-gray-400 mb-2" />
             </div>

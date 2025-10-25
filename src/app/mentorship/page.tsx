@@ -161,7 +161,7 @@ export default function MentorshipPage() {
                         {mentor.rating.toFixed(1)}
                       </span>
                     </div>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-600">
                       ({mentor.totalReviews} reviews)
                     </span>
                   </div>
@@ -185,7 +185,7 @@ export default function MentorshipPage() {
                   </p>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-4 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
                       <Users className="h-4 w-4" />
                       <span>{mentor.totalSessions} sessions</span>

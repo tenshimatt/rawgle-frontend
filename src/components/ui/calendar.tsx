@@ -170,7 +170,7 @@ export function Calendar({
       {/* Day names */}
       <div className="grid grid-cols-7 gap-1 mb-2">
         {dayNames.map((name) => (
-          <div key={name} className="text-center text-xs font-medium text-gray-500 p-2">
+          <div key={name} className="text-center text-xs font-medium text-gray-600 p-2">
             {name}
           </div>
         ))}

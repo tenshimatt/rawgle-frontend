@@ -90,7 +90,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               <h2 id="cart-sidebar-title" className="text-2xl font-bold text-gray-900">
                 Shopping Cart
               </h2>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-gray-600">
                 {summary.itemCount} {summary.itemCount === 1 ? 'item' : 'items'}
               </p>
             </div>

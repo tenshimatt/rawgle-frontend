@@ -208,7 +208,7 @@ export default function AdminModerationPage() {
                               <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeBadgeColor(report.type)}`}>
                                 {report.type}
                               </span>
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-gray-600">
                                 Reported by {report.reportedBy}
                               </span>
                               <span className="text-sm text-gray-400">
@@ -247,7 +247,7 @@ export default function AdminModerationPage() {
                               <p className="text-sm text-gray-700 line-clamp-2">
                                 {report.content.text}
                               </p>
-                              <p className="text-xs text-gray-500 mt-2">
+                              <p className="text-xs text-gray-600 mt-2">
                                 By {report.content.author}
                               </p>
                             </div>

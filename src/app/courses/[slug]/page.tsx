@@ -112,7 +112,7 @@ export default function CourseDetailPage() {
                 <Play className="h-20 w-20 mx-auto mb-4 opacity-50" />
                 <p className="text-xl font-semibold">{currentLesson.title}</p>
                 <p className="text-gray-400 mt-2">{currentLesson.duration}</p>
-                <p className="text-sm text-gray-500 mt-4">
+                <p className="text-sm text-gray-600 mt-4">
                   Video player integration: {currentLesson.videoUrl}
                 </p>
               </div>
@@ -233,7 +233,7 @@ export default function CourseDetailPage() {
                               Preview
                             </span>
                           )}
-                          <span className="text-sm text-gray-500">{lesson.duration}</span>
+                          <span className="text-sm text-gray-600">{lesson.duration}</span>
                         </div>
                       </div>
                     </button>

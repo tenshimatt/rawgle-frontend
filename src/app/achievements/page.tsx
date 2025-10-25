@@ -370,8 +370,8 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
 
         {!achievement.isEarned && !hasProgress && (
           <div className="flex items-center justify-center py-2 bg-gray-100 rounded-lg">
-            <Lock className="w-4 h-4 text-gray-500 mr-2" />
-            <span className="text-sm text-gray-600">Locked</span>
+            <Lock className="w-4 h-4 text-gray-400 mr-2" />
+            <span className="text-sm text-gray-700">Locked</span>
           </div>
         )}
 

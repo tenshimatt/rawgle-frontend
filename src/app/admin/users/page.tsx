@@ -228,7 +228,7 @@ export default function AdminUsersPage() {
                   <td className="px-6 py-4">
                     <div>
                       <p className="font-medium text-gray-900">{user.username}</p>
-                      <p className="text-sm text-gray-500 flex items-center mt-1">
+                      <p className="text-sm text-gray-600 flex items-center mt-1">
                         <Mail className="h-3 w-3 mr-1" />
                         {user.email}
                       </p>
@@ -250,7 +250,7 @@ export default function AdminUsersPage() {
                         <Calendar className="h-3 w-3 mr-1" />
                         Joined {new Date(user.joinDate).toLocaleDateString()}
                       </p>
-                      <p className="text-gray-500 mt-1">
+                      <p className="text-gray-600 mt-1">
                         Last active: {new Date(user.lastActive).toLocaleDateString()}
                       </p>
                     </div>
@@ -258,7 +258,7 @@ export default function AdminUsersPage() {
                   <td className="px-6 py-4">
                     <div className="text-sm">
                       <p className="text-gray-900">{user.petCount} pets</p>
-                      <p className="text-gray-500">{user.orderCount} orders</p>
+                      <p className="text-gray-600">{user.orderCount} orders</p>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">

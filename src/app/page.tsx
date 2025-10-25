@@ -218,7 +218,7 @@ export default function HomePage() {
                       <span className="text-2xl font-bold text-teal-600">
                         ${supplement.price.toFixed(2)}
                       </span>
-                      <span className="text-sm text-gray-500">{supplement.size}</span>
+                      <span className="text-sm text-gray-600">{supplement.size}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -260,7 +260,7 @@ export default function HomePage() {
                   "Max's allergies completely cleared up after switching to raw. His coat is shinier than ever!"
                 </p>
                 <div className="font-semibold text-charcoal">Sarah M.</div>
-                <div className="text-sm text-gray-500">Golden Retriever owner</div>
+                <div className="text-sm text-gray-600">Golden Retriever owner</div>
               </CardContent>
             </Card>
 
@@ -275,7 +275,7 @@ export default function HomePage() {
                   "The AI assistant helped me transition Luna safely. No more digestive issues!"
                 </p>
                 <div className="font-semibold text-charcoal">James L.</div>
-                <div className="text-sm text-gray-500">Cat owner</div>
+                <div className="text-sm text-gray-600">Cat owner</div>
               </CardContent>
             </Card>
 
@@ -290,7 +290,7 @@ export default function HomePage() {
                   "At 12 years old, Rocky has more energy than ever. Raw feeding changed his life!"
                 </p>
                 <div className="font-semibold text-charcoal">Emily K.</div>
-                <div className="text-sm text-gray-500">Senior dog owner</div>
+                <div className="text-sm text-gray-600">Senior dog owner</div>
               </CardContent>
             </Card>
           </div>
