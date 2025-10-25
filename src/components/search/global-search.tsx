@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   CommandDialog,
   CommandEmpty,
@@ -161,26 +162,26 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                   {results.products.map((item) => {
                     const Icon = categoryIcons.products;
                     return (
-                      <CommandItem
-                        key={item.id}
-                        value={item.title}
-                        onSelect={() => handleSelect(item.url)}
-                        onClick={() => handleSelect(item.url)}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <Icon className="h-4 w-4 text-teal-600" />
-                        <div className="flex flex-col flex-1">
-                          <span className="font-medium text-gray-900">{item.title}</span>
-                          {item.description && (
-                            <span className="text-xs text-gray-600 line-clamp-1">
-                              {item.description}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {item.category}
-                        </span>
-                      </CommandItem>
+                      <Link href={item.url} key={item.id} className="block">
+                        <CommandItem
+                          value={item.title}
+                          onSelect={() => handleSelect(item.url)}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Icon className="h-4 w-4 text-teal-600" />
+                          <div className="flex flex-col flex-1">
+                            <span className="font-medium text-gray-900">{item.title}</span>
+                            {item.description && (
+                              <span className="text-xs text-gray-600 line-clamp-1">
+                                {item.description}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {item.category}
+                          </span>
+                        </CommandItem>
+                      </Link>
                     );
                   })}
                 </CommandGroup>
@@ -195,26 +196,26 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                   {results.courses.map((item) => {
                     const Icon = categoryIcons.courses;
                     return (
-                      <CommandItem
-                        key={item.id}
-                        value={item.title}
-                        onSelect={() => handleSelect(item.url)}
-                        onClick={() => handleSelect(item.url)}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <Icon className="h-4 w-4 text-teal-600" />
-                        <div className="flex flex-col flex-1">
-                          <span className="font-medium text-gray-900">{item.title}</span>
-                          {item.description && (
-                            <span className="text-xs text-gray-600 line-clamp-1">
-                              {item.description}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {item.category}
-                        </span>
-                      </CommandItem>
+                      <Link href={item.url} key={item.id} className="block">
+                        <CommandItem
+                          value={item.title}
+                          onSelect={() => handleSelect(item.url)}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Icon className="h-4 w-4 text-teal-600" />
+                          <div className="flex flex-col flex-1">
+                            <span className="font-medium text-gray-900">{item.title}</span>
+                            {item.description && (
+                              <span className="text-xs text-gray-600 line-clamp-1">
+                                {item.description}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {item.category}
+                          </span>
+                        </CommandItem>
+                      </Link>
                     );
                   })}
                 </CommandGroup>
@@ -229,26 +230,26 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                   {results.breeds.map((item) => {
                     const Icon = categoryIcons.breeds;
                     return (
-                      <CommandItem
-                        key={item.id}
-                        value={item.title}
-                        onSelect={() => handleSelect(item.url)}
-                        onClick={() => handleSelect(item.url)}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <Icon className="h-4 w-4 text-teal-600" />
-                        <div className="flex flex-col flex-1">
-                          <span className="font-medium text-gray-900">{item.title}</span>
-                          {item.description && (
-                            <span className="text-xs text-gray-600 line-clamp-1">
-                              {item.description}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {item.category}
-                        </span>
-                      </CommandItem>
+                      <Link href={item.url} key={item.id} className="block">
+                        <CommandItem
+                          value={item.title}
+                          onSelect={() => handleSelect(item.url)}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Icon className="h-4 w-4 text-teal-600" />
+                          <div className="flex flex-col flex-1">
+                            <span className="font-medium text-gray-900">{item.title}</span>
+                            {item.description && (
+                              <span className="text-xs text-gray-600 line-clamp-1">
+                                {item.description}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {item.category}
+                          </span>
+                        </CommandItem>
+                      </Link>
                     );
                   })}
                 </CommandGroup>
@@ -263,26 +264,26 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                   {results.supplements.map((item) => {
                     const Icon = categoryIcons.supplements;
                     return (
-                      <CommandItem
-                        key={item.id}
-                        value={item.title}
-                        onSelect={() => handleSelect(item.url)}
-                        onClick={() => handleSelect(item.url)}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <Icon className="h-4 w-4 text-teal-600" />
-                        <div className="flex flex-col flex-1">
-                          <span className="font-medium text-gray-900">{item.title}</span>
-                          {item.description && (
-                            <span className="text-xs text-gray-600 line-clamp-1">
-                              {item.description}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {item.category}
-                        </span>
-                      </CommandItem>
+                      <Link href={item.url} key={item.id} className="block">
+                        <CommandItem
+                          value={item.title}
+                          onSelect={() => handleSelect(item.url)}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Icon className="h-4 w-4 text-teal-600" />
+                          <div className="flex flex-col flex-1">
+                            <span className="font-medium text-gray-900">{item.title}</span>
+                            {item.description && (
+                              <span className="text-xs text-gray-600 line-clamp-1">
+                                {item.description}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {item.category}
+                          </span>
+                        </CommandItem>
+                      </Link>
                     );
                   })}
                 </CommandGroup>
@@ -297,26 +298,26 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
                   {results.guides.map((item) => {
                     const Icon = categoryIcons.guides;
                     return (
-                      <CommandItem
-                        key={item.id}
-                        value={item.title}
-                        onSelect={() => handleSelect(item.url)}
-                        onClick={() => handleSelect(item.url)}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <Icon className="h-4 w-4 text-teal-600" />
-                        <div className="flex flex-col flex-1">
-                          <span className="font-medium text-gray-900">{item.title}</span>
-                          {item.description && (
-                            <span className="text-xs text-gray-600 line-clamp-1">
-                              {item.description}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {item.category}
-                        </span>
-                      </CommandItem>
+                      <Link href={item.url} key={item.id} className="block">
+                        <CommandItem
+                          value={item.title}
+                          onSelect={() => handleSelect(item.url)}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Icon className="h-4 w-4 text-teal-600" />
+                          <div className="flex flex-col flex-1">
+                            <span className="font-medium text-gray-900">{item.title}</span>
+                            {item.description && (
+                              <span className="text-xs text-gray-600 line-clamp-1">
+                                {item.description}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {item.category}
+                          </span>
+                        </CommandItem>
+                      </Link>
                     );
                   })}
                 </CommandGroup>
