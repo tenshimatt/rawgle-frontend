@@ -168,10 +168,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get product details from supplements or mock products
+    // Get product details from supplements, mock products, or shop products API
     const supplement = supplements.find(s => s.id === productId);
     const mockProduct = mockProducts.find(p => p.id === productId);
-    const product = supplement || mockProduct;
+    let product = supplement || mockProduct;
+
+    // If not found in static data, try fetching from shop products API
+    if (!product) {
+      try {
+        const shopProductsRes = await fetch(`http://localhost:3005/api/shop/products`, {
+          headers: {
+            'x-user-id': userId,
+          },
+        });
+        if (shopProductsRes.ok) {
+          const shopData = await shopProductsRes.json();
+          product = shopData.data?.find((p: any) => p.id === productId);
+        }
+      } catch (error) {
+        console.error('[Cart API] Failed to fetch shop products:', error);
+      }
+    }
 
     if (!product) {
       return NextResponse.json(
