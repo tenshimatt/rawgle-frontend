@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
 
 interface Pet {
   id: string;
@@ -15,48 +14,125 @@ interface Pet {
   createdAt: string;
 }
 
+// Demo data
+const demoPets: Pet[] = [
+  {
+    id: '1',
+    userId: 'demo-user',
+    name: 'Max',
+    species: 'dog',
+    breed: 'Golden Retriever',
+    birthdate: '2021-03-15',
+    weight: 65,
+    gender: 'male',
+    active: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: '2',
+    userId: 'demo-user',
+    name: 'Luna',
+    species: 'dog',
+    breed: 'Labrador Retriever',
+    birthdate: '2022-06-20',
+    weight: 55,
+    gender: 'female',
+    active: true,
+    createdAt: new Date().toISOString(),
+  },
+];
+
+// In-memory fallback storage
+const memoryStorage = new Map<string, Pet[]>();
+memoryStorage.set('pets:all', [...demoPets]);
+
+// KV availability flag
+let kvAvailable = false;
+let kv: any = null;
+
+// Check KV availability once at module load
+const initKV = async () => {
+  try {
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      const { kv: kvClient } = await import('@vercel/kv');
+      kv = kvClient;
+      kvAvailable = true;
+      console.log('[Pets API] Vercel KV initialized successfully');
+    } else {
+      console.warn('[Pets API] Vercel KV environment variables not found, using in-memory storage');
+      kvAvailable = false;
+    }
+  } catch (error) {
+    console.error('[Pets API] Failed to initialize KV, using in-memory storage:', error);
+    kvAvailable = false;
+  }
+};
+
+// Initialize KV on first request
+let kvInitPromise: Promise<void> | null = null;
+const ensureKVInitialized = async () => {
+  if (kvInitPromise === null) {
+    kvInitPromise = initKV();
+  }
+  await kvInitPromise;
+};
+
 // Storage key for KV
 const PETS_KEY = 'pets:all';
 
-// Helper functions for KV storage
+// Helper functions for storage (KV or in-memory fallback)
 async function getAllPets(): Promise<Pet[]> {
-  const pets = await kv.get<Pet[]>(PETS_KEY);
-  if (!pets) {
-    // Initialize with demo data
-    const demoPets: Pet[] = [
-      {
-        id: '1',
-        userId: 'demo-user',
-        name: 'Max',
-        species: 'dog',
-        breed: 'Golden Retriever',
-        birthdate: '2021-03-15',
-        weight: 65,
-        gender: 'male',
-        active: true,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        userId: 'demo-user',
-        name: 'Luna',
-        species: 'dog',
-        breed: 'Labrador Retriever',
-        birthdate: '2022-06-20',
-        weight: 55,
-        gender: 'female',
-        active: true,
-        createdAt: new Date().toISOString(),
-      },
-    ];
-    await kv.set(PETS_KEY, demoPets);
-    return demoPets;
+  await ensureKVInitialized();
+
+  if (kvAvailable && kv) {
+    try {
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<null>((_, reject) =>
+        setTimeout(() => reject(new Error('KV timeout')), 5000)
+      );
+
+      const kvPromise = kv.get<Pet[]>(PETS_KEY);
+      const pets = await Promise.race([kvPromise, timeoutPromise]);
+
+      if (!pets) {
+        // Initialize with demo data
+        await kv.set(PETS_KEY, demoPets);
+        return [...demoPets];
+      }
+      return pets;
+    } catch (error) {
+      console.warn('[Pets API] KV get failed, using in-memory fallback:', error instanceof Error ? error.message : error);
+      // Mark KV as unavailable for this session
+      kvAvailable = false;
+      return memoryStorage.get(PETS_KEY) || [...demoPets];
+    }
   }
-  return pets;
+
+  return memoryStorage.get(PETS_KEY) || [...demoPets];
 }
 
 async function savePets(pets: Pet[]): Promise<void> {
-  await kv.set(PETS_KEY, pets);
+  await ensureKVInitialized();
+
+  if (kvAvailable && kv) {
+    try {
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise<void>((_, reject) =>
+        setTimeout(() => reject(new Error('KV timeout')), 5000)
+      );
+
+      const kvPromise = kv.set(PETS_KEY, pets);
+      await Promise.race([kvPromise, timeoutPromise]);
+
+      return;
+    } catch (error) {
+      console.warn('[Pets API] KV set failed, using in-memory fallback:', error instanceof Error ? error.message : error);
+      // Mark KV as unavailable for this session
+      kvAvailable = false;
+    }
+  }
+
+  memoryStorage.set(PETS_KEY, pets);
 }
 
 export async function GET(request: NextRequest) {
