@@ -278,10 +278,12 @@ export default function AIAssistantPage() {
                         className={`p-4 rounded-2xl shadow-md ${
                           msg.role === 'user'
                             ? 'bg-persian-green-500 text-white rounded-tr-none'
-                            : 'bg-white border-2 border-gray-100 text-charcoal-700 rounded-tl-none'
+                            : 'bg-white border-2 border-gray-100 rounded-tl-none'
                         }`}
                       >
-                        <div className="whitespace-pre-wrap break-words">{msg.content}</div>
+                        <div className={`whitespace-pre-wrap break-words ${
+                          msg.role === 'user' ? 'text-white' : 'text-gray-900'
+                        }`}>{msg.content}</div>
                       </div>
 
                       {/* Message Actions (only for assistant messages) */}
