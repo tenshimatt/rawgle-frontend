@@ -1,0 +1,631 @@
+Subject,Description,Type,Status,Priority,Assignee,Category,Spec File,Good Examples,Target Files
+"[AUTO] Authentication - Login Flow","## Feature Requirements
+Allow users to log in with email and password. Support JWT token authentication with refresh tokens. Store auth state globally using React Context.
+
+## Technical Requirements
+- POST /api/auth/login endpoint
+- Validate email/password
+- Return JWT + refresh token
+- Store tokens in localStorage and httpOnly cookies
+- AuthContext for global state
+- Auto-redirect to dashboard on success
+- Show error toast on failure
+
+## Acceptance Criteria
+- [ ] User can enter email and password
+- [ ] Form validates required fields
+- [ ] Submitting calls /api/auth/login API
+- [ ] Success: User redirected to /dashboard
+- [ ] Success: Tokens stored in localStorage + cookies
+- [ ] Success: AuthContext updated with user data
+- [ ] Failure: Toast shows error message
+- [ ] Loading state shown during API call
+- [ ] Works on mobile devices
+
+---
+
+SPEC_FILE: /specs/features/auth-login.yml
+GOOD_EXAMPLES: /src/app/auth/register/page.tsx, /src/contexts/auth-context.tsx, /src/app/api/auth/login/route.ts
+TARGET_FILES: /src/app/auth/login/page.tsx, /src/app/api/auth/login/route.ts, /src/contexts/auth-context.tsx
+
+---
+
+## Testing Instructions
+1. Navigate to /auth/login
+2. Enter valid credentials (demo@rawgle.com / Demo1234)
+3. Click submit
+4. Verify redirect to /dashboard
+5. Verify tokens in localStorage
+6. Test invalid credentials (error toast)
+7. Test empty fields (validation)",Feature,New,High,,Authentication,/specs/features/auth-login.yml,"/src/app/auth/register/page.tsx, /src/contexts/auth-context.tsx","/src/app/auth/login/page.tsx, /src/app/api/auth/login/route.ts"
+
+"[AUTO] Authentication - Registration Flow","## Feature Requirements
+Allow new users to create accounts with email, password, and profile information. Auto-login after successful registration.
+
+## Technical Requirements
+- POST /api/auth/register endpoint
+- Validate email format, password strength
+- Check for duplicate emails
+- Hash passwords using bcrypt
+- Generate JWT + refresh tokens
+- Create user session immediately
+- Return tokens in response
+
+## Acceptance Criteria
+- [ ] User can enter email, password, confirm password
+- [ ] Password strength indicator shown
+- [ ] Email validation (format check)
+- [ ] Password must be 8+ chars
+- [ ] Passwords must match
+- [ ] Duplicate email shows error
+- [ ] Success: User auto-logged in
+- [ ] Success: Redirected to /dashboard
+- [ ] Success: Welcome toast shown
+- [ ] Tokens stored correctly
+
+---
+
+SPEC_FILE: /specs/features/auth-register.yml
+GOOD_EXAMPLES: /src/app/auth/login/page.tsx, /src/app/api/auth/login/route.ts
+TARGET_FILES: /src/app/auth/register/page.tsx, /src/app/api/auth/register/route.ts",Feature,New,High,,Authentication,/specs/features/auth-register.yml,/src/app/auth/login/page.tsx,"/src/app/auth/register/page.tsx, /src/app/api/auth/register/route.ts"
+
+"[AUTO] AI Assistant - Chat Interface","## Feature Requirements
+Provide AI-powered chat assistant (Dr. Raw) for raw feeding questions. Stream responses in real-time. Support pet context for personalized advice.
+
+## Technical Requirements
+- POST /api/chat endpoint using OpenAI GPT-4o-mini
+- Stream responses using AI SDK
+- Send user's pets as context
+- Rate limiting (10 requests/minute)
+- Display chat history
+- Show loading states during streaming
+- Auto-scroll to latest message
+
+## Acceptance Criteria
+- [ ] User can send messages to AI assistant
+- [ ] Responses stream in real-time (word-by-word)
+- [ ] AI has access to user's pet information
+- [ ] Chat history displays correctly
+- [ ] Dark text on light background (visible)
+- [ ] Rate limit shows helpful message
+- [ ] Loading spinner shown during API call
+- [ ] Auto-scrolls to latest message
+- [ ] Works on mobile devices
+- [ ] Copy message button works
+
+---
+
+SPEC_FILE: /specs/features/ai-assistant-chat.yml
+GOOD_EXAMPLES: /src/components/chat/MessageBubble.tsx, /src/app/api/chat/route.ts
+TARGET_FILES: /src/app/ai-assistant/page.tsx, /src/app/api/chat/route.ts",Feature,New,High,,AI Features,/specs/features/ai-assistant-chat.yml,/src/components/chat/MessageBubble.tsx,"/src/app/ai-assistant/page.tsx, /src/app/api/chat/route.ts"
+
+"[AUTO] Shop - Product Listing","## Feature Requirements
+Display all shop products in a grid with filtering, sorting, and search. Show product cards with images, prices, ratings.
+
+## Technical Requirements
+- GET /api/shop/products endpoint
+- Support filters: category, species, price range
+- Support sorting: price, rating, newest
+- Search by product name/description
+- Pagination (20 products per page)
+- Product cards with: image, name, price, rating, stock status
+
+## Acceptance Criteria
+- [ ] Products display in responsive grid
+- [ ] User can filter by category
+- [ ] User can filter by species (dogs/cats/both)
+- [ ] User can sort by price/rating/newest
+- [ ] Search box filters products
+- [ ] Pagination works correctly
+- [ ] Click product → navigate to /shop/[id]
+- [ ] Out of stock items shown differently
+- [ ] Loading skeleton shown during fetch
+- [ ] Works on mobile (responsive)
+
+---
+
+SPEC_FILE: /specs/features/shop-product-listing.yml
+GOOD_EXAMPLES: /src/app/supplements/page.tsx, /src/components/ProductCard.tsx
+TARGET_FILES: /src/app/shop/page.tsx, /src/app/api/shop/products/route.ts",Feature,New,Medium,,Shop,/specs/features/shop-product-listing.yml,/src/app/supplements/page.tsx,"/src/app/shop/page.tsx, /src/app/api/shop/products/route.ts"
+
+"[AUTO] Shop - Shopping Cart","## Feature Requirements
+Allow users to add products to cart, update quantities, remove items. Persist cart data across sessions. Show cart total and item count.
+
+## Technical Requirements
+- POST /api/cart (add item)
+- GET /api/cart (fetch cart)
+- PATCH /api/cart (update quantity)
+- DELETE /api/cart (remove item)
+- Store cart in Vercel KV with in-memory fallback
+- Cart context for global state
+- Show cart badge with item count in header
+
+## Acceptance Criteria
+- [ ] User can add products to cart
+- [ ] User can update item quantities
+- [ ] User can remove items from cart
+- [ ] Cart persists across page refreshes
+- [ ] Cart badge shows correct item count
+- [ ] Cart total calculates correctly
+- [ ] Empty cart state shown when empty
+- [ ] Loading states during API calls
+- [ ] Works offline (in-memory fallback)
+- [ ] ""Continue Shopping"" button works
+
+---
+
+SPEC_FILE: /specs/features/shop-cart.yml
+GOOD_EXAMPLES: /src/contexts/cart-context.tsx, /src/app/wishlist/page.tsx
+TARGET_FILES: /src/app/cart/page.tsx, /src/app/api/cart/route.ts, /src/contexts/cart-context.tsx",Feature,New,High,,Shop,/specs/features/shop-cart.yml,/src/contexts/cart-context.tsx,"/src/app/cart/page.tsx, /src/app/api/cart/route.ts"
+
+"[AUTO] Shop - Stripe Checkout","## Feature Requirements
+Process payments using Stripe Checkout. Create checkout session with line items, handle success/cancel redirects.
+
+## Technical Requirements
+- POST /api/checkout endpoint
+- Create Stripe checkout session
+- Include all cart items as line items
+- Set success_url and cancel_url
+- Handle Stripe webhook for fulfillment
+- Clear cart after successful payment
+
+## Acceptance Criteria
+- [ ] ""Proceed to Checkout"" button works
+- [ ] Redirects to Stripe hosted checkout
+- [ ] Shows correct cart items in Stripe UI
+- [ ] Shows correct total amount
+- [ ] Success: Redirect to /checkout/success
+- [ ] Success: Cart is cleared
+- [ ] Cancel: Redirect back to cart
+- [ ] Webhook handles payment_intent.succeeded
+- [ ] Order created after payment
+- [ ] Works with test cards
+
+---
+
+SPEC_FILE: /specs/features/shop-stripe-checkout.yml
+GOOD_EXAMPLES: /src/app/api/checkout/route.ts, /src/app/api/webhooks/stripe/route.ts
+TARGET_FILES: /src/app/shop/checkout/page.tsx, /src/app/api/checkout/route.ts, /src/app/api/webhooks/stripe/route.ts",Feature,New,High,,Shop,/specs/features/shop-stripe-checkout.yml,/src/app/api/checkout/route.ts,"/src/app/shop/checkout/page.tsx, /src/app/api/checkout/route.ts"
+
+"[AUTO] Wishlist - Add/Remove Items","## Feature Requirements
+Allow users to save products to wishlist for later. Persist wishlist data across sessions.
+
+## Technical Requirements
+- POST /api/wishlist (add item)
+- DELETE /api/wishlist (remove item)
+- GET /api/wishlist (fetch all items)
+- Store in Vercel KV with in-memory fallback
+- Show ""Add to Wishlist"" button on product pages
+- Heart icon changes when item in wishlist
+
+## Acceptance Criteria
+- [ ] User can add product to wishlist
+- [ ] User can remove product from wishlist
+- [ ] Heart icon filled when in wishlist
+- [ ] Heart icon empty when not in wishlist
+- [ ] Wishlist persists across sessions
+- [ ] Toast shown on add/remove
+- [ ] Wishlist page shows all saved items
+- [ ] Can add to cart from wishlist
+- [ ] Works when logged out (localStorage)
+
+---
+
+SPEC_FILE: /specs/features/wishlist-add-remove.yml
+GOOD_EXAMPLES: /src/app/cart/page.tsx, /src/app/favorites/page.tsx
+TARGET_FILES: /src/app/wishlist/page.tsx, /src/app/api/wishlist/route.ts",Feature,New,Medium,,Shop,/specs/features/wishlist-add-remove.yml,/src/app/cart/page.tsx,"/src/app/wishlist/page.tsx, /src/app/api/wishlist/route.ts"
+
+"[AUTO] Wishlist - Bulk Actions","## Feature Requirements
+Allow users to select multiple wishlist items and perform bulk actions: add all to cart, delete selected.
+
+## Technical Requirements
+- Checkbox selection UI for each item
+- ""Select All"" checkbox in header
+- ""Add All to Cart"" button
+- ""Delete Selected"" button
+- Sequential API calls to avoid race conditions
+- Confirmation modal for bulk delete
+
+## Acceptance Criteria
+- [ ] User can select individual items
+- [ ] ""Select All"" toggles all checkboxes
+- [ ] Selected count displays (""3 items selected"")
+- [ ] ""Add All to Cart"" adds sequentially
+- [ ] ""Delete Selected"" shows confirmation
+- [ ] Bulk actions complete successfully
+- [ ] Success toast shows action result
+- [ ] Loading states during operations
+- [ ] Selection clears after action
+- [ ] Works on mobile (touch-friendly)
+
+---
+
+SPEC_FILE: /specs/features/wishlist-bulk-actions.yml
+GOOD_EXAMPLES: /src/app/wishlist/page.tsx (existing handleAddAllToCart)
+TARGET_FILES: /src/app/wishlist/page.tsx",Feature,New,Low,,Shop,/specs/features/wishlist-bulk-actions.yml,/src/app/wishlist/page.tsx,/src/app/wishlist/page.tsx
+
+"[AUTO] Pets - Pet Profile Management","## Feature Requirements
+Allow users to create and manage pet profiles with name, species, breed, weight, age, photo.
+
+## Technical Requirements
+- POST /api/pets (create pet)
+- PATCH /api/pets (update pet)
+- DELETE /api/pets (delete pet)
+- GET /api/pets (list user's pets)
+- Support photo upload
+- Validate required fields
+
+## Acceptance Criteria
+- [ ] User can create new pet profile
+- [ ] Required fields: name, species, breed, weight
+- [ ] Optional fields: age, birthday, photo
+- [ ] User can edit existing pets
+- [ ] User can delete pets (with confirmation)
+- [ ] Photo upload works correctly
+- [ ] Pet list shows all user's pets
+- [ ] Can select pet for feeding plans
+- [ ] Validation errors shown clearly
+- [ ] Works on mobile
+
+---
+
+SPEC_FILE: /specs/features/pets-profile-management.yml
+GOOD_EXAMPLES: /src/app/profile/page.tsx, /src/components/forms/PetForm.tsx
+TARGET_FILES: /src/app/pets/page.tsx, /src/app/pets/[id]/page.tsx, /src/app/api/pets/route.ts",Feature,New,High,,Pets,/specs/features/pets-profile-management.yml,/src/app/profile/page.tsx,"/src/app/pets/page.tsx, /src/app/api/pets/route.ts"
+
+"[AUTO] Dashboard - Overview Page","## Feature Requirements
+Show personalized dashboard with user stats, recent activity, quick actions, pet health overview.
+
+## Technical Requirements
+- GET /api/dashboard (fetch dashboard data)
+- Show: pet count, cart items, notifications, recent orders
+- Quick action buttons: Add Pet, Shop, Feeding Plan
+- Recent activity feed
+- Pet health status cards
+
+## Acceptance Criteria
+- [ ] Dashboard loads on login redirect
+- [ ] Shows correct pet count
+- [ ] Shows cart item count
+- [ ] Shows unread notification count
+- [ ] Recent activity displays correctly
+- [ ] Quick action buttons work
+- [ ] Pet health cards link to /pets/[id]
+- [ ] Loading skeleton shown during fetch
+- [ ] Empty states for no data
+- [ ] Responsive on mobile
+
+---
+
+SPEC_FILE: /specs/features/dashboard-overview.yml
+GOOD_EXAMPLES: /src/app/page.tsx (homepage cards)
+TARGET_FILES: /src/app/dashboard/page.tsx, /src/app/api/dashboard/route.ts",Feature,New,Medium,,Dashboard,/specs/features/dashboard-overview.yml,/src/app/page.tsx,"/src/app/dashboard/page.tsx, /src/app/api/dashboard/route.ts"
+
+"[AUTO] Global Search - Command Palette","## Feature Requirements
+Provide global search across all content types (products, articles, breeds, supplements, glossary). Keyboard shortcut (Cmd+K) to open.
+
+## Technical Requirements
+- GET /api/search endpoint
+- Search types: products, guides, supplements, breeds, glossary
+- Fuzzy search support
+- Keyboard navigation (arrow keys, Enter)
+- Clickable results navigate to correct page
+- Show result type icons
+
+## Acceptance Criteria
+- [ ] Cmd+K opens search palette
+- [ ] User can type search query
+- [ ] Results appear as user types
+- [ ] Results grouped by type
+- [ ] Each result clickable (navigates)
+- [ ] Arrow keys navigate results
+- [ ] Enter opens selected result
+- [ ] Esc closes search
+- [ ] Shows ""No results"" when empty
+- [ ] Works on mobile (tap to open)
+
+---
+
+SPEC_FILE: /specs/features/global-search.yml
+GOOD_EXAMPLES: /src/components/search/global-search.tsx, /src/components/ui/command.tsx
+TARGET_FILES: /src/components/search/global-search.tsx, /src/app/api/search/route.ts",Feature,In Progress,High,,Search,/specs/features/global-search.yml,/src/components/search/global-search.tsx,"/src/components/search/global-search.tsx, /src/app/api/search/route.ts"
+
+"[AUTO] Supplier Map - Interactive Store Locator","## Feature Requirements
+Show interactive map of nearby raw pet food suppliers. Allow search by location, filter by species served, view supplier details.
+
+## Technical Requirements
+- GET /api/suppliers/nearby endpoint (geolocation-based)
+- GET /api/suppliers/search endpoint (text search)
+- Map integration (Google Maps or Mapbox)
+- Supplier markers with popup info
+- Distance calculation from user location
+- Filter by species (dogs/cats/both)
+
+## Acceptance Criteria
+- [ ] Map displays all suppliers in viewport
+- [ ] User location shown on map
+- [ ] Click marker shows supplier popup
+- [ ] Popup shows: name, address, phone, rating
+- [ ] Search box filters suppliers
+- [ ] Species filter works correctly
+- [ ] ""Get Directions"" button works
+- [ ] List view shows supplier cards
+- [ ] Toggle between map/list view
+- [ ] Works on mobile (responsive)
+
+---
+
+SPEC_FILE: /specs/features/supplier-map.yml
+GOOD_EXAMPLES: /src/app/map-simple/page.tsx
+TARGET_FILES: /src/app/suppliers/page.tsx, /src/app/api/suppliers/nearby/route.ts, /src/app/api/suppliers/search/route.ts",Feature,In Progress,Medium,,Suppliers,/specs/features/supplier-map.yml,/src/app/map-simple/page.tsx,"/src/app/suppliers/page.tsx, /src/app/api/suppliers/nearby/route.ts"
+
+"[AUTO] Breed Guides - Browse and View","## Feature Requirements
+Display comprehensive breed guides for dogs and cats. Show breed characteristics, raw feeding recommendations, health considerations.
+
+## Technical Requirements
+- GET /api/breeds endpoint
+- Breed listing page with search/filter
+- Individual breed detail pages
+- Show: characteristics, feeding tips, health notes
+- Related supplements recommendations
+
+## Acceptance Criteria
+- [ ] Breed listing shows all breeds
+- [ ] Search by breed name works
+- [ ] Filter by species (dog/cat) works
+- [ ] Click breed → navigate to detail page
+- [ ] Breed detail shows all info
+- [ ] Related supplements displayed
+- [ ] Responsive layout
+- [ ] Loading states shown
+- [ ] Back button works correctly
+
+---
+
+SPEC_FILE: /specs/features/breed-guides.yml
+GOOD_EXAMPLES: /src/app/supplements/[slug]/page.tsx
+TARGET_FILES: /src/app/breed-guides/page.tsx, /src/app/breed-guides/[slug]/page.tsx, /src/app/api/breeds/route.ts",Feature,New,Low,,Education,/specs/features/breed-guides.yml,/src/app/supplements/[slug]/page.tsx,"/src/app/breed-guides/page.tsx, /src/app/breed-guides/[slug]/page.tsx"
+
+"[AUTO] Supplements - Product Catalog","## Feature Requirements
+Display supplement products with detailed information, dosage recommendations, species compatibility.
+
+## Technical Requirements
+- GET /api/supplements endpoint
+- Supplement cards with image, name, price
+- Detail page with full description
+- Dosage calculator based on pet weight
+- Add to cart functionality
+- Related products section
+
+## Acceptance Criteria
+- [ ] Supplements display in grid layout
+- [ ] Click supplement → detail page
+- [ ] Detail page shows all info
+- [ ] Dosage calculator works correctly
+- [ ] ""Add to Cart"" button functional
+- [ ] Species compatibility shown
+- [ ] Related products displayed
+- [ ] Reviews/ratings shown (if available)
+- [ ] Mobile responsive
+
+---
+
+SPEC_FILE: /specs/features/supplements-catalog.yml
+GOOD_EXAMPLES: /src/app/shop/[id]/page.tsx
+TARGET_FILES: /src/app/supplements/page.tsx, /src/app/supplements/[slug]/page.tsx, /src/app/api/supplements/route.ts",Feature,New,Medium,,Shop,/specs/features/supplements-catalog.yml,/src/app/shop/[id]/page.tsx,"/src/app/supplements/page.tsx, /src/app/supplements/[slug]/page.tsx"
+
+"[AUTO] Glossary - Raw Feeding Terms","## Feature Requirements
+Searchable glossary of raw feeding terms and definitions. Alphabetical navigation.
+
+## Technical Requirements
+- GET /api/glossary endpoint
+- Search functionality
+- Alphabetical filter (A-Z buttons)
+- Term detail modal/page
+- Related terms linking
+
+## Acceptance Criteria
+- [ ] All terms display alphabetically
+- [ ] Search filters terms in real-time
+- [ ] A-Z buttons filter by first letter
+- [ ] Click term shows definition
+- [ ] Related terms are clickable links
+- [ ] Loading states shown
+- [ ] Mobile responsive
+- [ ] ""Clear search"" button works
+
+---
+
+SPEC_FILE: /specs/features/glossary.yml
+GOOD_EXAMPLES: /src/app/breed-guides/page.tsx (filtering pattern)
+TARGET_FILES: /src/app/glossary/page.tsx, /src/app/api/glossary/route.ts",Feature,New,Low,,Education,/specs/features/glossary.yml,/src/app/breed-guides/page.tsx,"/src/app/glossary/page.tsx, /src/app/api/glossary/route.ts"
+
+"[AUTO] Community - Success Stories","## Feature Requirements
+Allow users to submit and browse success stories about their pets' raw feeding journey. Include photos, before/after, testimonials.
+
+## Technical Requirements
+- GET /api/success-stories (browse stories)
+- POST /api/success-stories (submit story)
+- Support photo uploads
+- Moderation queue for admin
+- Like/comment on stories
+
+## Acceptance Criteria
+- [ ] Users can browse success stories
+- [ ] Users can submit new stories
+- [ ] Photo upload works (multiple photos)
+- [ ] Stories show author, date, pet info
+- [ ] Users can like stories
+- [ ] Users can comment on stories
+- [ ] Admin can moderate/approve stories
+- [ ] Mobile responsive
+- [ ] Social sharing buttons work
+
+---
+
+SPEC_FILE: /specs/features/success-stories.yml
+GOOD_EXAMPLES: /src/app/community/recipes/page.tsx
+TARGET_FILES: /src/app/success-stories/page.tsx, /src/app/success-stories/submit/page.tsx, /src/app/api/success-stories/route.ts",Feature,New,Medium,,Community,/specs/features/success-stories.yml,/src/app/community/recipes/page.tsx,"/src/app/success-stories/page.tsx, /src/app/success-stories/submit/page.tsx"
+
+"[AUTO] Mentorship - Connect with Experts","## Feature Requirements
+Connect users with raw feeding mentors. Book sessions, chat, get personalized advice.
+
+## Technical Requirements
+- GET /api/mentorship (list mentors)
+- POST /api/mentorship (book session)
+- Mentor profiles with: expertise, availability, rating
+- Session booking calendar
+- Messaging integration
+
+## Acceptance Criteria
+- [ ] Browse mentor profiles
+- [ ] Filter by expertise/availability
+- [ ] Click mentor → view full profile
+- [ ] Book session with date/time picker
+- [ ] Confirmation email sent
+- [ ] View upcoming sessions
+- [ ] Message mentor directly
+- [ ] Rate mentor after session
+- [ ] Payment integration (optional)
+
+---
+
+SPEC_FILE: /specs/features/mentorship.yml
+GOOD_EXAMPLES: /src/app/community/page.tsx
+TARGET_FILES: /src/app/mentorship/page.tsx, /src/app/mentorship/[mentorId]/page.tsx, /src/app/api/mentorship/route.ts",Feature,New,Low,,Community,/specs/features/mentorship.yml,/src/app/community/page.tsx,"/src/app/mentorship/page.tsx, /src/app/mentorship/[mentorId]/page.tsx"
+
+"[AUTO] Challenges - Feeding Challenges","## Feature Requirements
+Gamified feeding challenges to encourage users. Track progress, earn badges, compete on leaderboards.
+
+## Technical Requirements
+- GET /api/challenges (list challenges)
+- POST /api/challenges (join challenge)
+- Track user progress
+- Award badges/points
+- Leaderboard rankings
+- Social sharing
+
+## Acceptance Criteria
+- [ ] Users can browse challenges
+- [ ] Users can join challenges
+- [ ] Progress tracked automatically
+- [ ] Badges awarded on completion
+- [ ] Leaderboard shows top users
+- [ ] Share progress to social media
+- [ ] Challenge details show rules
+- [ ] Mobile responsive
+
+---
+
+SPEC_FILE: /specs/features/challenges.yml
+GOOD_EXAMPLES: /src/app/achievements/page.tsx
+TARGET_FILES: /src/app/challenges/page.tsx, /src/app/challenges/leaderboard/page.tsx, /src/app/api/challenges/route.ts",Feature,New,Low,,Gamification,/specs/features/challenges.yml,/src/app/achievements/page.tsx,"/src/app/challenges/page.tsx, /src/app/challenges/leaderboard/page.tsx"
+
+"[AUTO] Messaging - Direct Messages","## Feature Requirements
+Allow users to send direct messages to other users (mentors, community members).
+
+## Technical Requirements
+- GET /api/messages (fetch conversations)
+- POST /api/messages (send message)
+- Real-time updates (polling or websockets)
+- Unread message counter
+- Message notifications
+
+## Acceptance Criteria
+- [ ] Users can view message list
+- [ ] Click conversation → open chat
+- [ ] Users can send messages
+- [ ] Messages display in chronological order
+- [ ] Unread count shows in sidebar
+- [ ] New messages appear in real-time
+- [ ] Typing indicator (optional)
+- [ ] Mobile responsive
+- [ ] Search conversations
+
+---
+
+SPEC_FILE: /specs/features/messaging.yml
+GOOD_EXAMPLES: /src/app/ai-assistant/page.tsx (chat UI pattern)
+TARGET_FILES: /src/app/messages/page.tsx, /src/app/messages/[userId]/page.tsx, /src/app/api/messages/route.ts",Feature,New,Medium,,Community,/specs/features/messaging.yml,/src/app/ai-assistant/page.tsx,"/src/app/messages/page.tsx, /src/app/messages/[userId]/page.tsx"
+
+"[AUTO] Health Records - Track Pet Health","## Feature Requirements
+Allow users to track pet health records: vet visits, vaccinations, weight, medications, symptoms.
+
+## Technical Requirements
+- POST /api/health/records (create record)
+- GET /api/health/records (list records)
+- Support different record types
+- Date-based timeline view
+- Export health report PDF
+
+## Acceptance Criteria
+- [ ] Users can add health records
+- [ ] Record types: vet visit, vaccination, weight, medication
+- [ ] Timeline view shows all records
+- [ ] Filter by record type
+- [ ] Filter by date range
+- [ ] Export to PDF button works
+- [ ] Edit/delete records
+- [ ] Attach files/photos to records
+- [ ] Mobile responsive
+
+---
+
+SPEC_FILE: /specs/features/health-records.yml
+GOOD_EXAMPLES: /src/app/medications/page.tsx
+TARGET_FILES: /src/app/health/page.tsx, /src/app/api/health/records/route.ts, /src/app/api/export-health-report/route.ts",Feature,New,Medium,,Health,/specs/features/health-records.yml,/src/app/medications/page.tsx,"/src/app/health/page.tsx, /src/app/api/health/records/route.ts"
+
+"[AUTO] Notifications - User Notifications","## Feature Requirements
+Display notifications for user actions: order updates, message receipts, challenge progress, community interactions.
+
+## Technical Requirements
+- GET /api/notifications (fetch notifications)
+- PATCH /api/notifications/[id]/read (mark as read)
+- Notification types: order, message, badge, community
+- Unread counter in header
+- Notification dropdown in header
+
+## Acceptance Criteria
+- [ ] Notification bell shows unread count
+- [ ] Click bell → dropdown with notifications
+- [ ] Each notification shows: icon, message, time
+- [ ] Click notification → navigate to relevant page
+- [ ] Click notification → mark as read
+- [ ] ""Mark all as read"" button works
+- [ ] Real-time updates (polling)
+- [ ] Empty state when no notifications
+- [ ] Mobile responsive
+
+---
+
+SPEC_FILE: /specs/features/notifications.yml
+GOOD_EXAMPLES: /src/components/Header.tsx (notification bell pattern)
+TARGET_FILES: /src/components/NotificationDropdown.tsx, /src/app/api/notifications/route.ts, /src/app/api/notifications/[id]/read/route.ts",Feature,New,High,,Core,/specs/features/notifications.yml,/src/components/Header.tsx,"/src/components/NotificationDropdown.tsx, /src/app/api/notifications/route.ts"
+
+"[AUTO] Profile - User Settings","## Feature Requirements
+Allow users to update profile information: name, email, password, avatar, notification preferences.
+
+## Technical Requirements
+- GET /api/auth/me (fetch user profile)
+- PATCH /api/profile (update profile)
+- POST /api/profile/avatar (upload avatar)
+- PATCH /api/profile/password (change password)
+- Email notification preferences
+
+## Acceptance Criteria
+- [ ] User can view current profile info
+- [ ] User can update name/email
+- [ ] User can upload avatar photo
+- [ ] User can change password
+- [ ] User can toggle notification preferences
+- [ ] Form validation works
+- [ ] Success toast on save
+- [ ] Error handling for duplicate email
+- [ ] Avatar preview before upload
+- [ ] Mobile responsive
+
+---
+
+SPEC_FILE: /specs/features/profile-settings.yml
+GOOD_EXAMPLES: /src/app/pets/page.tsx (form pattern)
+TARGET_FILES: /src/app/profile/page.tsx, /src/app/api/auth/me/route.ts",Feature,New,Medium,,User,/specs/features/profile-settings.yml,/src/app/pets/page.tsx,/src/app/profile/page.tsx
