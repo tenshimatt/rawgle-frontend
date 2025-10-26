@@ -1,0 +1,614 @@
+{
+  "name": "Auto Testing Pipeline - OpenProject to Claude",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "openproject-task-update",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "OpenProject Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "auto-task-trigger",
+      "id": "node-001"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.action}}",
+              "operation": "equals",
+              "value2": "updated"
+            },
+            {
+              "value1": "={{$json.body._embedded.status.name}}",
+              "operation": "equals",
+              "value2": "In Progress"
+            }
+          ]
+        }
+      },
+      "name": "Filter: In Progress Tasks Only",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "id": "node-002"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.body._links.self.href}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openProjectApi",
+        "options": {}
+      },
+      "name": "Get Task Details from OpenProject",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 200],
+      "id": "node-003",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openProjectApi",
+          "name": "OpenProject API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract task information\nconst task = $input.first().json;\n\nconst taskId = task.id;\nconst taskSubject = task.subject;\nconst taskDescription = task.description?.raw || '';\n\n// Parse spec from custom field or description\nconst specMatch = taskDescription.match(/SPEC_FILE:\\s*(.+?)\\n/);\nconst specFile = specMatch ? specMatch[1].trim() : '';\n\n// Parse good examples from custom field or description\nconst examplesMatch = taskDescription.match(/GOOD_EXAMPLES:\\s*(.+?)\\n/);\nconst goodExamples = examplesMatch ? examplesMatch[1].split(',').map(e => e.trim()) : [];\n\n// Parse target files from description\nconst targetMatch = taskDescription.match(/TARGET_FILES:\\s*(.+?)\\n/);\nconst targetFiles = targetMatch ? targetMatch[1].split(',').map(f => f.trim()) : [];\n\nreturn {\n  taskId,\n  taskSubject,\n  taskDescription,\n  specFile,\n  goodExamples,\n  targetFiles,\n  taskUrl: task._links.self.href\n};"
+      },
+      "name": "Parse Task Info",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 200],
+      "id": "node-004"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{$env.GITHUB_OWNER}}/{{$env.GITHUB_REPO}}/contents/{{$json.specFile}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "name": "Fetch Spec File from GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 100],
+      "id": "node-005",
+      "credentials": {
+        "githubApi": {
+          "id": "githubApi",
+          "name": "GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Decode base64 spec file content\nconst specContent = Buffer.from($input.first().json.content, 'base64').toString('utf-8');\nreturn { specContent };"
+      },
+      "name": "Decode Spec File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 100],
+      "id": "node-006"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{$env.GITHUB_OWNER}}/{{$env.GITHUB_REPO}}/contents/examples",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi"
+      },
+      "name": "Fetch Good Examples from GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 300],
+      "id": "node-007",
+      "credentials": {
+        "githubApi": {
+          "id": "githubApi",
+          "name": "GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fetch content of good example files\nconst examples = $input.first().json;\nconst exampleContents = [];\n\nfor (const example of examples) {\n  if (example.type === 'file') {\n    // You'll need to fetch each file content\n    exampleContents.push({\n      path: example.path,\n      downloadUrl: example.download_url\n    });\n  }\n}\n\nreturn { exampleContents };"
+      },
+      "name": "Parse Example Files",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 300],
+      "id": "node-008"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll"
+      },
+      "name": "Merge Spec and Examples",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [1450, 200],
+      "id": "node-009"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build comprehensive prompt for Claude\nconst taskData = $input.item(0).json;\nconst specContent = $input.item(1).json.specContent;\nconst examples = $input.item(2).json.exampleContents;\n\nconst prompt = `You are an expert TypeScript/React developer. Generate production-ready code for the following task:\n\n# Task: ${taskData.taskSubject}\n\n## Task Description:\n${taskData.taskDescription}\n\n## Specification:\n${specContent}\n\n## Good Code Examples to Follow:\n${JSON.stringify(examples, null, 2)}\n\n## Target Files to Create/Modify:\n${taskData.targetFiles.join('\\n')}\n\n## Requirements:\n1. Generate COMPLETE, production-ready code\n2. Follow TypeScript best practices\n3. Include comprehensive error handling\n4. Match the coding style from good examples\n5. Add JSDoc comments for all functions\n6. Generate corresponding unit tests\n7. Generate E2E tests using Playwright\n\n## Output Format:\nReturn a JSON object with this structure:\n{\n  \"files\": [\n    {\n      \"path\": \"src/app/feature/page.tsx\",\n      \"content\": \"// Complete file content here\"\n    }\n  ],\n  \"tests\": [\n    {\n      \"path\": \"src/app/feature/page.test.tsx\",\n      \"content\": \"// Complete test file content\"\n    }\n  ],\n  \"e2e_tests\": [\n    {\n      \"path\": \"tests/e2e/feature.spec.ts\",\n      \"content\": \"// Complete E2E test\"\n    }\n  ],\n  \"summary\": \"Brief summary of changes\",\n  \"testing_instructions\": \"How to test this feature\"\n}\n\nGenerate the code now:`;\n\nreturn { \n  prompt,\n  taskData \n};"
+      },
+      "name": "Build Claude Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1650, 200],
+      "id": "node-010"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "claudeApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-sonnet-4-20250514"
+            },
+            {
+              "name": "max_tokens",
+              "value": "8000"
+            },
+            {
+              "name": "messages",
+              "value": "=[{\"role\": \"user\", \"content\": \"{{$json.prompt}}\"}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Call Claude API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1850, 200],
+      "id": "node-011",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "claudeApi",
+          "name": "Claude API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Claude's response\nconst response = $input.first().json;\nconst content = response.content[0].text;\n\n// Extract JSON from Claude's response (might be wrapped in markdown)\nconst jsonMatch = content.match(/```json\\n([\\s\\S]+?)\\n```/) || content.match(/({[\\s\\S]+})/);\nconst generatedCode = jsonMatch ? JSON.parse(jsonMatch[1]) : JSON.parse(content);\n\nreturn {\n  generatedCode,\n  taskData: $('Build Claude Prompt').item(0).json.taskData\n};"
+      },
+      "name": "Parse Claude Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2050, 200],
+      "id": "node-012"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.JENKINS_URL}}/job/auto-test-pipeline/buildWithParameters",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jenkinsApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "TASK_ID",
+              "value": "={{$json.taskData.taskId}}"
+            },
+            {
+              "name": "GENERATED_CODE",
+              "value": "={{JSON.stringify($json.generatedCode)}}"
+            },
+            {
+              "name": "BRANCH_NAME",
+              "value": "=auto-task-{{$json.taskData.taskId}}"
+            }
+          ]
+        }
+      },
+      "name": "Trigger Jenkins Test Pipeline",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2250, 200],
+      "id": "node-013",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "jenkinsApi",
+          "name": "Jenkins API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "name": "Wait for Jenkins",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [2450, 200],
+      "id": "node-014"
+    },
+    {
+      "parameters": {
+        "url": "={{$env.JENKINS_URL}}/job/auto-test-pipeline/lastBuild/api/json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jenkinsApi"
+      },
+      "name": "Get Jenkins Results",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2650, 200],
+      "id": "node-015",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "jenkinsApi",
+          "name": "Jenkins API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.result}}",
+              "operation": "equals",
+              "value2": "SUCCESS"
+            }
+          ]
+        }
+      },
+      "name": "Check Test Results",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [2850, 200],
+      "id": "node-016"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$('Get Task Details from OpenProject').item(0).json._links.addComment.href}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openProjectApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "comment",
+              "value": "=✅ **Automated Tests PASSED**\\n\\n## Generated Code Summary\\n{{$('Parse Claude Response').item(0).json.generatedCode.summary}}\\n\\n## Files Modified\\n{{$('Parse Claude Response').item(0).json.generatedCode.files.map(f => `- ${f.path}`).join('\\n')}}\\n\\n## Test Results\\n- Unit Tests: ✅ Passed\\n- E2E Tests: ✅ Passed\\n- Type Check: ✅ Passed\\n\\n## Testing Instructions\\n{{$('Parse Claude Response').item(0).json.generatedCode.testing_instructions}}\\n\\n## Next Steps\\n- Review the generated code\\n- Test manually if needed\\n- Merge PR when ready\\n\\n**Branch:** `auto-task-{{$('Parse Task Info').item(0).json.taskId}}`\\n**Jenkins Build:** {{$json.url}}"
+            }
+          ]
+        }
+      },
+      "name": "Post SUCCESS to OpenProject",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [3050, 100],
+      "id": "node-017",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openProjectApi",
+          "name": "OpenProject API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$('Get Task Details from OpenProject').item(0).json._links.self.href}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openProjectApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "_links",
+              "value": "={\"status\": {\"href\": \"/api/v3/statuses/{{$env.OPENPROJECT_STATUS_READY_FOR_REVIEW}}\"}}"
+            }
+          ]
+        }
+      },
+      "name": "Update Task Status to Ready for Review",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [3250, 100],
+      "id": "node-018",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openProjectApi",
+          "name": "OpenProject API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$('Get Task Details from OpenProject').item(0).json._links.addComment.href}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openProjectApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "comment",
+              "value": "=❌ **Automated Tests FAILED**\\n\\n## Generated Code Summary\\n{{$('Parse Claude Response').item(0).json.generatedCode.summary}}\\n\\n## Test Failures\\n{{$json.failureDetails}}\\n\\n## Error Logs\\n```\\n{{$json.consoleOutput}}\\n```\\n\\n## Next Steps\\n- Claude will attempt to fix the issues\\n- Manual review may be needed\\n\\n**Branch:** `auto-task-{{$('Parse Task Info').item(0).json.taskId}}`\\n**Jenkins Build:** {{$json.url}}"
+            }
+          ]
+        }
+      },
+      "name": "Post FAILURE to OpenProject",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [3050, 300],
+      "id": "node-019",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openProjectApi",
+          "name": "OpenProject API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build retry prompt with error details\nconst errors = $input.first().json;\nconst originalPrompt = $('Build Claude Prompt').item(0).json.prompt;\n\nconst retryPrompt = `${originalPrompt}\\n\\n## PREVIOUS ATTEMPT FAILED\\n\\nThe code you generated had these errors:\\n${JSON.stringify(errors, null, 2)}\\n\\nPlease fix these errors and regenerate the code.`;\n\nreturn { prompt: retryPrompt };"
+      },
+      "name": "Build Retry Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3250, 300],
+      "id": "node-020"
+    }
+  ],
+  "connections": {
+    "OpenProject Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter: In Progress Tasks Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: In Progress Tasks Only": {
+      "main": [
+        [
+          {
+            "node": "Get Task Details from OpenProject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Task Details from OpenProject": {
+      "main": [
+        [
+          {
+            "node": "Parse Task Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Task Info": {
+      "main": [
+        [
+          {
+            "node": "Fetch Spec File from GitHub",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Good Examples from GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Spec File from GitHub": {
+      "main": [
+        [
+          {
+            "node": "Decode Spec File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decode Spec File": {
+      "main": [
+        [
+          {
+            "node": "Merge Spec and Examples",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Good Examples from GitHub": {
+      "main": [
+        [
+          {
+            "node": "Parse Example Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Example Files": {
+      "main": [
+        [
+          {
+            "node": "Merge Spec and Examples",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Spec and Examples": {
+      "main": [
+        [
+          {
+            "node": "Build Claude Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Claude Prompt": {
+      "main": [
+        [
+          {
+            "node": "Call Claude API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Claude API": {
+      "main": [
+        [
+          {
+            "node": "Parse Claude Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Claude Response": {
+      "main": [
+        [
+          {
+            "node": "Trigger Jenkins Test Pipeline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Jenkins Test Pipeline": {
+      "main": [
+        [
+          {
+            "node": "Wait for Jenkins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Jenkins": {
+      "main": [
+        [
+          {
+            "node": "Get Jenkins Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Jenkins Results": {
+      "main": [
+        [
+          {
+            "node": "Check Test Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Test Results": {
+      "main": [
+        [
+          {
+            "node": "Post SUCCESS to OpenProject",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post FAILURE to OpenProject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post SUCCESS to OpenProject": {
+      "main": [
+        [
+          {
+            "node": "Update Task Status to Ready for Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post FAILURE to OpenProject": {
+      "main": [
+        [
+          {
+            "node": "Build Retry Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Retry Prompt": {
+      "main": [
+        [
+          {
+            "node": "Call Claude API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
