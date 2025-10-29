@@ -1,33 +1,43 @@
 feature: Hello World Page
-module: test
-priority: low
-complexity: low
+description: Simple test page to verify automation pipeline
 
 requirements:
-  - Display "Hello World" message
+  - Display "Hello World" message in teal color
   - Center the text on the page
-  - Use teal color scheme from design system
+  - Use Next.js App Router
+  - Apply Tailwind CSS styling
+  - Ensure responsive design
+
+technical_specs:
+  route: /hello
+  framework: Next.js 15.5.6
+  styling: Tailwind CSS
+  components:
+    - page.tsx (Server Component)
 
 acceptance_criteria:
   - Page renders at /hello route
-  - Text is visible and centered
-  - Uses site design system colors
-  - Responsive on mobile devices
-
-api_endpoints: []
-
-tests_required:
-  unit:
-    - Component renders correctly
-    - Text content matches expected value
-  e2e:
-    - Page loads successfully at /hello
-    - Text is visible in viewport
-    - Page is responsive on mobile
+  - Text "Hello World" is visible and readable
+  - Text uses teal-600 color from design system
+  - Text is centered horizontally and vertically
+  - Page is responsive on mobile (320px+)
+  - No console errors
+  - TypeScript compiles without errors
+  - Page loads in under 1 second
 
 good_examples:
   - /src/app/page.tsx
+  - /src/app/shop/page.tsx
 
-dependencies:
-  - Next.js 15 App Router
-  - Tailwind CSS
+target_files:
+  - /src/app/hello/page.tsx
+
+testing_instructions:
+  - npm run dev
+  - Navigate to http://localhost:3005/hello
+  - Verify "Hello World" displays in teal color
+  - Verify text is centered
+  - Test responsive view (resize browser)
+  - Check browser console for errors
+  - Run: npm run build (should succeed)
+  - Run: npm run type-check (should succeed)
