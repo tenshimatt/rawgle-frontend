@@ -1,0 +1,581 @@
+{
+  "name": "Auto Development Pipeline - OpenProject → Claude → GitHub → Vercel → MCP Tests",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "openproject-task-update",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "OpenProject Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 400],
+      "webhookId": "auto-task-trigger-mcp",
+      "id": "node-001"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-001",
+              "leftValue": "={{ $json.body.action }}",
+              "rightValue": "updated",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "condition-002",
+              "leftValue": "={{ $json.body._embedded.status.name }}",
+              "rightValue": "In Progress",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "name": "Filter: In Progress Tasks Only",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [450, 400],
+      "id": "node-002"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body._links.self.href }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openProjectApi",
+        "options": {}
+      },
+      "name": "Get Task Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [650, 300],
+      "id": "node-003",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openProjectApi",
+          "name": "OpenProject API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const task = $input.first().json;\nconst taskId = task.id;\nconst taskSubject = task.subject;\nconst taskDescription = task.description?.raw || '';\n\nconst specMatch = taskDescription.match(/SPEC_FILE:\\s*(.+?)(?:\\n|$)/);\nconst specFile = specMatch ? specMatch[1].trim() : '';\n\nconst examplesMatch = taskDescription.match(/GOOD_EXAMPLES:\\s*(.+?)(?:\\n|$)/);\nconst goodExamples = examplesMatch ? examplesMatch[1].split(',').map(e => e.trim()) : [];\n\nconst targetMatch = taskDescription.match(/TARGET_FILES:\\s*(.+?)(?:\\n|$)/);\nconst targetFiles = targetMatch ? targetMatch[1].split(',').map(f => f.trim()) : [];\n\nconst testFilesMatch = taskDescription.match(/TEST_FILES:\\s*(.+?)(?:\\n|$)/);\nconst testFiles = testFilesMatch ? testFilesMatch[1].split(',').map(f => f.trim()) : ['tests/e2e/generated.spec.ts'];\n\nreturn {\n  taskId,\n  taskSubject,\n  taskDescription,\n  specFile,\n  goodExamples,\n  targetFiles,\n  testFiles,\n  taskUrl: task._links.self.href,\n  branchName: `auto-task-${taskId}`\n};"
+      },
+      "name": "Parse Task Info",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 300],
+      "id": "node-004"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $env.GITHUB_OWNER }}/{{ $env.GITHUB_REPO }}/contents/{{ $json.specFile }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "name": "Fetch Spec from GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1050, 200],
+      "id": "node-005",
+      "credentials": {
+        "githubApi": {
+          "id": "githubApi",
+          "name": "GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const specContent = Buffer.from($input.first().json.content, 'base64').toString('utf-8');\nreturn { specContent };"
+      },
+      "name": "Decode Spec",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 200],
+      "id": "node-006"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll"
+      },
+      "name": "Merge Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [1450, 300],
+      "id": "node-007"
+    },
+    {
+      "parameters": {
+        "jsCode": "const taskData = $input.item(0).json;\nconst specContent = $input.item(1).json.specContent;\n\nconst prompt = `You are an expert TypeScript/React/Next.js developer with MCP tool access.\n\n# Task: ${taskData.taskSubject}\n\n## Description:\n${taskData.taskDescription}\n\n## Specification:\n${specContent}\n\n## Target Files:\n${taskData.targetFiles.join('\\n')}\n\n## Requirements:\n1. Generate COMPLETE, production-ready code\n2. Follow TypeScript best practices\n3. Include comprehensive error handling\n4. Add JSDoc comments for all functions\n5. Generate E2E tests using Playwright\n6. Tests MUST validate the core functionality\n\n## Output Format:\nReturn JSON:\n{\n  \"files\": [\n    {\"path\": \"src/...\", \"content\": \"...\"}\n  ],\n  \"tests\": [\n    {\"path\": \"tests/e2e/...\", \"content\": \"...\"}\n  ],\n  \"summary\": \"Brief summary\"\n}`;\n\nreturn { prompt, taskData };"
+      },
+      "name": "Build Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1650, 300],
+      "id": "node-008"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-sonnet-4-20250514\",\n  \"max_tokens\": 8000,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ JSON.stringify($json.prompt) }}\n    }\n  ]\n}",
+        "options": {}
+      },
+      "name": "Call Claude",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1850, 300],
+      "id": "node-009",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "anthropicApi",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst content = response.content[0].text;\n\nconst jsonMatch = content.match(/```json\\n([\\s\\S]+?)\\n```/) || content.match(/({[\\s\\S]+})/);\nconst generatedCode = jsonMatch ? JSON.parse(jsonMatch[1]) : JSON.parse(content);\n\nreturn {\n  generatedCode,\n  taskData: $('Build Prompt').item(0).json.taskData\n};"
+      },
+      "name": "Parse Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2050, 300],
+      "id": "node-010"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { generatedCode, taskData } = $input.first().json;\n\nconst allFiles = [\n  ...generatedCode.files,\n  ...generatedCode.tests\n];\n\nconst commits = allFiles.map(file => ({\n  path: file.path,\n  content: Buffer.from(file.content).toString('base64'),\n  branchName: taskData.branchName\n}));\n\nreturn commits;"
+      },
+      "name": "Prepare Commits",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2250, 300],
+      "id": "node-011"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.github.com/repos/{{ $env.GITHUB_OWNER }}/{{ $env.GITHUB_REPO }}/git/refs",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"ref\": \"refs/heads/{{ $json.branchName }}\",\n  \"sha\": \"{{ $('Get Task Details').item(0).json.defaultBranchSha || 'main' }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "name": "Create Branch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2450, 300],
+      "id": "node-012",
+      "credentials": {
+        "githubApi": {
+          "id": "githubApi",
+          "name": "GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/{{ $env.GITHUB_OWNER }}/{{ $env.GITHUB_REPO }}/contents/{{ $json.path }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": \"Auto-generated code for task {{ $('Parse Task Info').item(0).json.taskId }}\",\n  \"content\": {{ JSON.stringify($json.content) }},\n  \"branch\": {{ JSON.stringify($json.branchName) }}\n}",
+        "options": {}
+      },
+      "name": "Commit Files",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2650, 300],
+      "id": "node-013",
+      "credentials": {
+        "githubApi": {
+          "id": "githubApi",
+          "name": "GitHub API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "name": "Wait for Vercel",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [2850, 300],
+      "webhookSuffix": "wait-vercel",
+      "id": "node-014"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.vercel.com/v13/deployments?app={{ $env.VERCEL_PROJECT_ID }}&branch={{ $('Parse Task Info').item(0).json.branchName }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "vercelApi",
+        "options": {}
+      },
+      "name": "Get Vercel Preview",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3050, 300],
+      "id": "node-015",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "vercelApi",
+          "name": "Vercel API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const deployment = $input.first().json.deployments[0];\nconst previewUrl = `https://${deployment.url}`;\nconst taskData = $('Parse Task Info').item(0).json;\n\nreturn {\n  previewUrl,\n  deploymentId: deployment.id,\n  taskData,\n  testFiles: taskData.testFiles\n};"
+      },
+      "name": "Extract Preview URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3250, 300],
+      "id": "node-016"
+    },
+    {
+      "parameters": {
+        "command": "docker",
+        "arguments": "exec -i mcp-playwright node dist/index.js",
+        "sendBinary": false
+      },
+      "name": "Run MCP Tests",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [3450, 300],
+      "id": "node-017",
+      "notes": "Calls MCP Playwright server via stdio"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build MCP request\nconst { previewUrl, testFiles } = $input.first().json;\n\nconst mcpRequest = {\n  jsonrpc: '2.0',\n  id: 1,\n  method: 'tools/call',\n  params: {\n    name: 'run_tests',\n    arguments: {\n      url: previewUrl,\n      testFiles: testFiles,\n      options: {\n        browser: 'chromium',\n        headless: true,\n        screenshot: 'on',\n        trace: true,\n        video: true\n      }\n    }\n  }\n};\n\n// Write to stdin\nreturn { stdin: JSON.stringify(mcpRequest) + '\\n' };"
+      },
+      "name": "Build MCP Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3300, 300],
+      "id": "node-018"
+    },
+    {
+      "parameters": {
+        "jsCode": "const stdout = $input.first().json.stdout;\n\nlet testResults;\ntry {\n  const mcpResponse = JSON.parse(stdout);\n  testResults = mcpResponse.result;\n} catch (e) {\n  return { error: 'Failed to parse MCP response', stdout };\n}\n\nconst { runId, status, summary, tests } = testResults;\n\nconst passed = status === 'passed';\nconst failedTests = tests.filter(t => t.status === 'failed');\n\nreturn {\n  passed,\n  runId,\n  summary,\n  failedTests,\n  fullResults: testResults,\n  taskData: $('Extract Preview URL').item(0).json.taskData\n};"
+      },
+      "name": "Parse Test Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3650, 300],
+      "id": "node-019"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-003",
+              "leftValue": "={{ $json.passed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "name": "Check Tests",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [3850, 300],
+      "id": "node-020"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Get Task Details').item(0).json._links.addComment.href }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openProjectApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"comment\": {\n    \"raw\": \"✅ **Tests PASSED**\\n\\n## Summary\\n{{ $('Parse Response').item(0).json.generatedCode.summary }}\\n\\n## Test Results\\n- Total: {{ $json.summary.total }}\\n- Passed: {{ $json.summary.passed }}\\n- Duration: {{ $json.summary.duration }}ms\\n\\n## Preview\\n{{ $('Extract Preview URL').item(0).json.previewUrl }}\\n\\n## Branch\\n`{{ $json.taskData.branchName }}`\\n\\n## Test Artifacts\\nRun ID: {{ $json.runId }}\"\n  }\n}",
+        "options": {}
+      },
+      "name": "Post SUCCESS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [4050, 200],
+      "id": "node-021",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openProjectApi",
+          "name": "OpenProject API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $('Get Task Details').item(0).json._links.self.href }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openProjectApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"_links\": {\n    \"status\": {\n      \"href\": \"/api/v3/statuses/{{ $env.OPENPROJECT_STATUS_READY_FOR_REVIEW }}\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "name": "Update to Ready",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [4250, 200],
+      "id": "node-022",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openProjectApi",
+          "name": "OpenProject API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "docker",
+        "arguments": "exec -i mcp-playwright node dist/index.js"
+      },
+      "name": "Analyze Failure",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [4050, 400],
+      "id": "node-023"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { runId, failedTests } = $input.first().json;\n\nconst mcpRequest = {\n  jsonrpc: '2.0',\n  id: 2,\n  method: 'tools/call',\n  params: {\n    name: 'analyze_failure',\n    arguments: {\n      runId: runId,\n      testName: failedTests[0].name\n    }\n  }\n};\n\nreturn { stdin: JSON.stringify(mcpRequest) + '\\n' };"
+      },
+      "name": "Build Failure Analysis Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3950, 400],
+      "id": "node-024"
+    },
+    {
+      "parameters": {
+        "jsCode": "const stdout = $input.first().json.stdout;\n\nlet analysis;\ntry {\n  const mcpResponse = JSON.parse(stdout);\n  analysis = mcpResponse.result;\n} catch (e) {\n  return { error: 'Failed to parse analysis', stdout };\n}\n\nconst originalData = $('Parse Test Results').item(0).json;\n\nreturn {\n  analysis,\n  failedTests: originalData.failedTests,\n  taskData: originalData.taskData,\n  runId: originalData.runId\n};"
+      },
+      "name": "Parse Failure Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [4250, 400],
+      "id": "node-025"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Get Task Details').item(0).json._links.addComment.href }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openProjectApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"comment\": {\n    \"raw\": \"❌ **Tests FAILED**\\n\\n## Failed Tests\\n{{ $json.failedTests.map(t => `- ${t.name}: ${t.error.message}`).join('\\\\n') }}\\n\\n## Failure Analysis\\n**Reason:** {{ $json.analysis.failureReason }}\\n\\n**Suggestions:**\\n{{ $json.analysis.suggestions.map(s => `- ${s}`).join('\\\\n') }}\\n\\n## Console Errors\\n```\\n{{ $json.analysis.consoleLogs.slice(0, 5).map(l => l.message).join('\\\\n') }}\\n```\\n\\n## Test Artifacts\\nRun ID: {{ $json.runId }}\\n\\n**Claude will attempt to fix these issues.**\"\n  }\n}",
+        "options": {}
+      },
+      "name": "Post FAILURE",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [4450, 400],
+      "id": "node-026",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openProjectApi",
+          "name": "OpenProject API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const { analysis, failedTests, taskData } = $input.first().json;\nconst originalPrompt = $('Build Prompt').item(0).json.prompt;\n\nconst retryPrompt = `${originalPrompt}\\n\\n## ⚠️ PREVIOUS ATTEMPT FAILED\\n\\n### Test Failure Details:\\n**Test:** ${failedTests[0].name}\\n**Error:** ${failedTests[0].error.message}\\n\\n### Failure Analysis:\\n${analysis.failureReason}\\n\\n### Console Errors:\\n${analysis.consoleLogs.slice(0, 3).map(l => `- ${l.message}`).join('\\n')}\\n\\n### Suggestions:\\n${analysis.suggestions.map(s => `- ${s}`).join('\\n')}\\n\\n### Screenshot Evidence:\\nA screenshot was captured showing the visual state at failure.\\n\\n**Please fix these issues and regenerate the code. Focus on:**\\n1. The error message above\\n2. Console errors that occurred\\n3. Suggested fixes from the analysis\\n\\nGenerate improved code now:`;\n\nreturn { \n  prompt: retryPrompt, \n  taskData,\n  attemptNumber: (taskData.attemptNumber || 1) + 1\n};"
+      },
+      "name": "Build Retry Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [4650, 400],
+      "id": "node-027"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-004",
+              "leftValue": "={{ $json.attemptNumber }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "smaller"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "name": "Check Retry Limit",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [4850, 400],
+      "id": "node-028"
+    }
+  ],
+  "connections": {
+    "OpenProject Webhook Trigger": {
+      "main": [[{"node": "Filter: In Progress Tasks Only", "type": "main", "index": 0}]]
+    },
+    "Filter: In Progress Tasks Only": {
+      "main": [[{"node": "Get Task Details", "type": "main", "index": 0}]]
+    },
+    "Get Task Details": {
+      "main": [[{"node": "Parse Task Info", "type": "main", "index": 0}]]
+    },
+    "Parse Task Info": {
+      "main": [[{"node": "Fetch Spec from GitHub", "type": "main", "index": 0}, {"node": "Merge Data", "type": "main", "index": 0}]]
+    },
+    "Fetch Spec from GitHub": {
+      "main": [[{"node": "Decode Spec", "type": "main", "index": 0}]]
+    },
+    "Decode Spec": {
+      "main": [[{"node": "Merge Data", "type": "main", "index": 1}]]
+    },
+    "Merge Data": {
+      "main": [[{"node": "Build Prompt", "type": "main", "index": 0}]]
+    },
+    "Build Prompt": {
+      "main": [[{"node": "Call Claude", "type": "main", "index": 0}]]
+    },
+    "Call Claude": {
+      "main": [[{"node": "Parse Response", "type": "main", "index": 0}]]
+    },
+    "Parse Response": {
+      "main": [[{"node": "Prepare Commits", "type": "main", "index": 0}]]
+    },
+    "Prepare Commits": {
+      "main": [[{"node": "Create Branch", "type": "main", "index": 0}]]
+    },
+    "Create Branch": {
+      "main": [[{"node": "Commit Files", "type": "main", "index": 0}]]
+    },
+    "Commit Files": {
+      "main": [[{"node": "Wait for Vercel", "type": "main", "index": 0}]]
+    },
+    "Wait for Vercel": {
+      "main": [[{"node": "Get Vercel Preview", "type": "main", "index": 0}]]
+    },
+    "Get Vercel Preview": {
+      "main": [[{"node": "Extract Preview URL", "type": "main", "index": 0}]]
+    },
+    "Extract Preview URL": {
+      "main": [[{"node": "Build MCP Request", "type": "main", "index": 0}]]
+    },
+    "Build MCP Request": {
+      "main": [[{"node": "Run MCP Tests", "type": "main", "index": 0}]]
+    },
+    "Run MCP Tests": {
+      "main": [[{"node": "Parse Test Results", "type": "main", "index": 0}]]
+    },
+    "Parse Test Results": {
+      "main": [[{"node": "Check Tests", "type": "main", "index": 0}]]
+    },
+    "Check Tests": {
+      "main": [
+        [{"node": "Post SUCCESS", "type": "main", "index": 0}],
+        [{"node": "Build Failure Analysis Request", "type": "main", "index": 0}]
+      ]
+    },
+    "Post SUCCESS": {
+      "main": [[{"node": "Update to Ready", "type": "main", "index": 0}]]
+    },
+    "Build Failure Analysis Request": {
+      "main": [[{"node": "Analyze Failure", "type": "main", "index": 0}]]
+    },
+    "Analyze Failure": {
+      "main": [[{"node": "Parse Failure Analysis", "type": "main", "index": 0}]]
+    },
+    "Parse Failure Analysis": {
+      "main": [[{"node": "Post FAILURE", "type": "main", "index": 0}]]
+    },
+    "Post FAILURE": {
+      "main": [[{"node": "Build Retry Prompt", "type": "main", "index": 0}]]
+    },
+    "Build Retry Prompt": {
+      "main": [[{"node": "Check Retry Limit", "type": "main", "index": 0}]]
+    },
+    "Check Retry Limit": {
+      "main": [
+        [{"node": "Call Claude", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
