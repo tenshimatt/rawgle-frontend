@@ -1,0 +1,143 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+*.js
+*.js.map
+*.d.ts
+!playwright.config.ts
+
+# Test results and artifacts
+test-results/
+screenshots/
+videos/
+traces/
+coverage/
+.nyc_output/
+playwright-report/
+blob-report/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Runtime data
+.cache/
+.temp/
+tmp/
+temp/
+
+# Playwright
+playwright/.auth/
+.playwright/
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Debug files
+.debug/
+debug.log
+
+# Local development
+*.local
+local/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets and credentials
+secrets/
+credentials/
+*.pem
+*.key
+*.cert
+*.crt
+
+# CI/CD
+.github/workflows/*.local.yml
+
+# n8n data (if running locally)
+n8n-data/
+.n8n/
+
+# Reports
+reports/
+*.html
+*.xml
+*.json
+!package.json
+!tsconfig.json
+
+# Temporary files
+*.tmp
+*.temp
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# MCP specific
+mcp-config.json
+.mcp/
+
+# Performance profiles
+*.prof
+*.cpuprofile
+*.heapsnapshot
+
+# Storybook
+storybook-static/
