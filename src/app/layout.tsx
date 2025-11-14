@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Poppins } from 'next/font/google'
 import { Toaster } from 'sonner'
 import { Providers } from '@/components/providers'
 import { CartIcon } from '@/components/cart/cart-icon'
@@ -8,16 +7,16 @@ import { SearchProvider } from '@/components/search/search-provider'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 
-const inter = Inter({ 
-  subsets: ['latin'],
+// Using system fonts for better performance and offline support
+const inter = {
   variable: '--font-inter',
-})
+  className: 'font-sans'
+}
 
-const poppins = Poppins({ 
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
+const poppins = {
   variable: '--font-poppins',
-})
+  className: 'font-sans'
+}
 
 export const metadata: Metadata = {
   title: 'RAWGLE - Raw Pet Food Community',
