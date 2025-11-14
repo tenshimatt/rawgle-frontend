@@ -220,7 +220,7 @@ Keep responses clear, practical, and species-appropriate. Default to 2-4 paragra
         ...recentMessages,
       ],
       temperature: 0.7,
-      maxSteps: 5, // Limit complexity
+      maxTokens: 1000, // Limit response length for cost efficiency
     });
 
     // Return streaming response with rate limit headers

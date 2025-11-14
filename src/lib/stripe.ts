@@ -1,8 +1,10 @@
 import Stripe from 'stripe';
 import { loadStripe } from '@stripe/stripe-js';
 
-// Server-side Stripe instance
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+// Server-side Stripe instance (only initialized if key exists)
+// Use empty string as fallback to prevent build errors, actual validation happens in API routes
+const stripeKey = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder';
+export const stripe = new Stripe(stripeKey, {
   apiVersion: '2025-09-30.clover',
 });
 
