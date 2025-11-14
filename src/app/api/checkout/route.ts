@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Stripe is configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json(
+        {
+          error: 'Payment processing not configured',
+          message: 'Please contact support to complete your order.'
+        },
+        { status: 503 }
+      );
+    }
+
+    // Dynamically import Stripe only if configured
+    const { stripe } = await import('@/lib/stripe');
+
     const { items } = await request.json();
 
     if (!items || items.length === 0) {
