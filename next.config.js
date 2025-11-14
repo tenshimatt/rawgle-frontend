@@ -19,29 +19,8 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Add security headers including CSP
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://static.cloudflareinsights.com https://challenges.cloudflare.com https://vercel.live https://*.vercel.live",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https: blob:",
-              "font-src 'self' data:",
-              "connect-src 'self' https://api.stripe.com https://vercel.live https://*.vercel.live wss://ws-us3.pusher.com",
-              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://vercel.live https://*.vercel.live",
-              "worker-src 'self' blob:",
-            ].join('; '),
-          },
-        ],
-      },
-    ];
-  },
+  // Security headers moved to middleware.ts to avoid CSP conflicts
+  // CSP header duplication was causing eval blocking issues
   images: {
     remotePatterns: [
       {
