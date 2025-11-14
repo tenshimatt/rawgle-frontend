@@ -1,22 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supplements } from '@/data/products/supplements';
+import { getRedis, isRedisAvailable } from '@/lib/redis';
 
-// In-memory wishlist storage (Map keyed by userId)
-// Structure: Map<userId, Set<productId>>
+// In-memory wishlist storage (fallback when Redis unavailable)
 const wishlistStore = new Map<string, Set<string>>();
 
-// Initialize with mock data for demo-user
+// Storage key prefix for Redis
+const WISHLIST_KEY_PREFIX = 'wishlist:';
+
 const DEMO_USER_ID = 'demo-user';
-const demoWishlist = new Set<string>([
-  'omega3-fish-oil-1',
-  'probiotic-1',
-  'joint-support-1',
-  'taurine-cats-1',
-  'vitamin-e-1',
-  'bone-meal-calcium-1',
-  'green-lipped-mussel-1',
-]);
-wishlistStore.set(DEMO_USER_ID, demoWishlist);
+
+// Helper functions for Redis storage
+async function getUserWishlist(userId: string): Promise<Set<string>> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const wishlistData = await redis.smembers(`${WISHLIST_KEY_PREFIX}${userId}`);
+      return new Set(wishlistData);
+    } catch (error) {
+      console.warn('[Wishlist API] Redis get failed, using in-memory fallback:', error instanceof Error ? error.message : error);
+      return wishlistStore.get(userId) || new Set<string>();
+    }
+  }
+
+  return wishlistStore.get(userId) || new Set<string>();
+}
+
+async function addToUserWishlist(userId: string, productId: string): Promise<void> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      await redis.sadd(`${WISHLIST_KEY_PREFIX}${userId}`, productId);
+      // Set expiration to 90 days
+      await redis.expire(`${WISHLIST_KEY_PREFIX}${userId}`, 60 * 60 * 24 * 90);
+      return;
+    } catch (error) {
+      console.warn('[Wishlist API] Redis add failed, using in-memory fallback:', error instanceof Error ? error.message : error);
+    }
+  }
+
+  // Fallback to in-memory
+  let userWishlist = wishlistStore.get(userId);
+  if (!userWishlist) {
+    userWishlist = new Set<string>();
+    wishlistStore.set(userId, userWishlist);
+  }
+  userWishlist.add(productId);
+}
+
+async function removeFromUserWishlist(userId: string, productId: string): Promise<void> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      await redis.srem(`${WISHLIST_KEY_PREFIX}${userId}`, productId);
+      return;
+    } catch (error) {
+      console.warn('[Wishlist API] Redis remove failed, using in-memory fallback:', error instanceof Error ? error.message : error);
+    }
+  }
+
+  // Fallback to in-memory
+  const userWishlist = wishlistStore.get(userId);
+  if (userWishlist) {
+    userWishlist.delete(productId);
+  }
+}
 
 /**
  * GET /api/wishlist
@@ -26,8 +77,8 @@ export async function GET(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id') || DEMO_USER_ID;
 
-    // Get user's wishlist product IDs
-    const userWishlist = wishlistStore.get(userId) || new Set<string>();
+    // Get user's wishlist product IDs from Redis
+    const userWishlist = await getUserWishlist(userId);
     const productIds = Array.from(userWishlist);
 
     // Get full product details for wishlisted items
@@ -104,12 +155,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get or create user's wishlist
-    let userWishlist = wishlistStore.get(userId);
-    if (!userWishlist) {
-      userWishlist = new Set<string>();
-      wishlistStore.set(userId, userWishlist);
-    }
+    // Get user's wishlist from Redis
+    const userWishlist = await getUserWishlist(userId);
 
     // Check if already in wishlist
     if (userWishlist.has(productId)) {
@@ -122,8 +169,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Add to wishlist
-    userWishlist.add(productId);
+    // Add to wishlist in Redis
+    await addToUserWishlist(userId, productId);
 
     const item = {
       id: productId,
@@ -187,9 +234,9 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Get user's wishlist
-    const userWishlist = wishlistStore.get(userId);
-    if (!userWishlist || !userWishlist.has(productId)) {
+    // Get user's wishlist from Redis
+    const userWishlist = await getUserWishlist(userId);
+    if (!userWishlist.has(productId)) {
       return NextResponse.json(
         {
           success: false,
@@ -199,11 +246,12 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Remove from wishlist
-    userWishlist.delete(productId);
+    // Remove from wishlist in Redis
+    await removeFromUserWishlist(userId, productId);
 
     // Get updated wishlist items
-    const productIds = Array.from(userWishlist);
+    const updatedWishlist = await getUserWishlist(userId);
+    const productIds = Array.from(updatedWishlist);
     const wishlistItems = supplements
       .filter(product => productIds.includes(product.id))
       .map(product => ({
