@@ -1,10 +1,106 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyAdminToken, isTokenBlacklisted } from '@/lib/auth/admin';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  // Handle admin routes protection
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    // Allow access to login page and auth endpoints
+    const publicAdminPaths = [
+      '/admin/login',
+      '/api/admin/auth/login',
+      '/api/admin/auth/logout',
+    ];
+
+    const isPublicPath = publicAdminPaths.some((path) =>
+      request.nextUrl.pathname.startsWith(path)
+    );
+
+    if (!isPublicPath) {
+      // Get token from cookie or Authorization header
+      let token = request.cookies.get('admin-token')?.value;
+
+      if (!token) {
+        const authHeader = request.headers.get('authorization');
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+          token = authHeader.substring(7);
+        }
+      }
+
+      // If no token, redirect to login (for pages) or return 401 (for API)
+      if (!token) {
+        if (request.nextUrl.pathname.startsWith('/api/admin')) {
+          return NextResponse.json(
+            { error: 'Unauthorized - No token provided' },
+            { status: 401 }
+          );
+        }
+        return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+
+      // Check if token is blacklisted
+      const blacklisted = await isTokenBlacklisted(token);
+      if (blacklisted) {
+        if (request.nextUrl.pathname.startsWith('/api/admin')) {
+          return NextResponse.json(
+            { error: 'Unauthorized - Token has been invalidated' },
+            { status: 401 }
+          );
+        }
+        return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+
+      // Verify token
+      const payload = verifyAdminToken(token);
+
+      if (!payload) {
+        if (request.nextUrl.pathname.startsWith('/api/admin')) {
+          return NextResponse.json(
+            { error: 'Unauthorized - Invalid or expired token' },
+            { status: 401 }
+          );
+        }
+        return NextResponse.redirect(new URL('/admin/login', request.url));
+      }
+
+      // Add admin user info to request headers for use in API routes
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('x-admin-id', payload.adminId);
+      requestHeaders.set('x-admin-email', payload.email);
+      requestHeaders.set('x-admin-role', payload.role);
+
+      const response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+
+      // Continue with security headers
+      applySecurityHeaders(response);
+      applyCORSHeaders(request, response);
+
+      return response;
+    }
+  }
+
   const response = NextResponse.next();
 
-  // Security Headers
+  // Apply security headers and CORS
+  applySecurityHeaders(response);
+  applyCORSHeaders(request, response);
+
+  // Handle preflight requests
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, { status: 200, headers: response.headers });
+  }
+
+  return response;
+}
+
+/**
+ * Apply security headers to response
+ */
+function applySecurityHeaders(response: NextResponse) {
   const securityHeaders = {
     // Content Security Policy - Strict policy for production
     'Content-Security-Policy': [
@@ -54,8 +150,12 @@ export function middleware(request: NextRequest) {
   Object.entries(securityHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
+}
 
-  // CORS Headers - Restrict to same origin only
+/**
+ * Apply CORS headers to response
+ */
+function applyCORSHeaders(request: NextRequest, response: NextResponse) {
   const origin = request.headers.get('origin');
   const allowedOrigins = [
     'https://www.rawgle.com',
@@ -72,16 +172,9 @@ export function middleware(request: NextRequest) {
     );
     response.headers.set(
       'Access-Control-Allow-Headers',
-      'Content-Type, Authorization, x-user-id'
+      'Content-Type, Authorization, x-user-id, x-admin-id, x-admin-email, x-admin-role'
     );
   }
-
-  // Handle preflight requests
-  if (request.method === 'OPTIONS') {
-    return new NextResponse(null, { status: 200, headers: response.headers });
-  }
-
-  return response;
 }
 
 export const config = {
