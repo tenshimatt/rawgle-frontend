@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Ensure middleware runs on Edge Runtime
-export const runtime = 'edge';
-
 export function middleware(request: NextRequest) {
   try {
     const response = NextResponse.next();
