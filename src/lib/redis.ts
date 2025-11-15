@@ -17,12 +17,31 @@ function debug(message: string, data?: any) {
  * Lazy initialization with connection pooling
  */
 export function getRedis(): Redis | null {
-  if (!process.env.REDIS_URL) {
+  // Support multiple Redis URL sources (in priority order):
+  // 1. REDIS_URL (manual configuration)
+  // 2. UPSTASH_REDIS_REDIS_URL (Upstash Vercel integration - double REDIS in name!)
+  // 3. UPSTASH_REDIS_KV_URL (Upstash alternative)
+  // 4. KV_URL (old Vercel KV)
+  // 5. UPSTASH_REDIS_URL (Upstash direct)
+  // 6. rawgle_REDIS_URL (legacy integration)
+  const redisUrl = process.env.REDIS_URL ||
+                   process.env.UPSTASH_REDIS_REDIS_URL ||
+                   process.env.UPSTASH_REDIS_KV_URL ||
+                   process.env.KV_URL ||
+                   process.env.UPSTASH_REDIS_URL ||
+                   process.env.rawgle_REDIS_URL;
+
+  if (!redisUrl) {
     if (connectionAttempts === 0) {
-      console.warn('[Redis] REDIS_URL not configured, data persistence disabled');
+      console.warn('[Redis] No Redis URL configured, data persistence disabled');
       debug('Environment variables:', {
         NODE_ENV: process.env.NODE_ENV,
-        REDIS_URL: 'NOT SET'
+        REDIS_URL: process.env.REDIS_URL ? 'SET' : 'NOT SET',
+        UPSTASH_REDIS_REDIS_URL: process.env.UPSTASH_REDIS_REDIS_URL ? 'SET' : 'NOT SET',
+        UPSTASH_REDIS_KV_URL: process.env.UPSTASH_REDIS_KV_URL ? 'SET' : 'NOT SET',
+        KV_URL: process.env.KV_URL ? 'SET' : 'NOT SET',
+        UPSTASH_REDIS_URL: process.env.UPSTASH_REDIS_URL ? 'SET' : 'NOT SET',
+        rawgle_REDIS_URL: process.env.rawgle_REDIS_URL ? 'SET' : 'NOT SET'
       });
     }
     connectionAttempts++;
@@ -33,9 +52,19 @@ export function getRedis(): Redis | null {
     try {
       connectionAttempts++;
       debug(`Connection attempt #${connectionAttempts}`);
-      debug('REDIS_URL format:', process.env.REDIS_URL.replace(/:[^:@]+@/, ':***@')); // Hide password in logs
 
-      redis = new Redis(process.env.REDIS_URL, {
+      // Determine which env var is being used
+      let source = 'REDIS_URL (manual)';
+      if (redisUrl === process.env.UPSTASH_REDIS_REDIS_URL) source = 'UPSTASH_REDIS_REDIS_URL (Upstash integration)';
+      else if (redisUrl === process.env.UPSTASH_REDIS_KV_URL) source = 'UPSTASH_REDIS_KV_URL (Upstash)';
+      else if (redisUrl === process.env.KV_URL) source = 'KV_URL (old Vercel KV)';
+      else if (redisUrl === process.env.UPSTASH_REDIS_URL) source = 'UPSTASH_REDIS_URL';
+      else if (redisUrl === process.env.rawgle_REDIS_URL) source = 'rawgle_REDIS_URL (legacy)';
+
+      debug('Using Redis URL from:', source);
+      debug('REDIS_URL format:', redisUrl.replace(/:[^:@]+@/, ':***@')); // Hide password in logs
+
+      redis = new Redis(redisUrl, {
         maxRetriesPerRequest: 3,
         retryStrategy: (times) => {
           if (times > 3) {

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifyAdminToken, isTokenBlacklisted } from '@/lib/auth/admin';
-import { verifyToken } from '@/lib/jwt-auth';
+import { verifyTokenEdge, verifyAdminTokenEdge } from '@/lib/jwt-auth-edge';
 
 export async function middleware(request: NextRequest) {
   try {
@@ -47,7 +46,7 @@ export async function middleware(request: NextRequest) {
     // Verify token and extract user info
     let userPayload: any = null;
     if (token) {
-      userPayload = verifyToken(token);
+      userPayload = await verifyTokenEdge(token);
     }
 
     // Handle protected routes - redirect to login if not authenticated
@@ -100,20 +99,8 @@ export async function middleware(request: NextRequest) {
           return NextResponse.redirect(new URL('/admin/login', request.url));
         }
 
-        // Check if token is blacklisted
-        const blacklisted = await isTokenBlacklisted(token);
-        if (blacklisted) {
-          if (request.nextUrl.pathname.startsWith('/api/admin')) {
-            return NextResponse.json(
-              { error: 'Unauthorized - Token has been invalidated' },
-              { status: 401 }
-            );
-          }
-          return NextResponse.redirect(new URL('/admin/login', request.url));
-        }
-
-        // Verify token
-        const payload = verifyAdminToken(token);
+        // Verify token (blacklist check is done in API routes)
+        const payload = await verifyAdminTokenEdge(token);
 
         if (!payload) {
           if (request.nextUrl.pathname.startsWith('/api/admin')) {
