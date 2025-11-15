@@ -1,236 +1,508 @@
 import { User, Session, PasswordResetToken, hashPassword } from './jwt-auth';
-
-// In-memory storage (Map-based like cart and pets APIs)
-export const usersStore = new Map<string, User>();
-export const sessionsStore = new Map<string, Session>();
-export const passwordResetTokensStore = new Map<string, PasswordResetToken>();
-
-// Rate limiting storage (IP -> array of attempt timestamps)
-export const loginAttemptsStore = new Map<string, number[]>();
+import { getRedis, isRedisAvailable } from './redis';
 
 /**
- * Initialize demo user
+ * Redis-based authentication storage
+ *
+ * Key structure:
+ * - auth:users:{userId} → User object
+ * - auth:users:email:{email} → userId
+ * - auth:sessions:{token} → Session object (30-day TTL)
+ * - auth:sessions:refresh:{refreshToken} → session token (30-day TTL)
+ * - auth:password-reset:{token} → PasswordResetToken (1-hour TTL)
+ * - auth:rate-limit:{ip} → Array of attempt timestamps (15-min TTL)
  */
-async function initializeDemoUser() {
-  const demoUserId = 'user_demo_001';
 
-  if (!usersStore.has(demoUserId)) {
-    const demoUser: User = {
-      id: demoUserId,
-      email: 'demo@rawgle.com',
-      passwordHash: await hashPassword('Demo1234'),
-      username: 'demo_user',
-      firstName: 'Demo',
-      lastName: 'User',
-      role: 'user',
-      avatarUrl: '/images/avatars/demo-user.jpg',
-      createdAt: new Date('2024-01-01').toISOString(),
-      updatedAt: new Date('2024-01-01').toISOString(),
-      emailVerified: true
-    };
+const REDIS_PREFIX = 'auth:';
+const SESSION_TTL = 30 * 24 * 60 * 60; // 30 days in seconds
+const PASSWORD_RESET_TTL = 60 * 60; // 1 hour in seconds
+const RATE_LIMIT_TTL = 15 * 60; // 15 minutes in seconds
 
-    usersStore.set(demoUserId, demoUser);
-    usersStore.set(demoUser.email, demoUser); // Also index by email for lookup
+// Enable detailed debugging
+const DEBUG = process.env.NODE_ENV === 'development' || process.env.AUTH_DEBUG === 'true';
 
-    console.log('[AUTH] Demo user initialized - Email: demo@rawgle.com, Password: Demo1234');
+function debug(message: string, data?: any) {
+  if (DEBUG) {
+    console.log(`[AUTH-DEBUG] ${message}`, data || '');
   }
 }
 
-// Initialize demo user immediately
-initializeDemoUser().catch(console.error);
+/**
+ * Initialize demo user (called lazily on first auth operation)
+ */
+let demoUserInitialized = false;
+async function initializeDemoUser() {
+  // Only initialize once
+  if (demoUserInitialized) {
+    return;
+  }
+
+  const redis = getRedis();
+  if (!redis) {
+    console.warn('[AUTH] Redis not available, skipping demo user initialization');
+    return;
+  }
+
+  const demoUserId = 'user_demo_001';
+  const demoEmail = 'demo@rawgle.com';
+
+  try {
+    // Check if demo user already exists
+    const existingUser = await redis.get(`${REDIS_PREFIX}users:${demoUserId}`);
+
+    if (!existingUser) {
+      const demoUser: User = {
+        id: demoUserId,
+        email: demoEmail,
+        passwordHash: await hashPassword('Demo1234'),
+        username: 'demo_user',
+        firstName: 'Demo',
+        lastName: 'User',
+        role: 'user',
+        avatarUrl: '/images/avatars/demo-user.jpg',
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString(),
+        emailVerified: true
+      };
+
+      // Store user by ID and create email index
+      await redis.set(`${REDIS_PREFIX}users:${demoUserId}`, JSON.stringify(demoUser));
+      await redis.set(`${REDIS_PREFIX}users:email:${demoEmail}`, demoUserId);
+
+      console.log('[AUTH] Demo user initialized - Email: demo@rawgle.com, Password: Demo1234');
+    }
+
+    demoUserInitialized = true;
+  } catch (error) {
+    console.error('[AUTH] Failed to initialize demo user:', error);
+    // Don't mark as initialized so it will retry on next call
+  }
+}
 
 /**
  * Get user by ID
  */
-export function getUserById(userId: string): User | undefined {
-  return usersStore.get(userId);
+export async function getUserById(userId: string): Promise<User | null> {
+  debug(`getUserById called for: ${userId}`);
+  const redis = getRedis();
+
+  if (!redis) {
+    console.warn(`[AUTH] Redis not available in getUserById for: ${userId}`);
+    return null;
+  }
+
+  try {
+    const key = `${REDIS_PREFIX}users:${userId}`;
+    debug(`Fetching from Redis: ${key}`);
+    const userData = await redis.get(key);
+
+    if (!userData) {
+      debug(`User not found: ${userId}`);
+      return null;
+    }
+
+    debug(`User found: ${userId}`);
+    return JSON.parse(userData) as User;
+  } catch (error) {
+    console.error('[AUTH] Error getting user by ID:', error);
+    return null;
+  }
 }
 
 /**
  * Get user by email
  */
-export function getUserByEmail(email: string): User | undefined {
-  return usersStore.get(email);
+export async function getUserByEmail(email: string): Promise<User | null> {
+  debug(`getUserByEmail called for: ${email}`);
+  const redis = getRedis();
+
+  if (!redis) {
+    console.warn(`[AUTH] Redis not available in getUserByEmail for: ${email}`);
+    return null;
+  }
+
+  try {
+    // Initialize demo user on first access
+    if (email === 'demo@rawgle.com' && !demoUserInitialized) {
+      debug('Initializing demo user on first access');
+      await initializeDemoUser();
+    }
+
+    // First get userId from email index
+    const emailKey = `${REDIS_PREFIX}users:email:${email}`;
+    debug(`Fetching user ID from Redis: ${emailKey}`);
+    const userId = await redis.get(emailKey);
+
+    if (!userId) {
+      debug(`No user ID found for email: ${email}`);
+      return null;
+    }
+
+    debug(`Found user ID: ${userId} for email: ${email}`);
+    // Then get the full user object
+    return await getUserById(userId);
+  } catch (error) {
+    console.error('[AUTH] Error getting user by email:', error);
+    return null;
+  }
 }
 
 /**
  * Create a new user
  */
-export function createUser(user: User): void {
-  usersStore.set(user.id, user);
-  usersStore.set(user.email, user); // Index by email too
-  console.log(`[AUTH] User created: ${user.email} (${user.id})`);
+export async function createUser(user: User): Promise<void> {
+  debug(`createUser called for: ${user.email} (${user.id})`);
+  const redis = getRedis();
+
+  if (!redis) {
+    const error = new Error('Redis not available - user authentication requires Redis connection');
+    console.error('[AUTH] Create user failed:', error.message);
+    console.error('[AUTH] REDIS_URL:', process.env.REDIS_URL ? 'SET' : 'NOT SET');
+    console.error('[AUTH] Redis available:', isRedisAvailable());
+    throw error;
+  }
+
+  try {
+    const userKey = `${REDIS_PREFIX}users:${user.id}`;
+    const emailKey = `${REDIS_PREFIX}users:email:${user.email}`;
+
+    debug(`Storing user in Redis: ${userKey}`);
+    // Store user by ID and create email index
+    await redis.set(userKey, JSON.stringify(user));
+    await redis.set(emailKey, user.id);
+
+    console.log(`[AUTH] User created in Redis: ${user.email} (${user.id})`);
+    debug('User storage successful');
+  } catch (error) {
+    console.error('[AUTH] Error creating user:', error);
+    debug('User storage failed', error);
+    throw error;
+  }
 }
 
 /**
  * Update user
  */
-export function updateUser(userId: string, updates: Partial<User>): User | null {
-  const user = usersStore.get(userId);
-  if (!user) {
+export async function updateUser(userId: string, updates: Partial<User>): Promise<User | null> {
+  const redis = getRedis();
+  if (!redis) return null;
+
+  try {
+    const user = await getUserById(userId);
+    if (!user) return null;
+
+    const updatedUser = { ...user, ...updates, updatedAt: new Date().toISOString() };
+
+    // Update user by ID
+    await redis.set(`${REDIS_PREFIX}users:${userId}`, JSON.stringify(updatedUser));
+
+    // Update email index if email changed
+    if (updates.email && updates.email !== user.email) {
+      await redis.del(`${REDIS_PREFIX}users:email:${user.email}`);
+      await redis.set(`${REDIS_PREFIX}users:email:${updates.email}`, userId);
+    }
+
+    return updatedUser;
+  } catch (error) {
+    console.error('[AUTH] Error updating user:', error);
     return null;
   }
-
-  const updatedUser = { ...user, ...updates, updatedAt: new Date().toISOString() };
-  usersStore.set(userId, updatedUser);
-  usersStore.set(user.email, updatedUser); // Update email index
-
-  return updatedUser;
 }
 
 /**
  * Create a new session
  */
-export function createSession(session: Session): void {
-  sessionsStore.set(session.token, session);
-  sessionsStore.set(session.refreshToken, session);
-  console.log(`[AUTH] Session created for user: ${session.userId}`);
+export async function createSession(session: Session): Promise<void> {
+  const redis = getRedis();
+  if (!redis) {
+    const error = new Error('Redis not available - session management requires Redis connection');
+    console.error('[AUTH] Create session failed:', error.message);
+    throw error;
+  }
+
+  try {
+    // Store session by token with TTL
+    await redis.setex(
+      `${REDIS_PREFIX}sessions:${session.token}`,
+      SESSION_TTL,
+      JSON.stringify(session)
+    );
+
+    // Create refresh token index with TTL
+    await redis.setex(
+      `${REDIS_PREFIX}sessions:refresh:${session.refreshToken}`,
+      SESSION_TTL,
+      session.token
+    );
+
+    console.log(`[AUTH] Session created in Redis for user: ${session.userId}`);
+  } catch (error) {
+    console.error('[AUTH] Error creating session:', error);
+    throw error;
+  }
 }
 
 /**
  * Get session by token
  */
-export function getSessionByToken(token: string): Session | undefined {
-  return sessionsStore.get(token);
+export async function getSessionByToken(token: string): Promise<Session | null> {
+  const redis = getRedis();
+  if (!redis) return null;
+
+  try {
+    const sessionData = await redis.get(`${REDIS_PREFIX}sessions:${token}`);
+    if (!sessionData) return null;
+
+    return JSON.parse(sessionData) as Session;
+  } catch (error) {
+    console.error('[AUTH] Error getting session by token:', error);
+    return null;
+  }
 }
 
 /**
  * Get session by refresh token
  */
-export function getSessionByRefreshToken(refreshToken: string): Session | undefined {
-  return sessionsStore.get(refreshToken);
+export async function getSessionByRefreshToken(refreshToken: string): Promise<Session | null> {
+  const redis = getRedis();
+  if (!redis) return null;
+
+  try {
+    // First get session token from refresh token index
+    const sessionToken = await redis.get(`${REDIS_PREFIX}sessions:refresh:${refreshToken}`);
+    if (!sessionToken) return null;
+
+    // Then get the full session object
+    return await getSessionByToken(sessionToken);
+  } catch (error) {
+    console.error('[AUTH] Error getting session by refresh token:', error);
+    return null;
+  }
 }
 
 /**
  * Delete session (logout)
  */
-export function deleteSession(token: string): void {
-  const session = sessionsStore.get(token);
-  if (session) {
-    sessionsStore.delete(token);
-    sessionsStore.delete(session.refreshToken);
-    console.log(`[AUTH] Session deleted for user: ${session.userId}`);
+export async function deleteSession(token: string): Promise<void> {
+  const redis = getRedis();
+  if (!redis) return;
+
+  try {
+    // Get session to find refresh token
+    const session = await getSessionByToken(token);
+
+    if (session) {
+      // Delete both token and refresh token
+      await redis.del(`${REDIS_PREFIX}sessions:${token}`);
+      await redis.del(`${REDIS_PREFIX}sessions:refresh:${session.refreshToken}`);
+
+      console.log(`[AUTH] Session deleted from Redis for user: ${session.userId}`);
+    }
+  } catch (error) {
+    console.error('[AUTH] Error deleting session:', error);
   }
 }
 
 /**
  * Delete all sessions for a user
  */
-export function deleteAllUserSessions(userId: string): void {
-  const sessionsToDelete: string[] = [];
+export async function deleteAllUserSessions(userId: string): Promise<void> {
+  const redis = getRedis();
+  if (!redis) return;
 
-  sessionsStore.forEach((session, key) => {
-    if (session.userId === userId) {
-      sessionsToDelete.push(key);
+  try {
+    // Scan for all session keys
+    const stream = redis.scanStream({
+      match: `${REDIS_PREFIX}sessions:*`,
+      count: 100
+    });
+
+    const keysToDelete: string[] = [];
+
+    for await (const keys of stream) {
+      for (const key of keys) {
+        // Skip refresh token keys (they'll be deleted when we delete the main session)
+        if (key.includes(':refresh:')) continue;
+
+        try {
+          const sessionData = await redis.get(key);
+          if (sessionData) {
+            const session = JSON.parse(sessionData) as Session;
+            if (session.userId === userId) {
+              keysToDelete.push(key);
+              keysToDelete.push(`${REDIS_PREFIX}sessions:refresh:${session.refreshToken}`);
+            }
+          }
+        } catch (err) {
+          console.error('[AUTH] Error processing session key:', err);
+        }
+      }
     }
-  });
 
-  sessionsToDelete.forEach(key => sessionsStore.delete(key));
-  console.log(`[AUTH] All sessions deleted for user: ${userId}`);
+    if (keysToDelete.length > 0) {
+      await redis.del(...keysToDelete);
+      console.log(`[AUTH] Deleted ${keysToDelete.length / 2} sessions for user: ${userId}`);
+    }
+  } catch (error) {
+    console.error('[AUTH] Error deleting all user sessions:', error);
+  }
 }
 
 /**
  * Create password reset token
  */
-export function createPasswordResetToken(resetToken: PasswordResetToken): void {
-  passwordResetTokensStore.set(resetToken.token, resetToken);
-  console.log(`[AUTH] Password reset token created for user: ${resetToken.userId}`);
+export async function createPasswordResetToken(resetToken: PasswordResetToken): Promise<void> {
+  const redis = getRedis();
+  if (!redis) {
+    const error = new Error('Redis not available - password reset requires Redis connection');
+    console.error('[AUTH] Create password reset token failed:', error.message);
+    throw error;
+  }
+
+  try {
+    // Store with 1-hour TTL
+    await redis.setex(
+      `${REDIS_PREFIX}password-reset:${resetToken.token}`,
+      PASSWORD_RESET_TTL,
+      JSON.stringify(resetToken)
+    );
+
+    console.log(`[AUTH] Password reset token created in Redis for user: ${resetToken.userId}`);
+  } catch (error) {
+    console.error('[AUTH] Error creating password reset token:', error);
+    throw error;
+  }
 }
 
 /**
  * Get password reset token
  */
-export function getPasswordResetToken(token: string): PasswordResetToken | undefined {
-  return passwordResetTokensStore.get(token);
+export async function getPasswordResetToken(token: string): Promise<PasswordResetToken | null> {
+  const redis = getRedis();
+  if (!redis) return null;
+
+  try {
+    const tokenData = await redis.get(`${REDIS_PREFIX}password-reset:${token}`);
+    if (!tokenData) return null;
+
+    return JSON.parse(tokenData) as PasswordResetToken;
+  } catch (error) {
+    console.error('[AUTH] Error getting password reset token:', error);
+    return null;
+  }
 }
 
 /**
  * Delete password reset token
  */
-export function deletePasswordResetToken(token: string): void {
-  passwordResetTokensStore.delete(token);
+export async function deletePasswordResetToken(token: string): Promise<void> {
+  const redis = getRedis();
+  if (!redis) return;
+
+  try {
+    await redis.del(`${REDIS_PREFIX}password-reset:${token}`);
+  } catch (error) {
+    console.error('[AUTH] Error deleting password reset token:', error);
+  }
 }
 
 /**
  * Check rate limiting for login attempts
  * Returns true if rate limit exceeded
  */
-export function checkRateLimit(ip: string, maxAttempts: number = 5, windowMs: number = 15 * 60 * 1000): boolean {
-  const now = Date.now();
-  const attempts = loginAttemptsStore.get(ip) || [];
+export async function checkRateLimit(
+  ip: string,
+  maxAttempts: number = 5,
+  windowMs: number = 15 * 60 * 1000
+): Promise<boolean> {
+  const redis = getRedis();
+  if (!redis) return false; // No rate limiting if Redis unavailable
 
-  // Remove old attempts outside the window
-  const recentAttempts = attempts.filter(timestamp => now - timestamp < windowMs);
+  try {
+    const key = `${REDIS_PREFIX}rate-limit:${ip}`;
+    const now = Date.now();
 
-  if (recentAttempts.length >= maxAttempts) {
-    return true; // Rate limit exceeded
+    // Get existing attempts
+    const attemptsData = await redis.get(key);
+    const attempts: number[] = attemptsData ? JSON.parse(attemptsData) : [];
+
+    // Remove old attempts outside the window
+    const recentAttempts = attempts.filter(timestamp => now - timestamp < windowMs);
+
+    if (recentAttempts.length >= maxAttempts) {
+      return true; // Rate limit exceeded
+    }
+
+    // Add current attempt
+    recentAttempts.push(now);
+
+    // Store with TTL
+    await redis.setex(key, RATE_LIMIT_TTL, JSON.stringify(recentAttempts));
+
+    return false;
+  } catch (error) {
+    console.error('[AUTH] Error checking rate limit:', error);
+    return false; // Don't block on error
   }
-
-  // Add current attempt
-  recentAttempts.push(now);
-  loginAttemptsStore.set(ip, recentAttempts);
-
-  return false;
 }
 
 /**
  * Clear rate limit for IP (after successful login)
  */
-export function clearRateLimit(ip: string): void {
-  loginAttemptsStore.delete(ip);
-}
+export async function clearRateLimit(ip: string): Promise<void> {
+  const redis = getRedis();
+  if (!redis) return;
 
-/**
- * Clean up expired sessions (should be called periodically)
- */
-export function cleanupExpiredSessions(): void {
-  const now = new Date().toISOString();
-  const tokensToDelete: string[] = [];
-
-  sessionsStore.forEach((session, token) => {
-    if (session.expiresAt < now) {
-      tokensToDelete.push(token);
-      tokensToDelete.push(session.refreshToken);
-    }
-  });
-
-  tokensToDelete.forEach(token => sessionsStore.delete(token));
-
-  if (tokensToDelete.length > 0) {
-    console.log(`[AUTH] Cleaned up ${tokensToDelete.length / 2} expired sessions`);
+  try {
+    await redis.del(`${REDIS_PREFIX}rate-limit:${ip}`);
+  } catch (error) {
+    console.error('[AUTH] Error clearing rate limit:', error);
   }
 }
 
 /**
- * Clean up expired password reset tokens
+ * Get storage stats (for debugging)
  */
-export function cleanupExpiredPasswordResetTokens(): void {
-  const now = new Date().toISOString();
-  const tokensToDelete: string[] = [];
-
-  passwordResetTokensStore.forEach((resetToken, token) => {
-    if (resetToken.expiresAt < now) {
-      tokensToDelete.push(token);
-    }
-  });
-
-  tokensToDelete.forEach(token => passwordResetTokensStore.delete(token));
-
-  if (tokensToDelete.length > 0) {
-    console.log(`[AUTH] Cleaned up ${tokensToDelete.length} expired password reset tokens`);
+export async function getStorageStats() {
+  const redis = getRedis();
+  if (!redis) {
+    return {
+      users: 0,
+      sessions: 0,
+      passwordResetTokens: 0,
+      loginAttempts: 0,
+      redisAvailable: false
+    };
   }
-}
 
-// Set up cleanup intervals (run every hour)
-setInterval(cleanupExpiredSessions, 60 * 60 * 1000);
-setInterval(cleanupExpiredPasswordResetTokens, 60 * 60 * 1000);
+  try {
+    const [userKeys, sessionKeys, resetKeys, rateLimitKeys] = await Promise.all([
+      redis.keys(`${REDIS_PREFIX}users:*`),
+      redis.keys(`${REDIS_PREFIX}sessions:*`),
+      redis.keys(`${REDIS_PREFIX}password-reset:*`),
+      redis.keys(`${REDIS_PREFIX}rate-limit:*`)
+    ]);
 
-// Export for testing/debugging
-export function getStorageStats() {
-  return {
-    users: usersStore.size / 2, // Divided by 2 because we index by both id and email
-    sessions: sessionsStore.size / 2, // Divided by 2 because we index by both token and refresh token
-    passwordResetTokens: passwordResetTokensStore.size,
-    loginAttempts: loginAttemptsStore.size
-  };
+    // Filter out email index keys for user count
+    const actualUserKeys = userKeys.filter(key => !key.includes(':email:'));
+    // Filter out refresh token keys for session count
+    const actualSessionKeys = sessionKeys.filter(key => !key.includes(':refresh:'));
+
+    return {
+      users: actualUserKeys.length,
+      sessions: actualSessionKeys.length,
+      passwordResetTokens: resetKeys.length,
+      loginAttempts: rateLimitKeys.length,
+      redisAvailable: true
+    };
+  } catch (error) {
+    console.error('[AUTH] Error getting storage stats:', error);
+    return {
+      users: 0,
+      sessions: 0,
+      passwordResetTokens: 0,
+      loginAttempts: 0,
+      redisAvailable: false
+    };
+  }
 }

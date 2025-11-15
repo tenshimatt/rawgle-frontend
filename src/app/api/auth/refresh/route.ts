@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get session by refresh token
-    const session = getSessionByRefreshToken(refreshToken);
+    const session = await getSessionByRefreshToken(refreshToken);
 
     if (!session) {
       return NextResponse.json(
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const now = new Date();
     if (new Date(session.refreshExpiresAt) < now) {
       // Delete expired session
-      deleteSession(session.token);
+      await deleteSession(session.token);
 
       return NextResponse.json(
         {
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user
-    const user = getUserById(session.userId);
+    const user = await getUserById(session.userId);
     if (!user) {
       return NextResponse.json(
         {
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Delete old session
-    deleteSession(session.token);
+    await deleteSession(session.token);
 
     // Generate new tokens
     const tokenPayload = {
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
       createdAt: now.toISOString()
     };
 
-    createSession(newSession);
+    await createSession(newSession);
 
     // Log token refresh
     console.log(`[AUTH] Token refreshed for user: ${user.email} (${user.id})`);

@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = getUserByEmail(email.toLowerCase());
+    const existingUser = await getUserByEmail(email.toLowerCase());
     if (existingUser) {
       return NextResponse.json(
         {
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
       emailVerified: false
     };
 
-    createUser(newUser);
+    await createUser(newUser);
 
     // Log registration event
     console.log(`[AUTH] User registered: ${newUser.email} (${newUser.id})`);
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
       createdAt: now.toISOString()
     };
 
-    createSession(session);
+    await createSession(session);
 
     // Create response with tokens for auto-login
     const response = NextResponse.json(
