@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRedis, isRedisAvailable } from '@/lib/redis';
 
 interface Pet {
   id: string;
@@ -46,64 +47,25 @@ const demoPets: Pet[] = [
 const memoryStorage = new Map<string, Pet[]>();
 memoryStorage.set('pets:all', [...demoPets]);
 
-// KV availability flag
-let kvAvailable = false;
-let kv: any = null;
-
-// Check KV availability once at module load
-const initKV = async () => {
-  try {
-    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-      const { kv: kvClient } = await import('@vercel/kv');
-      kv = kvClient;
-      kvAvailable = true;
-      console.log('[Pets API] Vercel KV initialized successfully');
-    } else {
-      console.warn('[Pets API] Vercel KV environment variables not found, using in-memory storage');
-      kvAvailable = false;
-    }
-  } catch (error) {
-    console.error('[Pets API] Failed to initialize KV, using in-memory storage:', error);
-    kvAvailable = false;
-  }
-};
-
-// Initialize KV on first request
-let kvInitPromise: Promise<void> | null = null;
-const ensureKVInitialized = async () => {
-  if (kvInitPromise === null) {
-    kvInitPromise = initKV();
-  }
-  await kvInitPromise;
-};
-
-// Storage key for KV
+// Storage key for Redis
 const PETS_KEY = 'pets:all';
 
-// Helper functions for storage (KV or in-memory fallback)
+// Helper functions for storage (Redis or in-memory fallback)
 async function getAllPets(): Promise<Pet[]> {
-  await ensureKVInitialized();
+  const redis = getRedis();
 
-  if (kvAvailable && kv) {
+  if (redis && isRedisAvailable()) {
     try {
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise<null>((_, reject) =>
-        setTimeout(() => reject(new Error('KV timeout')), 5000)
-      );
-
-      const kvPromise = kv.get<Pet[]>(PETS_KEY);
-      const pets = await Promise.race([kvPromise, timeoutPromise]);
-
-      if (!pets) {
-        // Initialize with demo data
-        await kv.set(PETS_KEY, demoPets);
-        return [...demoPets];
+      const data = await redis.get(PETS_KEY);
+      if (data) {
+        return JSON.parse(data);
       }
-      return pets;
+      // Initialize with demo data if no data exists
+      await redis.set(PETS_KEY, JSON.stringify(demoPets));
+      await redis.expire(PETS_KEY, 60 * 60 * 24 * 365); // 1 year
+      return [...demoPets];
     } catch (error) {
-      console.warn('[Pets API] KV get failed, using in-memory fallback:', error instanceof Error ? error.message : error);
-      // Mark KV as unavailable for this session
-      kvAvailable = false;
+      console.warn('[Pets API] Redis get failed, using in-memory fallback:', error instanceof Error ? error.message : error);
       return memoryStorage.get(PETS_KEY) || [...demoPets];
     }
   }
@@ -112,23 +74,15 @@ async function getAllPets(): Promise<Pet[]> {
 }
 
 async function savePets(pets: Pet[]): Promise<void> {
-  await ensureKVInitialized();
+  const redis = getRedis();
 
-  if (kvAvailable && kv) {
+  if (redis && isRedisAvailable()) {
     try {
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise<void>((_, reject) =>
-        setTimeout(() => reject(new Error('KV timeout')), 5000)
-      );
-
-      const kvPromise = kv.set(PETS_KEY, pets);
-      await Promise.race([kvPromise, timeoutPromise]);
-
+      await redis.set(PETS_KEY, JSON.stringify(pets));
+      await redis.expire(PETS_KEY, 60 * 60 * 24 * 365); // 1 year
       return;
     } catch (error) {
-      console.warn('[Pets API] KV set failed, using in-memory fallback:', error instanceof Error ? error.message : error);
-      // Mark KV as unavailable for this session
-      kvAvailable = false;
+      console.warn('[Pets API] Redis set failed, using in-memory fallback:', error instanceof Error ? error.message : error);
     }
   }
 
