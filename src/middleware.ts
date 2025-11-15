@@ -5,6 +5,18 @@ export function middleware(request: NextRequest) {
   try {
     const response = NextResponse.next();
 
+    // Prevent aggressive caching of HTML pages
+    const isHtmlPage = !request.nextUrl.pathname.startsWith('/_next/') &&
+                       !request.nextUrl.pathname.startsWith('/api/') &&
+                       !request.nextUrl.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$/);
+
+    if (isHtmlPage) {
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      response.headers.set('Pragma', 'no-cache');
+      response.headers.set('Expires', '0');
+      response.headers.set('Surrogate-Control', 'no-store');
+    }
+
     // Security Headers
     const securityHeaders = {
       // Content Security Policy - Strict policy for production
