@@ -18,11 +18,15 @@ function debug(message: string, data?: any) {
  */
 export function getRedis(): Redis | null {
   // Support multiple Redis URL sources (in priority order):
-  // 1. REDIS_URL (manual configuration / Upstash integration)
-  // 2. KV_URL (old Vercel KV)
-  // 3. UPSTASH_REDIS_URL (Upstash direct)
-  // 4. rawgle_REDIS_URL (legacy integration)
+  // 1. REDIS_URL (manual configuration)
+  // 2. UPSTASH_REDIS_REDIS_URL (Upstash Vercel integration - double REDIS in name!)
+  // 3. UPSTASH_REDIS_KV_URL (Upstash alternative)
+  // 4. KV_URL (old Vercel KV)
+  // 5. UPSTASH_REDIS_URL (Upstash direct)
+  // 6. rawgle_REDIS_URL (legacy integration)
   const redisUrl = process.env.REDIS_URL ||
+                   process.env.UPSTASH_REDIS_REDIS_URL ||
+                   process.env.UPSTASH_REDIS_KV_URL ||
                    process.env.KV_URL ||
                    process.env.UPSTASH_REDIS_URL ||
                    process.env.rawgle_REDIS_URL;
@@ -33,6 +37,8 @@ export function getRedis(): Redis | null {
       debug('Environment variables:', {
         NODE_ENV: process.env.NODE_ENV,
         REDIS_URL: process.env.REDIS_URL ? 'SET' : 'NOT SET',
+        UPSTASH_REDIS_REDIS_URL: process.env.UPSTASH_REDIS_REDIS_URL ? 'SET' : 'NOT SET',
+        UPSTASH_REDIS_KV_URL: process.env.UPSTASH_REDIS_KV_URL ? 'SET' : 'NOT SET',
         KV_URL: process.env.KV_URL ? 'SET' : 'NOT SET',
         UPSTASH_REDIS_URL: process.env.UPSTASH_REDIS_URL ? 'SET' : 'NOT SET',
         rawgle_REDIS_URL: process.env.rawgle_REDIS_URL ? 'SET' : 'NOT SET'
@@ -48,8 +54,10 @@ export function getRedis(): Redis | null {
       debug(`Connection attempt #${connectionAttempts}`);
 
       // Determine which env var is being used
-      let source = 'REDIS_URL (manual/Upstash)';
-      if (redisUrl === process.env.KV_URL) source = 'KV_URL (old Vercel KV)';
+      let source = 'REDIS_URL (manual)';
+      if (redisUrl === process.env.UPSTASH_REDIS_REDIS_URL) source = 'UPSTASH_REDIS_REDIS_URL (Upstash integration)';
+      else if (redisUrl === process.env.UPSTASH_REDIS_KV_URL) source = 'UPSTASH_REDIS_KV_URL (Upstash)';
+      else if (redisUrl === process.env.KV_URL) source = 'KV_URL (old Vercel KV)';
       else if (redisUrl === process.env.UPSTASH_REDIS_URL) source = 'UPSTASH_REDIS_URL';
       else if (redisUrl === process.env.rawgle_REDIS_URL) source = 'rawgle_REDIS_URL (legacy)';
 
