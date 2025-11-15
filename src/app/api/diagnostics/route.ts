@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getRedis, isRedisAvailable } from '@/lib/redis';
+import { checkRawgleApiHealth, rawgleApi } from '@/lib/rawgle-api-client';
 
 /**
  * GET /api/diagnostics
@@ -15,11 +16,18 @@ export async function GET() {
       hasUpstashKvUrl: !!process.env.UPSTASH_REDIS_KV_URL,
       hasNextAuthUrl: !!process.env.NEXTAUTH_URL,
       hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+      hasRawgleApiUrl: !!process.env.NEXT_PUBLIC_RAWGLE_API_URL,
     },
     redis: {
       available: false,
       connected: false,
       ping: null,
+      error: null
+    },
+    cloudflare: {
+      apiAvailable: false,
+      connected: false,
+      stats: null,
       error: null
     },
     imports: {
@@ -40,6 +48,20 @@ export async function GET() {
     }
   } catch (error) {
     diagnostics.redis.error = error instanceof Error ? error.message : String(error);
+  }
+
+  // Test Cloudflare Workers API connection
+  try {
+    const isHealthy = await checkRawgleApiHealth();
+    diagnostics.cloudflare.apiAvailable = isHealthy;
+    diagnostics.cloudflare.connected = isHealthy;
+
+    if (isHealthy) {
+      const stats = await rawgleApi.getStats();
+      diagnostics.cloudflare.stats = stats.stats;
+    }
+  } catch (error) {
+    diagnostics.cloudflare.error = error instanceof Error ? error.message : String(error);
   }
 
   // Test imports

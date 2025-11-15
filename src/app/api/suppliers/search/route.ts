@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchSuppliers, suppliers, Supplier } from '@/data/suppliers';
+import { rawgleApi, type CloudflareSupplier } from '@/lib/rawgle-api-client';
+
+export const runtime = 'edge';
 
 /**
  * Text Search API for Suppliers
  *
- * Searches suppliers by name, address, city, state, and description.
- * Supports pagination for large result sets.
+ * Proxies to Cloudflare Workers for full-text supplier search
+ * Uses production database with 9,190+ suppliers
  *
  * GET /api/suppliers/search?q={query}&page={page}&limit={limit}&species={dogs|cats|both}
  *
@@ -17,6 +19,7 @@ import { searchSuppliers, suppliers, Supplier } from '@/data/suppliers';
  *
  * Response:
  * {
+ *   success: true,
  *   results: Supplier[],
  *   page: number,
  *   limit: number,
@@ -71,9 +74,9 @@ function parseSearchParams(searchParams: URLSearchParams): SearchParams | { erro
 }
 
 function filterBySpecies(
-  suppliers: Supplier[],
+  suppliers: CloudflareSupplier[],
   species?: 'dogs' | 'cats' | 'both'
-): Supplier[] {
+): CloudflareSupplier[] {
   if (!species) {
     return suppliers;
   }
@@ -84,11 +87,11 @@ function filterBySpecies(
 }
 
 function paginateResults(
-  results: Supplier[],
+  results: CloudflareSupplier[],
   page: number,
   limit: number
 ): {
-  paginatedResults: Supplier[];
+  paginatedResults: CloudflareSupplier[];
   hasMore: boolean;
   total: number;
 } {
@@ -123,14 +126,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Search suppliers by query
-    let results: Supplier[];
-    if (params.query.trim()) {
-      results = searchSuppliers(params.query);
-    } else {
-      // If no query, return all suppliers
-      results = [...suppliers];
-    }
+    console.log(`[Search API] Query: "${params.query}", Page: ${params.page}, Limit: ${params.limit}`);
+
+    // Call Cloudflare Workers API
+    // Fetch more than needed to allow for pagination and filtering
+    const fetchLimit = params.limit * 10; // Get 10 pages worth for client-side pagination
+    const response = await rawgleApi.searchSuppliers(params.query, fetchLimit);
+
+    let results = response.results || [];
 
     // Filter by species if specified
     if (params.species) {
@@ -138,7 +141,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Sort results alphabetically by business name
-    results.sort((a, b) => a.business_name.localeCompare(b.business_name));
+    results.sort((a, b) => {
+      const nameA = a.business_name || a.name || '';
+      const nameB = b.business_name || b.name || '';
+      return nameA.localeCompare(nameB);
+    });
+
+    console.log(`[Search API] Found ${results.length} suppliers from Cloudflare D1`);
 
     // Paginate results
     const { paginatedResults, hasMore, total } = paginateResults(
@@ -148,7 +157,8 @@ export async function GET(request: NextRequest) {
     );
 
     // Format response
-    const response = {
+    const formattedResponse = {
+      success: true,
       results: paginatedResults,
       page: params.page,
       limit: params.limit,
@@ -158,9 +168,10 @@ export async function GET(request: NextRequest) {
       filters: {
         species: params.species || 'all',
       },
+      source: 'cloudflare-d1',
     };
 
-    return NextResponse.json(response, {
+    return NextResponse.json(formattedResponse, {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
@@ -171,10 +182,11 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Supplier search API error:', error);
+    console.error('[Search API] Error:', error);
 
     return NextResponse.json(
       {
+        success: false,
         error: 'Internal server error',
         results: [],
         page: 1,
@@ -182,6 +194,7 @@ export async function GET(request: NextRequest) {
         total: 0,
         hasMore: false,
         message: error instanceof Error ? error.message : 'Unknown error',
+        source: 'cloudflare-d1',
       },
       {
         status: 500,
