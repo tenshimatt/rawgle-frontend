@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     // Delete session
     if (token) {
-      deleteSession(token);
+      await deleteSession(token);
     }
 
     // Log logout event
