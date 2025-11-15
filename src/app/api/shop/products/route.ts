@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRedis, isRedisAvailable } from '@/lib/redis';
 
 // In-memory store for products
 const productsStore = new Map<string, any[]>();
@@ -95,6 +96,52 @@ const initializeProducts = (userId: string) => {
   }
 };
 
+const PRODUCTS_KEY = 'shop:products:';
+
+// Helper: Get products for a user
+async function getUserProducts(userId: string): Promise<any[]> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const data = await redis.get(`${PRODUCTS_KEY}${userId}`);
+      if (data) {
+        return JSON.parse(data);
+      }
+      // Initialize with demo data
+      initializeProducts(userId);
+      const products = productsStore.get(userId) || [];
+      await redis.set(`${PRODUCTS_KEY}${userId}`, JSON.stringify(products));
+      await redis.expire(`${PRODUCTS_KEY}${userId}`, 60 * 60 * 24 * 180); // 6 months
+      return products;
+    } catch (error) {
+      console.warn('[Shop Products API] Redis get failed, using fallback:', error instanceof Error ? error.message : error);
+      initializeProducts(userId);
+      return productsStore.get(userId) || [];
+    }
+  }
+
+  initializeProducts(userId);
+  return productsStore.get(userId) || [];
+}
+
+// Helper: Save products for a user
+async function saveUserProducts(userId: string, products: any[]): Promise<void> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      await redis.set(`${PRODUCTS_KEY}${userId}`, JSON.stringify(products));
+      await redis.expire(`${PRODUCTS_KEY}${userId}`, 60 * 60 * 24 * 180); // 6 months
+      return;
+    } catch (error) {
+      console.warn('[Shop Products API] Redis set failed, using fallback:', error instanceof Error ? error.message : error);
+    }
+  }
+
+  productsStore.set(userId, products);
+}
+
 export async function GET(req: NextRequest) {
   try {
     const userId = req.headers.get('x-user-id') || 'demo-user';
@@ -102,9 +149,7 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get('category');
     const search = searchParams.get('search');
 
-    initializeProducts(userId);
-
-    let products = productsStore.get(userId) || [];
+    let products = await getUserProducts(userId);
 
     // Filter by category
     if (category && category !== 'all') {
@@ -150,8 +195,6 @@ export async function POST(req: NextRequest) {
 
     const userId = req.headers.get('x-user-id') || 'demo-user';
 
-    initializeProducts(userId);
-
     const newProduct = {
       id: `prod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name,
@@ -167,9 +210,9 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date().toISOString(),
     };
 
-    const userProducts = productsStore.get(userId) || [];
+    const userProducts = await getUserProducts(userId);
     userProducts.push(newProduct);
-    productsStore.set(userId, userProducts);
+    await saveUserProducts(userId, userProducts);
 
     return NextResponse.json({
       success: true,

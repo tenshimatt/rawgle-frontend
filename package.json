@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.53",
-    "@ai-sdk/react": "^1.0.20",
+    "@ai-sdk/react": "^1.2.12",
     "@clerk/nextjs": "^5.0.0",
     "@cloudflare/workers-types": "^4.20240101.0",
     "@ducanh2912/next-pwa": "^10.2.9",
