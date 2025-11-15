@@ -55,7 +55,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     }
 
     // Get reset token
-    const resetToken = getPasswordResetToken(token);
+    const resetToken = await getPasswordResetToken(token);
 
     if (!resetToken) {
       return NextResponse.json(
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const now = new Date();
     if (new Date(resetToken.expiresAt) < now) {
       // Delete expired token
-      deletePasswordResetToken(token);
+      await deletePasswordResetToken(token);
 
       return NextResponse.json(
         {
@@ -85,10 +85,10 @@ export async function POST(req: NextRequest, context: RouteContext) {
     }
 
     // Get user
-    const user = getUserById(resetToken.userId);
+    const user = await getUserById(resetToken.userId);
 
     if (!user) {
-      deletePasswordResetToken(token);
+      await deletePasswordResetToken(token);
 
       return NextResponse.json(
         {
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
     usersStore.set(user.email, updatedUser);
 
     // Delete the reset token
-    deletePasswordResetToken(token);
+    await deletePasswordResetToken(token);
 
     // Delete all user sessions (force re-login)
     deleteAllUserSessions(user.id);

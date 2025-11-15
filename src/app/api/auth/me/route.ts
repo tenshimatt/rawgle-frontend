@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest, toPublicUser } from '@/lib/jwt-auth';
-import { getUserById } from '@/lib/auth-storage';
+import { getUserById, updateUser } from '@/lib/auth-storage';
 
 /**
  * GET /api/auth/me
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get full user data
-    const user = getUserById(tokenPayload.userId);
+    const user = await getUserById(tokenPayload.userId);
 
     if (!user) {
       return NextResponse.json(
@@ -80,7 +80,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Get full user data
-    const user = getUserById(tokenPayload.userId);
+    const user = await getUserById(tokenPayload.userId);
 
     if (!user) {
       return NextResponse.json(
@@ -121,12 +121,19 @@ export async function PATCH(req: NextRequest) {
     if (lastName !== undefined) updates.lastName = lastName;
     if (avatarUrl !== undefined) updates.avatarUrl = avatarUrl;
 
-    const updatedUser = { ...user, ...updates };
+    // Update user in Redis
+    const updatedUser = await updateUser(user.id, updates);
 
-    // Update in storage (note: auth-storage doesn't have updateUser yet, so we'll do it manually)
-    const { usersStore } = require('@/lib/auth-storage');
-    usersStore.set(user.id, updatedUser);
-    usersStore.set(user.email, updatedUser);
+    if (!updatedUser) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Update failed',
+          message: 'Failed to update user profile'
+        },
+        { status: 500 }
+      );
+    }
 
     console.log(`[AUTH] User profile updated: ${user.email} (${user.id})`);
 

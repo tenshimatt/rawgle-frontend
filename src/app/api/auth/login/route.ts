@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
                'unknown';
 
     // Check rate limiting (5 attempts per 15 minutes per IP)
-    if (checkRateLimit(ip)) {
+    if (await checkRateLimit(ip)) {
       console.log(`[AUTH] Rate limit exceeded for IP: ${ip}`);
       return NextResponse.json(
         {
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user by email
-    const user = getUserByEmail(email.toLowerCase());
+    const user = await getUserByEmail(email.toLowerCase());
     if (!user) {
       console.log(`[AUTH] Login failed - user not found: ${email}`);
       return NextResponse.json(
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Clear rate limit on successful login
-    clearRateLimit(ip);
+    await clearRateLimit(ip);
 
     // Generate JWT token
     const tokenPayload = {
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       createdAt: now.toISOString()
     };
 
-    createSession(session);
+    await createSession(session);
 
     // Log successful login
     console.log(`[AUTH] User logged in: ${user.email} (${user.id}) from IP: ${ip}`);

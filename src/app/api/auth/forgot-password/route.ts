@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user by email
-    const user = getUserByEmail(email.toLowerCase());
+    const user = await getUserByEmail(email.toLowerCase());
 
     // Always return success to prevent email enumeration
     // Don't reveal whether the email exists or not
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString()
     };
 
-    createPasswordResetToken(passwordResetToken);
+    await createPasswordResetToken(passwordResetToken);
 
     // In a real application, you would send an email here
     // For now, we'll just log it to the console
