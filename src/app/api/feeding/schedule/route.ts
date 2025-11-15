@@ -1,16 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRedis, isRedisAvailable } from '@/lib/redis';
 
-// In-memory storage (replace with database later)
-const feedingSchedules = (global as any).__feedingSchedules || [];
-if (!(global as any).__feedingSchedules) {
-  (global as any).__feedingSchedules = feedingSchedules;
+const FEEDING_SCHEDULE_KEY = 'feeding:schedule:';
+const feedingSchedules: any[] = []; // Fallback in-memory storage
+
+// Helper: Get feeding schedules for a user
+async function getFeedingSchedules(userId: string): Promise<any[]> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const data = await redis.get(`${FEEDING_SCHEDULE_KEY}${userId}`);
+      if (data) {
+        return JSON.parse(data);
+      }
+      return [];
+    } catch (error) {
+      console.warn('[Feeding Schedule API] Redis get failed, using fallback:', error instanceof Error ? error.message : error);
+      return feedingSchedules.filter(s => s.userId === userId);
+    }
+  }
+
+  return feedingSchedules.filter(s => s.userId === userId);
+}
+
+// Helper: Save feeding schedules for a user
+async function saveFeedingSchedules(userId: string, schedules: any[]): Promise<void> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      await redis.set(`${FEEDING_SCHEDULE_KEY}${userId}`, JSON.stringify(schedules));
+      await redis.expire(`${FEEDING_SCHEDULE_KEY}${userId}`, 60 * 60 * 24 * 180); // 6 months
+      return;
+    } catch (error) {
+      console.warn('[Feeding Schedule API] Redis set failed, using fallback:', error instanceof Error ? error.message : error);
+    }
+  }
+
+  // Fallback: Update in-memory storage
+  const filtered = feedingSchedules.filter(s => s.userId !== userId);
+  feedingSchedules.length = 0;
+  feedingSchedules.push(...filtered, ...schedules);
 }
 
 export async function GET(request: NextRequest) {
   const petId = request.nextUrl.searchParams.get('petId');
   const userId = request.headers.get('x-user-id') || 'demo-user';
 
-  let schedules = feedingSchedules.filter((s: any) => s.userId === userId);
+  let schedules = await getFeedingSchedules(userId);
 
   if (petId) {
     schedules = schedules.filter((s: any) => s.petId === petId);
@@ -49,10 +87,11 @@ export async function POST(request: NextRequest) {
     updatedAt: new Date().toISOString(),
   };
 
-  feedingSchedules.push(newSchedule);
+  const existingSchedules = await getFeedingSchedules(userId);
+  existingSchedules.push(newSchedule);
+  await saveFeedingSchedules(userId, existingSchedules);
 
-  console.log('[API POST] Created feeding schedule:', newSchedule);
-  console.log('[API POST] Total schedules:', feedingSchedules.length);
+  console.log('[Feeding Schedule API] Created schedule:', newSchedule.id);
 
   return NextResponse.json({
     success: true,
@@ -72,7 +111,8 @@ export async function PATCH(request: NextRequest) {
   }
 
   const userId = request.headers.get('x-user-id') || 'demo-user';
-  const scheduleIndex = feedingSchedules.findIndex((s: any) => s.id === id && s.userId === userId);
+  const userSchedules = await getFeedingSchedules(userId);
+  const scheduleIndex = userSchedules.findIndex((s: any) => s.id === id);
 
   if (scheduleIndex === -1) {
     return NextResponse.json({
@@ -81,16 +121,18 @@ export async function PATCH(request: NextRequest) {
     }, { status: 404 });
   }
 
-  feedingSchedules[scheduleIndex] = {
-    ...feedingSchedules[scheduleIndex],
+  userSchedules[scheduleIndex] = {
+    ...userSchedules[scheduleIndex],
     ...updates,
     id, // Ensure ID cannot be changed
     updatedAt: new Date().toISOString(),
   };
 
+  await saveFeedingSchedules(userId, userSchedules);
+
   return NextResponse.json({
     success: true,
-    data: feedingSchedules[scheduleIndex]
+    data: userSchedules[scheduleIndex]
   });
 }
 
@@ -106,8 +148,9 @@ export async function DELETE(request: NextRequest) {
   }
 
   const userId = request.headers.get('x-user-id') || 'demo-user';
-  const initialLength = feedingSchedules.length;
-  const filteredSchedules = feedingSchedules.filter((s: any) => !(s.id === id && s.userId === userId));
+  const userSchedules = await getFeedingSchedules(userId);
+  const initialLength = userSchedules.length;
+  const filteredSchedules = userSchedules.filter((s: any) => s.id !== id);
 
   if (filteredSchedules.length === initialLength) {
     return NextResponse.json({
@@ -116,8 +159,7 @@ export async function DELETE(request: NextRequest) {
     }, { status: 404 });
   }
 
-  feedingSchedules.length = 0;
-  feedingSchedules.push(...filteredSchedules);
+  await saveFeedingSchedules(userId, filteredSchedules);
 
   return NextResponse.json({
     success: true,
