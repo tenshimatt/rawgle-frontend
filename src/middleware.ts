@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifyAdminToken, isTokenBlacklisted } from '@/lib/auth/admin';
-import { verifyToken } from '@/lib/jwt-auth';
+import { verifyTokenEdge, verifyAdminTokenEdge } from '@/lib/jwt-auth-edge';
+import { getRedis } from '@/lib/redis';
 
 export async function middleware(request: NextRequest) {
   try {
@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
     // Verify token and extract user info
     let userPayload: any = null;
     if (token) {
-      userPayload = verifyToken(token);
+      userPayload = await verifyTokenEdge(token);
     }
 
     // Handle protected routes - redirect to login if not authenticated
@@ -101,7 +101,17 @@ export async function middleware(request: NextRequest) {
         }
 
         // Check if token is blacklisted
-        const blacklisted = await isTokenBlacklisted(token);
+        const redis = getRedis();
+        let blacklisted = false;
+        if (redis) {
+          try {
+            const result = await redis.get(`admin:blacklist:${token}`);
+            blacklisted = result !== null;
+          } catch (error) {
+            console.error('[Middleware] Redis blacklist check failed:', error);
+          }
+        }
+
         if (blacklisted) {
           if (request.nextUrl.pathname.startsWith('/api/admin')) {
             return NextResponse.json(
@@ -113,7 +123,7 @@ export async function middleware(request: NextRequest) {
         }
 
         // Verify token
-        const payload = verifyAdminToken(token);
+        const payload = await verifyAdminTokenEdge(token);
 
         if (!payload) {
           if (request.nextUrl.pathname.startsWith('/api/admin')) {
