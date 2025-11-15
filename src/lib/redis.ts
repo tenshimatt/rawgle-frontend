@@ -17,12 +17,16 @@ function debug(message: string, data?: any) {
  * Lazy initialization with connection pooling
  */
 export function getRedis(): Redis | null {
-  if (!process.env.REDIS_URL) {
+  // Support both REDIS_URL and rawgle_REDIS_URL (Vercel integration)
+  const redisUrl = process.env.REDIS_URL || process.env.rawgle_REDIS_URL;
+
+  if (!redisUrl) {
     if (connectionAttempts === 0) {
       console.warn('[Redis] REDIS_URL not configured, data persistence disabled');
       debug('Environment variables:', {
         NODE_ENV: process.env.NODE_ENV,
-        REDIS_URL: 'NOT SET'
+        REDIS_URL: process.env.REDIS_URL ? 'SET' : 'NOT SET',
+        rawgle_REDIS_URL: process.env.rawgle_REDIS_URL ? 'SET' : 'NOT SET'
       });
     }
     connectionAttempts++;
@@ -33,9 +37,10 @@ export function getRedis(): Redis | null {
     try {
       connectionAttempts++;
       debug(`Connection attempt #${connectionAttempts}`);
-      debug('REDIS_URL format:', process.env.REDIS_URL.replace(/:[^:@]+@/, ':***@')); // Hide password in logs
+      debug('Using Redis URL:', redisUrl.includes('rawgle') ? 'rawgle_REDIS_URL (integration)' : 'REDIS_URL (manual)');
+      debug('REDIS_URL format:', redisUrl.replace(/:[^:@]+@/, ':***@')); // Hide password in logs
 
-      redis = new Redis(process.env.REDIS_URL, {
+      redis = new Redis(redisUrl, {
         maxRetriesPerRequest: 3,
         retryStrategy: (times) => {
           if (times > 3) {
