@@ -1,5 +1,5 @@
 import { User, Session, PasswordResetToken, hashPassword } from './jwt-auth';
-import { getRedis } from './redis';
+import { getRedis, isRedisAvailable } from './redis';
 
 /**
  * Redis-based authentication storage
@@ -18,10 +18,25 @@ const SESSION_TTL = 30 * 24 * 60 * 60; // 30 days in seconds
 const PASSWORD_RESET_TTL = 60 * 60; // 1 hour in seconds
 const RATE_LIMIT_TTL = 15 * 60; // 15 minutes in seconds
 
+// Enable detailed debugging
+const DEBUG = process.env.NODE_ENV === 'development' || process.env.AUTH_DEBUG === 'true';
+
+function debug(message: string, data?: any) {
+  if (DEBUG) {
+    console.log(`[AUTH-DEBUG] ${message}`, data || '');
+  }
+}
+
 /**
- * Initialize demo user
+ * Initialize demo user (called lazily on first auth operation)
  */
+let demoUserInitialized = false;
 async function initializeDemoUser() {
+  // Only initialize once
+  if (demoUserInitialized) {
+    return;
+  }
+
   const redis = getRedis();
   if (!redis) {
     console.warn('[AUTH] Redis not available, skipping demo user initialization');
@@ -56,25 +71,37 @@ async function initializeDemoUser() {
 
       console.log('[AUTH] Demo user initialized - Email: demo@rawgle.com, Password: Demo1234');
     }
+
+    demoUserInitialized = true;
   } catch (error) {
     console.error('[AUTH] Failed to initialize demo user:', error);
+    // Don't mark as initialized so it will retry on next call
   }
 }
-
-// Initialize demo user immediately
-initializeDemoUser().catch(console.error);
 
 /**
  * Get user by ID
  */
 export async function getUserById(userId: string): Promise<User | null> {
+  debug(`getUserById called for: ${userId}`);
   const redis = getRedis();
-  if (!redis) return null;
+
+  if (!redis) {
+    console.warn(`[AUTH] Redis not available in getUserById for: ${userId}`);
+    return null;
+  }
 
   try {
-    const userData = await redis.get(`${REDIS_PREFIX}users:${userId}`);
-    if (!userData) return null;
+    const key = `${REDIS_PREFIX}users:${userId}`;
+    debug(`Fetching from Redis: ${key}`);
+    const userData = await redis.get(key);
 
+    if (!userData) {
+      debug(`User not found: ${userId}`);
+      return null;
+    }
+
+    debug(`User found: ${userId}`);
     return JSON.parse(userData) as User;
   } catch (error) {
     console.error('[AUTH] Error getting user by ID:', error);
@@ -86,14 +113,32 @@ export async function getUserById(userId: string): Promise<User | null> {
  * Get user by email
  */
 export async function getUserByEmail(email: string): Promise<User | null> {
+  debug(`getUserByEmail called for: ${email}`);
   const redis = getRedis();
-  if (!redis) return null;
+
+  if (!redis) {
+    console.warn(`[AUTH] Redis not available in getUserByEmail for: ${email}`);
+    return null;
+  }
 
   try {
-    // First get userId from email index
-    const userId = await redis.get(`${REDIS_PREFIX}users:email:${email}`);
-    if (!userId) return null;
+    // Initialize demo user on first access
+    if (email === 'demo@rawgle.com' && !demoUserInitialized) {
+      debug('Initializing demo user on first access');
+      await initializeDemoUser();
+    }
 
+    // First get userId from email index
+    const emailKey = `${REDIS_PREFIX}users:email:${email}`;
+    debug(`Fetching user ID from Redis: ${emailKey}`);
+    const userId = await redis.get(emailKey);
+
+    if (!userId) {
+      debug(`No user ID found for email: ${email}`);
+      return null;
+    }
+
+    debug(`Found user ID: ${userId} for email: ${email}`);
     // Then get the full user object
     return await getUserById(userId);
   } catch (error) {
@@ -106,19 +151,31 @@ export async function getUserByEmail(email: string): Promise<User | null> {
  * Create a new user
  */
 export async function createUser(user: User): Promise<void> {
+  debug(`createUser called for: ${user.email} (${user.id})`);
   const redis = getRedis();
+
   if (!redis) {
-    throw new Error('Redis not available');
+    const error = new Error('Redis not available - user authentication requires Redis connection');
+    console.error('[AUTH] Create user failed:', error.message);
+    console.error('[AUTH] REDIS_URL:', process.env.REDIS_URL ? 'SET' : 'NOT SET');
+    console.error('[AUTH] Redis available:', isRedisAvailable());
+    throw error;
   }
 
   try {
+    const userKey = `${REDIS_PREFIX}users:${user.id}`;
+    const emailKey = `${REDIS_PREFIX}users:email:${user.email}`;
+
+    debug(`Storing user in Redis: ${userKey}`);
     // Store user by ID and create email index
-    await redis.set(`${REDIS_PREFIX}users:${user.id}`, JSON.stringify(user));
-    await redis.set(`${REDIS_PREFIX}users:email:${user.email}`, user.id);
+    await redis.set(userKey, JSON.stringify(user));
+    await redis.set(emailKey, user.id);
 
     console.log(`[AUTH] User created in Redis: ${user.email} (${user.id})`);
+    debug('User storage successful');
   } catch (error) {
     console.error('[AUTH] Error creating user:', error);
+    debug('User storage failed', error);
     throw error;
   }
 }
@@ -158,7 +215,9 @@ export async function updateUser(userId: string, updates: Partial<User>): Promis
 export async function createSession(session: Session): Promise<void> {
   const redis = getRedis();
   if (!redis) {
-    throw new Error('Redis not available');
+    const error = new Error('Redis not available - session management requires Redis connection');
+    console.error('[AUTH] Create session failed:', error.message);
+    throw error;
   }
 
   try {
@@ -295,7 +354,9 @@ export async function deleteAllUserSessions(userId: string): Promise<void> {
 export async function createPasswordResetToken(resetToken: PasswordResetToken): Promise<void> {
   const redis = getRedis();
   if (!redis) {
-    throw new Error('Redis not available');
+    const error = new Error('Redis not available - password reset requires Redis connection');
+    console.error('[AUTH] Create password reset token failed:', error.message);
+    throw error;
   }
 
   try {
