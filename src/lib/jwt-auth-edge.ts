@@ -7,22 +7,22 @@ const JWT_SECRET = process.env.JWT_SECRET || 'rawgle-dev-secret-key-change-in-pr
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'rawgle-admin-secret-key-change-in-production';
 
 /**
- * Base64 URL encode
+ * Base64 URL encode (Pure Edge Runtime - no Buffer)
  */
 function base64UrlEncode(str: string): string {
-  const base64 = btoa(str);
+  const base64 = btoa(unescape(encodeURIComponent(str)));
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 /**
- * Base64 URL decode
+ * Base64 URL decode (Pure Edge Runtime - no Buffer)
  */
 function base64UrlDecode(str: string): string {
   let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
   while (base64.length % 4) {
     base64 += '=';
   }
-  return atob(base64);
+  return decodeURIComponent(escape(atob(base64)));
 }
 
 /**
@@ -51,7 +51,7 @@ async function sign(data: string, secret: string): Promise<string> {
 /**
  * Verify and decode a JWT token (Edge-compatible)
  */
-export async function verifyTokenEdge(token: string): Promise<any | null> {
+export async function verifyTokenEdge(token: string | null | undefined): Promise<any | null> {
   try {
     if (!token) return null;
 
@@ -61,6 +61,12 @@ export async function verifyTokenEdge(token: string): Promise<any | null> {
     }
 
     const [encodedHeader, encodedPayload, signature] = parts;
+
+    // Validate that we have all parts
+    if (!encodedHeader || !encodedPayload || !signature) {
+      return null;
+    }
+
     const expectedSignature = await sign(`${encodedHeader}.${encodedPayload}`, JWT_SECRET);
 
     if (signature !== expectedSignature) {
@@ -84,7 +90,7 @@ export async function verifyTokenEdge(token: string): Promise<any | null> {
 /**
  * Verify admin token (Edge-compatible)
  */
-export async function verifyAdminTokenEdge(token: string): Promise<any | null> {
+export async function verifyAdminTokenEdge(token: string | null | undefined): Promise<any | null> {
   try {
     if (!token) return null;
 
@@ -94,6 +100,12 @@ export async function verifyAdminTokenEdge(token: string): Promise<any | null> {
     }
 
     const [encodedHeader, encodedPayload, signature] = parts;
+
+    // Validate that we have all parts
+    if (!encodedHeader || !encodedPayload || !signature) {
+      return null;
+    }
+
     const expectedSignature = await sign(`${encodedHeader}.${encodedPayload}`, ADMIN_JWT_SECRET);
 
     if (signature !== expectedSignature) {
