@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRedis, isRedisAvailable } from '@/lib/redis';
 
 export interface Session {
   id: string;
@@ -645,10 +646,84 @@ const initMockData = () => {
   }
 };
 
+const MENTORS_KEY = 'mentors:all';
+const SESSIONS_KEY = 'mentors:sessions:all';
+
+// Helper: Get all mentors from Redis or memory
+async function getAllMentors(): Promise<Map<string, Mentor>> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const data = await redis.get(MENTORS_KEY);
+      if (data) {
+        const mentorsArray = JSON.parse(data) as Mentor[];
+        const mentorsMap = new Map<string, Mentor>();
+        mentorsArray.forEach(mentor => mentorsMap.set(mentor.id, mentor));
+        return mentorsMap;
+      }
+      // Initialize with mock data
+      initMockData();
+      const mentorsArray = Array.from(mentors.values());
+      await redis.set(MENTORS_KEY, JSON.stringify(mentorsArray));
+      await redis.expire(MENTORS_KEY, 60 * 60 * 24 * 365); // 1 year
+      return mentors;
+    } catch (error) {
+      console.warn('[Mentorship API] Redis get mentors failed, using fallback:', error instanceof Error ? error.message : error);
+      initMockData();
+      return mentors;
+    }
+  }
+
+  initMockData();
+  return mentors;
+}
+
+// Helper: Get all sessions from Redis or memory
+async function getAllSessions(): Promise<Map<string, Session>> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const data = await redis.get(SESSIONS_KEY);
+      if (data) {
+        const sessionsArray = JSON.parse(data) as Session[];
+        const sessionsMap = new Map<string, Session>();
+        sessionsArray.forEach(session => sessionsMap.set(session.id, session));
+        return sessionsMap;
+      }
+      return sessions;
+    } catch (error) {
+      console.warn('[Mentorship API] Redis get sessions failed, using fallback:', error instanceof Error ? error.message : error);
+      return sessions;
+    }
+  }
+
+  return sessions;
+}
+
+// Helper: Save all sessions to Redis
+async function saveAllSessions(sessionsMap: Map<string, Session>): Promise<void> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const sessionsArray = Array.from(sessionsMap.values());
+      await redis.set(SESSIONS_KEY, JSON.stringify(sessionsArray));
+      await redis.expire(SESSIONS_KEY, 60 * 60 * 24 * 90); // 3 months
+      return;
+    } catch (error) {
+      console.warn('[Mentorship API] Redis set sessions failed, using fallback:', error instanceof Error ? error.message : error);
+    }
+  }
+
+  // Fallback: already in memory
+}
+
 // GET: Fetch mentors or mentor details
 export async function GET(req: NextRequest) {
   try {
-    initMockData();
+    const allMentors = await getAllMentors();
 
     const { searchParams } = new URL(req.url);
     const mentorId = searchParams.get('mentorId');
@@ -656,7 +731,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search');
 
     if (mentorId) {
-      const mentor = mentors.get(mentorId);
+      const mentor = allMentors.get(mentorId);
       if (!mentor) {
         return NextResponse.json(
           { success: false, error: 'Mentor not found' },
@@ -666,7 +741,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ success: true, mentor });
     }
 
-    let filteredMentors = Array.from(mentors.values());
+    let filteredMentors = Array.from(allMentors.values());
 
     // Filter by specialty
     if (specialty && specialty !== 'all') {
@@ -702,7 +777,8 @@ export async function GET(req: NextRequest) {
 // POST: Book a session
 export async function POST(req: NextRequest) {
   try {
-    initMockData();
+    const allMentors = await getAllMentors();
+    const allSessions = await getAllSessions();
 
     const body = await req.json();
     const { mentorId, userId, date, time, duration, notes } = body;
@@ -714,7 +790,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const mentor = mentors.get(mentorId);
+    const mentor = allMentors.get(mentorId);
     if (!mentor) {
       return NextResponse.json(
         { success: false, error: 'Mentor not found' },
@@ -736,7 +812,8 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString()
     };
 
-    sessions.set(sessionId, session);
+    allSessions.set(sessionId, session);
+    await saveAllSessions(allSessions);
 
     return NextResponse.json({
       success: true,
@@ -755,6 +832,8 @@ export async function POST(req: NextRequest) {
 // PUT: Update session (cancel, reschedule)
 export async function PUT(req: NextRequest) {
   try {
+    const allSessions = await getAllSessions();
+
     const body = await req.json();
     const { sessionId, status, date, time } = body;
 
@@ -765,7 +844,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const session = sessions.get(sessionId);
+    const session = allSessions.get(sessionId);
     if (!session) {
       return NextResponse.json(
         { success: false, error: 'Session not found' },
@@ -777,7 +856,8 @@ export async function PUT(req: NextRequest) {
     if (date) session.date = date;
     if (time) session.time = time;
 
-    sessions.set(sessionId, session);
+    allSessions.set(sessionId, session);
+    await saveAllSessions(allSessions);
 
     return NextResponse.json({
       success: true,
