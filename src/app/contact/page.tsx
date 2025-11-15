@@ -6,13 +6,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Message sent! We\'ll get back to you soon.');
+    setSubmitting(true);
+
+    try {
+      // TODO: Implement actual contact form API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Message sent! We\'ll get back to you soon.');
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -25,10 +38,10 @@ export default function ContactPage() {
           <Card className="card-feature-primary">
             <CardContent className="p-6">
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div><Label className="label-base">Name</Label><Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="input-base" required /></div>
-                <div><Label className="label-base">Email</Label><Input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="input-base" required /></div>
-                <div><Label className="label-base">Message</Label><Textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="input-base min-h-[120px]" required /></div>
-                <Button type="submit" variant="default">Send Message</Button>
+                <div><Label className="label-base">Name</Label><Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="input-base" required disabled={submitting} /></div>
+                <div><Label className="label-base">Email</Label><Input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="input-base" required disabled={submitting} /></div>
+                <div><Label className="label-base">Message</Label><Textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="input-base min-h-[120px]" required disabled={submitting} /></div>
+                <Button type="submit" variant="default" disabled={submitting}>{submitting ? 'Sending...' : 'Send Message'}</Button>
               </form>
             </CardContent>
           </Card>

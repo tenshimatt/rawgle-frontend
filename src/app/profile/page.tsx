@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,16 +8,30 @@ import { Label } from '@/components/ui/label';
 import { User, Bell, Shield, Mail, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
+const DEFAULT_PROFILE = {
+  name: 'Demo User',
+  email: 'demo@rawgle.com',
+  notifications: {
+    feeding: true,
+    health: true,
+    community: false,
+  }
+};
+
 export default function ProfilePage() {
-  const [profile, setProfile] = useState({
-    name: 'Demo User',
-    email: 'demo@rawgle.com',
-    notifications: {
-      feeding: true,
-      health: true,
-      community: false,
+  const [profile, setProfile] = useState(DEFAULT_PROFILE);
+
+  // Load profile from localStorage on mount
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('userProfile');
+    if (savedProfile) {
+      try {
+        setProfile(JSON.parse(savedProfile));
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+      }
     }
-  });
+  }, []);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -31,11 +45,12 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // TODO: Implement actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Profile updated successfully!');
+      // Save to localStorage
+      await new Promise(resolve => setTimeout(resolve, 500));
+      localStorage.setItem('userProfile', JSON.stringify(profile));
+      toast.success('Profile saved locally!');
     } catch (error) {
-      toast.error('Failed to update profile');
+      toast.error('Failed to save profile');
     } finally {
       setSaving(false);
     }

@@ -4,6 +4,7 @@ import { Providers } from '@/components/providers'
 import { CartIcon } from '@/components/cart/cart-icon'
 import { MainNav } from '@/components/navigation/main-nav'
 import { SearchProvider } from '@/components/search/search-provider'
+import { ServiceWorkerUnregister } from '@/components/sw-unregister'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 
@@ -83,6 +84,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
+        <ServiceWorkerUnregister />
         <Providers>
           <SearchProvider>
             <MainNav />

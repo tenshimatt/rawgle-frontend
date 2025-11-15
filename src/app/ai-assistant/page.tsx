@@ -53,7 +53,6 @@ export default function AIAssistantPage() {
     const fetchPets = async () => {
       try {
         const response = await fetch('/api/pets?active=true', {
-          headers: { 'x-user-id': 'demo-user' },
         });
         const data = await response.json();
         if (data.success) {

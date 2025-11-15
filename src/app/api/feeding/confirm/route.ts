@@ -13,7 +13,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { recordIds, confirmAll, startDate, endDate } = body;
 
-    const userId = req.headers.get('x-user-id') || 'demo-user';
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
     const records = feedingStore.get(userId) || [];
 
     let confirmedCount = 0;
@@ -83,7 +90,14 @@ export async function DELETE(req: NextRequest) {
     }
 
     const recordIds = recordIdsParam.split(',');
-    const userId = req.headers.get('x-user-id') || 'demo-user';
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
     const records = feedingStore.get(userId) || [];
 
     const initialLength = records.length;

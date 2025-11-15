@@ -42,9 +42,7 @@ export function NutritionCalculator() {
   useEffect(() => {
     const fetchPets = async () => {
       try {
-        const response = await fetch('/api/pets?active=true', {
-          headers: { 'x-user-id': 'demo-user' },
-        });
+        const response = await fetch('/api/pets?active=true');
         const data = await response.json();
         if (data.success) {
           setPets(data.data || []);

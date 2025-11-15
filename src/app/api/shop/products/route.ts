@@ -183,6 +183,15 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const { name, description, price, category, stock } = body;
 
@@ -192,8 +201,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    const userId = req.headers.get('x-user-id') || 'demo-user';
 
     const newProduct = {
       id: `prod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

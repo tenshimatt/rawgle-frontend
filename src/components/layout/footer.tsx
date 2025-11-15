@@ -1,5 +1,9 @@
-import Link from 'next/link'
-import { Github, Twitter, Facebook, Instagram, Youtube, Mail } from 'lucide-react'
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { Github, Twitter, Facebook, Instagram, Youtube, Mail } from 'lucide-react';
+import { toast } from 'sonner';
 
 const footerLinks = {
   Product: [
@@ -48,6 +52,31 @@ const socialLinks = [
 ]
 
 export function Footer() {
+  const [email, setEmail] = useState('');
+  const [subscribing, setSubscribing] = useState(false);
+
+  const handleNewsletterSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email || !email.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setSubscribing(true);
+
+    try {
+      // TODO: Implement actual newsletter subscription API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Thanks for subscribing! Check your email for confirmation.');
+      setEmail('');
+    } catch (error) {
+      toast.error('Failed to subscribe. Please try again.');
+    } finally {
+      setSubscribing(false);
+    }
+  };
+
   return (
     <footer className="bg-muted/50 border-t">
       <div className="container mx-auto px-4 py-12">
@@ -106,16 +135,24 @@ export function Footer() {
                 Get the latest raw feeding tips, PAWS token updates, and community news.
               </p>
             </div>
-            <div className="flex gap-3">
+            <form onSubmit={handleNewsletterSubscribe} className="flex gap-3">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={subscribing}
+                className="flex-1 px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                required
               />
-              <button className="px-6 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-                Subscribe
+              <button
+                type="submit"
+                disabled={subscribing}
+                className="px-6 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+              >
+                {subscribing ? 'Subscribing...' : 'Subscribe'}
               </button>
-            </div>
+            </form>
           </div>
         </div>
 

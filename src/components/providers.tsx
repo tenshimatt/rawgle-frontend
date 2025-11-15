@@ -4,6 +4,7 @@ import { ReactNode } from 'react'
 import { ThemeProvider } from 'next-themes'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { CartProvider } from '@/components/cart/cart-provider'
+import { AuthProvider } from '@/contexts/auth-context'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,9 +24,11 @@ export function Providers({ children }: { children: ReactNode }) {
         enableSystem
         disableTransitionOnChange
       >
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   )

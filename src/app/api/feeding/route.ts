@@ -8,7 +8,14 @@ if (!(global as any).__feedingStore) {
 
 export async function GET(req: NextRequest) {
   try {
-    const userId = req.headers.get('x-user-id') || 'demo-user';
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
     const { searchParams } = new URL(req.url);
     const petId = searchParams.get('petId');
     const startDate = searchParams.get('startDate');
@@ -58,7 +65,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = req.headers.get('x-user-id') || 'demo-user';
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
 
     const newRecord = {
       id: `feeding_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

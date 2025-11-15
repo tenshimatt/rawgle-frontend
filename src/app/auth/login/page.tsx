@@ -23,13 +23,22 @@ export default function LoginPage() {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error('Login failed');
-
       const data = await response.json();
-      localStorage.setItem('auth-token', data.token);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      // Login successful - token is automatically set in cookies by API
+      // Also store in localStorage for backward compatibility with auth-context
+      if (data.data?.token) {
+        localStorage.setItem('auth-token', data.data.token);
+      }
+
+      // Redirect to dashboard
       window.location.href = '/dashboard';
-    } catch (error) {
-      alert('Invalid credentials');
+    } catch (error: any) {
+      alert(error.message || 'Invalid credentials. Please try again.');
     } finally {
       setLoading(false);
     }

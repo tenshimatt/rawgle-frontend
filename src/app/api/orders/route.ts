@@ -11,6 +11,9 @@ interface Order {
   shippingAddress: any;
   createdAt: string;
   updatedAt: string;
+  gelatoOrderId?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
 }
 
 // In-memory storage (fallback)
@@ -84,7 +87,7 @@ export async function POST(request: NextRequest) {
       id: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       userId,
       sessionId,
-      status: 'processing',
+      status: 'pending', // Start as pending, will be changed to processing after payment
       items,
       total,
       shippingAddress,
@@ -101,6 +104,83 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || 'Failed to create order' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const userId = request.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { orderId, status, trackingNumber, trackingUrl } = await request.json();
+
+    if (!orderId) {
+      return NextResponse.json(
+        { error: 'Order ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Get existing orders
+    const existingOrders = await getUserOrders(userId);
+    const orderIndex = existingOrders.findIndex(o => o.id === orderId);
+
+    if (orderIndex === -1) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      );
+    }
+
+    const order = existingOrders[orderIndex];
+    const previousStatus = order.status;
+
+    // Update order fields
+    if (status) order.status = status;
+    if (trackingNumber) order.trackingNumber = trackingNumber;
+    if (trackingUrl) order.trackingUrl = trackingUrl;
+    order.updatedAt = new Date().toISOString();
+
+    // Save updated orders
+    await saveUserOrders(userId, existingOrders);
+
+    // If status changed to 'processing', trigger Gelato order creation
+    if (status === 'processing' && previousStatus !== 'processing' && !order.gelatoOrderId) {
+      try {
+        // Call Gelato API to create order
+        const gelatoResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/gelato/orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': userId,
+          },
+          body: JSON.stringify({ orderId: order.id }),
+        });
+
+        if (gelatoResponse.ok) {
+          const gelatoData = await gelatoResponse.json();
+          order.gelatoOrderId = gelatoData.data.gelatoOrderId;
+          order.updatedAt = new Date().toISOString();
+          await saveUserOrders(userId, existingOrders);
+          console.log('[Orders API] Gelato order created:', gelatoData.data.gelatoOrderId);
+        } else {
+          console.error('[Orders API] Failed to create Gelato order:', await gelatoResponse.text());
+        }
+      } catch (error) {
+        console.error('[Orders API] Error creating Gelato order:', error);
+        // Don't fail the order update if Gelato fails
+      }
+    }
+
+    return NextResponse.json({ data: order });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message || 'Failed to update order' },
       { status: 500 }
     );
   }
