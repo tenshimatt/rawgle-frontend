@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRedis, isRedisAvailable } from '@/lib/redis';
 
 // Success story interface
 export interface SuccessStory {
@@ -691,6 +692,53 @@ initialStories.forEach(story => {
   successStories.set(story.id, story);
 });
 
+const SUCCESS_STORIES_KEY = 'success:stories:all';
+
+// Helper: Get all success stories from Redis or memory
+async function getAllSuccessStories(): Promise<Map<string, SuccessStory>> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const data = await redis.get(SUCCESS_STORIES_KEY);
+      if (data) {
+        const storiesArray = JSON.parse(data) as SuccessStory[];
+        const storiesMap = new Map<string, SuccessStory>();
+        storiesArray.forEach(story => storiesMap.set(story.id, story));
+        return storiesMap;
+      }
+      // Initialize with demo data
+      const storiesArray = Array.from(successStories.values());
+      await redis.set(SUCCESS_STORIES_KEY, JSON.stringify(storiesArray));
+      await redis.expire(SUCCESS_STORIES_KEY, 60 * 60 * 24 * 365); // 1 year
+      return successStories;
+    } catch (error) {
+      console.warn('[Success Stories API] Redis get failed, using fallback:', error instanceof Error ? error.message : error);
+      return successStories;
+    }
+  }
+
+  return successStories;
+}
+
+// Helper: Save all success stories to Redis
+async function saveAllSuccessStories(stories: Map<string, SuccessStory>): Promise<void> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const storiesArray = Array.from(stories.values());
+      await redis.set(SUCCESS_STORIES_KEY, JSON.stringify(storiesArray));
+      await redis.expire(SUCCESS_STORIES_KEY, 60 * 60 * 24 * 365); // 1 year
+      return;
+    } catch (error) {
+      console.warn('[Success Stories API] Redis set failed, using fallback:', error instanceof Error ? error.message : error);
+    }
+  }
+
+  // Fallback: already in memory map
+}
+
 // GET: Fetch all stories or filtered stories
 export async function GET(request: NextRequest) {
   try {
@@ -700,7 +748,8 @@ export async function GET(request: NextRequest) {
     const timeframe = searchParams.get('timeframe');
     const sortBy = searchParams.get('sortBy') || 'likes'; // likes, recent, comments
 
-    let stories = Array.from(successStories.values());
+    const allStories = await getAllSuccessStories();
+    let stories = Array.from(allStories.values());
 
     // Apply filters
     if (petType && petType !== 'all') {
@@ -752,7 +801,9 @@ export async function POST(request: NextRequest) {
       vetApproved: false,
     };
 
-    successStories.set(newStory.id, newStory);
+    const allStories = await getAllSuccessStories();
+    allStories.set(newStory.id, newStory);
+    await saveAllSuccessStories(allStories);
 
     return NextResponse.json({
       success: true,
