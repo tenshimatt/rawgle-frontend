@@ -62,6 +62,13 @@ export function NutritionCalculator() {
     fetchPets();
   }, []);
 
+  // Auto-calculate when any input changes
+  useEffect(() => {
+    if (selectedPetId && pets.length > 0) {
+      calculateNutrition();
+    }
+  }, [selectedPetId, activityLevel, lifeStage, pets]);
+
   const activityMultipliers = {
     sedentary: 1.2,
     moderate: 1.4,
@@ -304,13 +311,7 @@ export function NutritionCalculator() {
           </div>
         </div>
 
-        {/* Calculate Button */}
-        <Button onClick={calculateNutrition} className="btn-secondary w-full">
-          <Calculator className="h-4 w-4 mr-2" />
-          Calculate Daily Portions
-        </Button>
-
-        {/* Results */}
+        {/* Results (auto-calculated) */}
         {results && selectedPet && (
           <div className="space-y-4 pt-4 border-t-2 border-gray-900/10">
             <div className="flex items-start gap-2 bg-teal-600/10 p-3 rounded-lg border-2 border-teal-600/30">

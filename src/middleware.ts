@@ -9,12 +9,13 @@ export function middleware(request: NextRequest) {
     // Content Security Policy - Strict policy for production
     'Content-Security-Policy': [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com https://js.stripe.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com https://challenges.cloudflare.com https://js.stripe.com https://vercel.live https://*.vercel.live",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https://api.openai.com https://*.cloudflare.com https://static.cloudflareinsights.com https://rawgle.com https://*.rawgle.com https://api.stripe.com https://*.stripe.com",
-      "frame-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com",
+      "connect-src 'self' https://api.openai.com https://*.cloudflare.com https://static.cloudflareinsights.com https://rawgle.com https://*.rawgle.com https://api.stripe.com https://*.stripe.com https://vercel.live https://*.vercel.live wss://ws-us3.pusher.com",
+      "frame-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com https://vercel.live https://*.vercel.live",
+      "worker-src 'self' blob:",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
