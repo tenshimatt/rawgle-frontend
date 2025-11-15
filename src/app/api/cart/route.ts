@@ -68,7 +68,14 @@ async function saveUserCart(userId: string, cartItems: CartItem[]): Promise<void
  */
 export async function GET(req: NextRequest) {
   try {
-    const userId = req.headers.get('x-user-id') || 'demo-user';
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
     const cartItems = await getUserCart(userId);
     const cartSummary = calculateCartSummary(cartItems);
 
@@ -98,7 +105,14 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const userId = req.headers.get('x-user-id') || 'demo-user';
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
     const body = await req.json();
     const { productId, quantity, sizeOption } = body;
 
@@ -265,7 +279,14 @@ export async function POST(req: NextRequest) {
  */
 export async function PATCH(req: NextRequest) {
   try {
-    const userId = req.headers.get('x-user-id') || 'demo-user';
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
     const body = await req.json();
     const { productId, sizeOption, quantity } = body;
 
@@ -357,7 +378,14 @@ export async function PATCH(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   try {
-    const userId = req.headers.get('x-user-id') || 'demo-user';
+    const userId = req.headers.get('x-user-id');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized - User ID required' },
+        { status: 401 }
+      );
+    }
     const searchParams = req.nextUrl.searchParams;
     const productId = searchParams.get('productId');
     const sizeOption = searchParams.get('sizeOption');

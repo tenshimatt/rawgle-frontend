@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MessageSquare, Users, TrendingUp, Clock, Search, Plus } from 'lucide-react';
+import { MessageSquare, Users, TrendingUp, Clock, Search, Plus, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CreateThreadModal } from '@/components/community/forums/create-thread-modal';
 
 interface ForumCategory {
   id: string;
@@ -22,8 +23,11 @@ interface ForumThread {
   categoryId: string;
   title: string;
   content: string;
-  author: string;
-  authorAvatar: string;
+  author: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
   createdAt: string;
   replyCount: number;
   viewCount: number;
@@ -32,125 +36,95 @@ interface ForumThread {
   isLocked: boolean;
 }
 
-const categories: ForumCategory[] = [
-  {
-    id: 'getting-started',
-    name: 'Getting Started',
-    description: 'New to raw feeding? Start here for basics and beginner tips',
-    icon: '🌱',
-    threadCount: 156,
-    postCount: 2341,
-    color: 'bg-green-100 text-green-800',
-  },
-  {
-    id: 'recipes-nutrition',
-    name: 'Recipes & Nutrition',
-    description: 'Share recipes, meal plans, and nutritional advice',
-    icon: '🍖',
-    threadCount: 423,
-    postCount: 5892,
-    color: 'bg-orange-100 text-orange-800',
-  },
-  {
-    id: 'health-wellness',
-    name: 'Health & Wellness',
-    description: 'Discuss health concerns, vet visits, and wellness tips',
-    icon: '💊',
-    threadCount: 298,
-    postCount: 4102,
-    color: 'bg-blue-100 text-blue-800',
-  },
-  {
-    id: 'success-stories',
-    name: 'Success Stories',
-    description: 'Share your raw feeding success stories and transformations',
-    icon: '⭐',
-    threadCount: 189,
-    postCount: 1567,
-    color: 'bg-yellow-100 text-yellow-800',
-  },
-  {
-    id: 'suppliers-products',
-    name: 'Suppliers & Products',
-    description: 'Recommend suppliers, products, and equipment',
-    icon: '🛒',
-    threadCount: 234,
-    postCount: 3201,
-    color: 'bg-purple-100 text-purple-800',
-  },
-  {
-    id: 'off-topic',
-    name: 'Off-Topic',
-    description: 'General pet discussions not related to raw feeding',
-    icon: '💬',
-    threadCount: 112,
-    postCount: 1823,
-    color: 'bg-gray-100 text-gray-800',
-  },
-];
-
-const sampleThreads: ForumThread[] = [
-  {
-    id: '1',
-    categoryId: 'getting-started',
-    title: 'Complete Beginner\'s Guide to Raw Feeding - Start Here!',
-    content: 'Everything you need to know to get started with raw feeding...',
-    author: 'Sarah M.',
-    authorAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-    createdAt: '2025-10-15T10:00:00Z',
-    replyCount: 127,
-    viewCount: 3421,
-    lastActivity: '2 hours ago',
-    isPinned: true,
-    isLocked: false,
-  },
-  {
-    id: '2',
-    categoryId: 'recipes-nutrition',
-    title: 'Best chicken-based raw recipes for dogs?',
-    content: 'Looking for some tried and tested chicken recipes for my golden retriever...',
-    author: 'Mike Chen',
-    authorAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
-    createdAt: '2025-10-21T14:30:00Z',
-    replyCount: 23,
-    viewCount: 456,
-    lastActivity: '15 minutes ago',
-    isPinned: false,
-    isLocked: false,
-  },
-  {
-    id: '3',
-    categoryId: 'health-wellness',
-    title: 'My dog\'s coat improved dramatically after switching to raw!',
-    content: 'I wanted to share my experience after 3 months of raw feeding...',
-    author: 'Jennifer L.',
-    authorAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jennifer',
-    createdAt: '2025-10-22T09:00:00Z',
-    replyCount: 45,
-    viewCount: 892,
-    lastActivity: '1 hour ago',
-    isPinned: false,
-    isLocked: false,
-  },
-];
-
 export default function ForumsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('activity');
+  const [categories, setCategories] = useState<ForumCategory[]>([]);
+  const [threads, setThreads] = useState<ForumThread[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  const filteredThreads = sampleThreads
-    .filter((thread) => {
-      const matchesSearch = thread.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || thread.categoryId === selectedCategory;
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'activity') return new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime();
-      if (sortBy === 'replies') return b.replyCount - a.replyCount;
-      if (sortBy === 'views') return b.viewCount - a.viewCount;
-      return 0;
-    });
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/community/forums');
+        const data = await response.json();
+        if (data.success) {
+          setCategories(data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Fetch threads
+  useEffect(() => {
+    const fetchThreads = async () => {
+      setIsLoading(true);
+      try {
+        const categoryParam = selectedCategory === 'all' ? 'all' : selectedCategory;
+        const response = await fetch(
+          `/api/community/forums/${categoryParam}/threads?sort=${sortBy}&limit=50`
+        );
+        const data = await response.json();
+        if (data.success) {
+          setThreads(data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch threads:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchThreads();
+  }, [selectedCategory, sortBy]);
+
+  const handleThreadCreated = () => {
+    // Refresh threads after creating a new one
+    const fetchThreads = async () => {
+      try {
+        const categoryParam = selectedCategory === 'all' ? 'all' : selectedCategory;
+        const response = await fetch(
+          `/api/community/forums/${categoryParam}/threads?sort=${sortBy}&limit=50`
+        );
+        const data = await response.json();
+        if (data.success) {
+          setThreads(data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch threads:', error);
+      }
+    };
+
+    fetchThreads();
+  };
+
+  // Format time ago
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInMins = Math.floor(diffInMs / 60000);
+    const diffInHours = Math.floor(diffInMs / 3600000);
+    const diffInDays = Math.floor(diffInMs / 86400000);
+
+    if (diffInMins < 1) return 'just now';
+    if (diffInMins < 60) return `${diffInMins} minute${diffInMins > 1 ? 's' : ''} ago`;
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    if (diffInDays < 30) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString();
+  };
+
+  // Filter threads by search query
+  const filteredThreads = threads.filter((thread) =>
+    thread.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sea-salt via-white to-sea-salt">
@@ -162,7 +136,10 @@ export default function ForumsPage() {
               <h1 className="text-4xl font-bold mb-2">Community Forums</h1>
               <p className="text-sea-salt text-lg">Connect, learn, and share with fellow raw feeding enthusiasts</p>
             </div>
-            <Button className="bg-white text-teal-600 hover:bg-sea-salt">
+            <Button
+              className="bg-white text-teal-600 hover:bg-sea-salt"
+              onClick={() => setIsCreateModalOpen(true)}
+            >
               <Plus className="h-4 w-4 mr-2" />
               New Thread
             </Button>
@@ -176,10 +153,10 @@ export default function ForumsPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Browse Categories</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((category) => (
-              <Link
+              <button
                 key={category.id}
-                href={`/community/forums?category=${category.id}`}
-                className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-900/10"
+                onClick={() => setSelectedCategory(category.id)}
+                className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-900/10 text-left"
               >
                 <div className="flex items-start gap-4">
                   <div className="text-4xl">{category.icon}</div>
@@ -198,7 +175,7 @@ export default function ForumsPage() {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         </div>
@@ -233,6 +210,7 @@ export default function ForumsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="activity">Recent Activity</SelectItem>
+                <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="replies">Most Replies</SelectItem>
                 <SelectItem value="views">Most Views</SelectItem>
               </SelectContent>
@@ -242,60 +220,84 @@ export default function ForumsPage() {
 
         {/* Threads List */}
         <div className="space-y-4">
-          {filteredThreads.map((thread) => (
-            <Link
-              key={thread.id}
-              href={`/community/forums/${thread.id}`}
-              className="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-900/10"
-            >
-              <div className="flex gap-4">
-                <img
-                  src={thread.authorAvatar}
-                  alt={thread.author}
-                  className="w-12 h-12 rounded-full"
-                />
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      {thread.isPinned && (
-                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-teal-600 text-white rounded mr-2">
-                          PINNED
-                        </span>
-                      )}
-                      <h3 className="text-lg font-bold text-gray-900 hover:text-teal-600 inline">
-                        {thread.title}
-                      </h3>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12 bg-white rounded-lg shadow-md">
+              <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+              <span className="ml-2 text-gray-900/60">Loading threads...</span>
+            </div>
+          ) : filteredThreads.length > 0 ? (
+            filteredThreads.map((thread) => (
+              <Link
+                key={thread.id}
+                href={`/community/forums/${thread.id}`}
+                className="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-900/10"
+              >
+                <div className="flex gap-4">
+                  <img
+                    src={thread.author.avatar}
+                    alt={thread.author.name}
+                    className="w-12 h-12 rounded-full"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        {thread.isPinned && (
+                          <span className="inline-block px-2 py-1 text-xs font-semibold bg-teal-600 text-white rounded mr-2">
+                            PINNED
+                          </span>
+                        )}
+                        <h3 className="text-lg font-bold text-gray-900 hover:text-teal-600 inline">
+                          {thread.title}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-gray-900/70 text-sm mb-3 line-clamp-2">{thread.content}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-900/60">
-                    <span className="font-medium">by {thread.author}</span>
-                    <div className="flex items-center gap-1">
-                      <MessageSquare className="h-4 w-4" />
-                      <span>{thread.replyCount} replies</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="h-4 w-4" />
-                      <span>{thread.viewCount} views</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>Last activity: {thread.lastActivity}</span>
+                    <p className="text-gray-900/70 text-sm mb-3 line-clamp-2">{thread.content}</p>
+                    <div className="flex items-center gap-4 text-sm text-gray-900/60">
+                      <span className="font-medium">by {thread.author.name}</span>
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="h-4 w-4" />
+                        <span>{thread.replyCount} replies</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <TrendingUp className="h-4 w-4" />
+                        <span>{thread.viewCount} views</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>Last activity: {formatTimeAgo(thread.lastActivity)}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-
-          {filteredThreads.length === 0 && (
+              </Link>
+            ))
+          ) : (
             <div className="text-center py-12 bg-white rounded-lg shadow-md">
               <MessageSquare className="h-16 w-16 text-gray-900/20 mx-auto mb-4" />
-              <p className="text-gray-900/60 text-lg">No threads found matching your criteria</p>
+              <p className="text-gray-900/60 text-lg">No threads found</p>
+              <p className="text-gray-900/50 text-sm mt-2">
+                {searchQuery ? 'Try a different search term' : 'Be the first to start a discussion!'}
+              </p>
+              <Button
+                className="mt-4 bg-teal-600 hover:bg-teal-700 text-white"
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create First Thread
+              </Button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Create Thread Modal */}
+      <CreateThreadModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        categories={categories.map(c => ({ id: c.id, name: c.name, icon: c.icon }))}
+        selectedCategoryId={selectedCategory !== 'all' ? selectedCategory : undefined}
+        onThreadCreated={handleThreadCreated}
+      />
     </div>
   );
 }

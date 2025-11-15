@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { OrderHistory } from '@/components/orders/order-history';
@@ -42,7 +43,6 @@ export default function DashboardPage() {
   const fetchPets = async () => {
     try {
       const response = await fetch('/api/pets', {
-        headers: { 'x-user-id': 'demo-user' },
       });
       const data = await response.json();
       setPets(data.data || []);
@@ -60,7 +60,6 @@ export default function DashboardPage() {
     try {
       setLoading(true);
       const response = await fetch(`/api/dashboard?petId=${selectedPet}`, {
-        headers: { 'x-user-id': 'demo-user' },
       });
       const data = await response.json();
       setDashboardData(data.data);
@@ -287,7 +286,9 @@ export default function DashboardPage() {
                           You have {dashboardData.upcomingVaccinations} vaccination(s) due soon
                         </p>
                       </div>
-                      <Button variant="accent">View Details</Button>
+                      <Link href="/health">
+                        <Button variant="accent">View Details</Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>

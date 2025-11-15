@@ -46,7 +46,14 @@ async function saveFeedingSchedules(userId: string, schedules: any[]): Promise<v
 
 export async function GET(request: NextRequest) {
   const petId = request.nextUrl.searchParams.get('petId');
-  const userId = request.headers.get('x-user-id') || 'demo-user';
+  const userId = request.headers.get('x-user-id');
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: 'Unauthorized - User ID required' },
+      { status: 401 }
+    );
+  }
 
   let schedules = await getFeedingSchedules(userId);
 
@@ -71,7 +78,14 @@ export async function POST(request: NextRequest) {
     }, { status: 400 });
   }
 
-  const userId = request.headers.get('x-user-id') || 'demo-user';
+  const userId = request.headers.get('x-user-id');
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: 'Unauthorized - User ID required' },
+      { status: 401 }
+    );
+  }
 
   const newSchedule = {
     id: `schedule_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -110,7 +124,14 @@ export async function PATCH(request: NextRequest) {
     }, { status: 400 });
   }
 
-  const userId = request.headers.get('x-user-id') || 'demo-user';
+  const userId = request.headers.get('x-user-id');
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: 'Unauthorized - User ID required' },
+      { status: 401 }
+    );
+  }
   const userSchedules = await getFeedingSchedules(userId);
   const scheduleIndex = userSchedules.findIndex((s: any) => s.id === id);
 
@@ -147,7 +168,14 @@ export async function DELETE(request: NextRequest) {
     }, { status: 400 });
   }
 
-  const userId = request.headers.get('x-user-id') || 'demo-user';
+  const userId = request.headers.get('x-user-id');
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: 'Unauthorized - User ID required' },
+      { status: 401 }
+    );
+  }
   const userSchedules = await getFeedingSchedules(userId);
   const initialLength = userSchedules.length;
   const filteredSchedules = userSchedules.filter((s: any) => s.id !== id);

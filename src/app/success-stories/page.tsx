@@ -252,7 +252,7 @@ export default function SuccessStoriesPage() {
                               {story.petName}
                             </h3>
                             <p className="text-sm text-charcoal/70">
-                              {story.breed} " {story.age} years old
+                              {story.breed} • {story.age} years old
                             </p>
                           </div>
                           {story.vetApproved && (
