@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRedis, isRedisAvailable } from '@/lib/redis';
 
 interface Lesson {
   id: string;
@@ -224,15 +225,47 @@ const initMockCourses = () => {
   }
 };
 
+const COURSES_KEY = 'courses:all';
+
+// Helper: Get all courses from Redis or memory
+async function getAllCourses(): Promise<Map<string, Course>> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const data = await redis.get(COURSES_KEY);
+      if (data) {
+        const coursesArray = JSON.parse(data) as Course[];
+        const coursesMap = new Map<string, Course>();
+        coursesArray.forEach(course => coursesMap.set(course.id, course));
+        return coursesMap;
+      }
+      // Initialize with mock data
+      initMockCourses();
+      const coursesArray = Array.from(courses.values());
+      await redis.set(COURSES_KEY, JSON.stringify(coursesArray));
+      await redis.expire(COURSES_KEY, 60 * 60 * 24 * 90); // 90 days
+      return courses;
+    } catch (error) {
+      console.warn('[Courses API] Redis get failed, using fallback:', error instanceof Error ? error.message : error);
+      initMockCourses();
+      return courses;
+    }
+  }
+
+  initMockCourses();
+  return courses;
+}
+
 export async function GET(req: NextRequest) {
   try {
-    initMockCourses();
+    const allCourses = await getAllCourses();
 
     const { searchParams } = new URL(req.url);
     const courseId = searchParams.get('courseId');
 
     if (courseId) {
-      const course = courses.get(courseId);
+      const course = allCourses.get(courseId);
       if (!course) {
         return NextResponse.json(
           { success: false, error: 'Course not found' },
@@ -247,7 +280,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      courses: Array.from(courses.values())
+      courses: Array.from(allCourses.values())
     });
 
   } catch (error) {

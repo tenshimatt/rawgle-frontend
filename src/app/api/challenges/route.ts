@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getRedis, isRedisAvailable } from '@/lib/redis';
 
 // Challenge categories
 export type ChallengeCategory = 'feeding' | 'community' | 'education' | 'health';
@@ -759,6 +760,76 @@ const leaderboardData: Map<string, LeaderboardUser[]> = new Map([
   ],
 ]);
 
+const CHALLENGES_KEY = 'challenges:all';
+const LEADERBOARD_KEY = 'leaderboard:all';
+
+// Helper: Get all challenges from Redis or memory
+async function getAllChallenges(): Promise<Map<string, Challenge>> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const data = await redis.get(CHALLENGES_KEY);
+      if (data) {
+        const challengesArray = JSON.parse(data) as Challenge[];
+        const challengesMap = new Map<string, Challenge>();
+        challengesArray.forEach(challenge => challengesMap.set(challenge.id, challenge));
+        return challengesMap;
+      }
+      // Initialize with demo data
+      const challengesArray = Array.from(challengesData.values());
+      await redis.set(CHALLENGES_KEY, JSON.stringify(challengesArray));
+      await redis.expire(CHALLENGES_KEY, 60 * 60 * 24 * 30); // 30 days
+      return challengesData;
+    } catch (error) {
+      console.warn('[Challenges API] Redis get failed, using fallback:', error instanceof Error ? error.message : error);
+      return challengesData;
+    }
+  }
+
+  return challengesData;
+}
+
+// Helper: Save all challenges to Redis
+async function saveAllChallenges(challenges: Map<string, Challenge>): Promise<void> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const challengesArray = Array.from(challenges.values());
+      await redis.set(CHALLENGES_KEY, JSON.stringify(challengesArray));
+      await redis.expire(CHALLENGES_KEY, 60 * 60 * 24 * 30); // 30 days
+      return;
+    } catch (error) {
+      console.warn('[Challenges API] Redis set failed, using fallback:', error instanceof Error ? error.message : error);
+    }
+  }
+}
+
+// Helper: Get leaderboard from Redis or memory
+async function getLeaderboard(timeframe: string): Promise<LeaderboardUser[]> {
+  const redis = getRedis();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const data = await redis.get(`${LEADERBOARD_KEY}:${timeframe}`);
+      if (data) {
+        return JSON.parse(data) as LeaderboardUser[];
+      }
+      // Initialize with demo data
+      const leaderboard = leaderboardData.get(timeframe) || [];
+      await redis.set(`${LEADERBOARD_KEY}:${timeframe}`, JSON.stringify(leaderboard));
+      await redis.expire(`${LEADERBOARD_KEY}:${timeframe}`, 60 * 60 * 24 * 7); // 7 days
+      return leaderboard;
+    } catch (error) {
+      console.warn('[Challenges API] Redis get leaderboard failed, using fallback:', error instanceof Error ? error.message : error);
+      return leaderboardData.get(timeframe) || [];
+    }
+  }
+
+  return leaderboardData.get(timeframe) || [];
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type');
@@ -766,7 +837,7 @@ export async function GET(request: Request) {
 
   // Return leaderboard data
   if (type === 'leaderboard') {
-    const data = leaderboardData.get(timeframe) || leaderboardData.get('weekly');
+    const data = await getLeaderboard(timeframe);
     return NextResponse.json({
       leaderboard: data,
       timeframe,
@@ -774,7 +845,8 @@ export async function GET(request: Request) {
   }
 
   // Return all challenges
-  const challenges = Array.from(challengesData.values());
+  const allChallenges = await getAllChallenges();
+  const challenges = Array.from(allChallenges.values());
   return NextResponse.json({
     challenges,
     stats: {
@@ -794,7 +866,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Challenge ID required' }, { status: 400 });
   }
 
-  const challenge = challengesData.get(challengeId);
+  const allChallenges = await getAllChallenges();
+  const challenge = allChallenges.get(challengeId);
   if (!challenge) {
     return NextResponse.json({ error: 'Challenge not found' }, { status: 404 });
   }
@@ -802,7 +875,8 @@ export async function POST(request: Request) {
   // Start challenge
   if (action === 'start') {
     challenge.progress = 1;
-    challengesData.set(challengeId, challenge);
+    allChallenges.set(challengeId, challenge);
+    await saveAllChallenges(allChallenges);
     return NextResponse.json({ success: true, challenge });
   }
 
@@ -811,7 +885,8 @@ export async function POST(request: Request) {
     const { increment = 1 } = body;
     challenge.progress = Math.min(challenge.progress + increment, challenge.maxProgress);
     challenge.isCompleted = challenge.progress >= challenge.maxProgress;
-    challengesData.set(challengeId, challenge);
+    allChallenges.set(challengeId, challenge);
+    await saveAllChallenges(allChallenges);
     return NextResponse.json({ success: true, challenge });
   }
 
