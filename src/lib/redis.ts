@@ -17,15 +17,21 @@ function debug(message: string, data?: any) {
  * Lazy initialization with connection pooling
  */
 export function getRedis(): Redis | null {
-  // Support both REDIS_URL and rawgle_REDIS_URL (Vercel integration)
-  const redisUrl = process.env.REDIS_URL || process.env.rawgle_REDIS_URL;
+  // Support multiple Redis URL sources (in priority order):
+  // 1. REDIS_URL (manual configuration)
+  // 2. KV_URL (Vercel KV)
+  // 3. rawgle_REDIS_URL (old integration)
+  const redisUrl = process.env.REDIS_URL ||
+                   process.env.KV_URL ||
+                   process.env.rawgle_REDIS_URL;
 
   if (!redisUrl) {
     if (connectionAttempts === 0) {
-      console.warn('[Redis] REDIS_URL not configured, data persistence disabled');
+      console.warn('[Redis] No Redis URL configured, data persistence disabled');
       debug('Environment variables:', {
         NODE_ENV: process.env.NODE_ENV,
         REDIS_URL: process.env.REDIS_URL ? 'SET' : 'NOT SET',
+        KV_URL: process.env.KV_URL ? 'SET' : 'NOT SET',
         rawgle_REDIS_URL: process.env.rawgle_REDIS_URL ? 'SET' : 'NOT SET'
       });
     }
@@ -37,7 +43,13 @@ export function getRedis(): Redis | null {
     try {
       connectionAttempts++;
       debug(`Connection attempt #${connectionAttempts}`);
-      debug('Using Redis URL:', redisUrl.includes('rawgle') ? 'rawgle_REDIS_URL (integration)' : 'REDIS_URL (manual)');
+
+      // Determine which env var is being used
+      let source = 'REDIS_URL (manual)';
+      if (redisUrl === process.env.KV_URL) source = 'KV_URL (Vercel KV)';
+      else if (redisUrl === process.env.rawgle_REDIS_URL) source = 'rawgle_REDIS_URL (old integration)';
+
+      debug('Using Redis URL from:', source);
       debug('REDIS_URL format:', redisUrl.replace(/:[^:@]+@/, ':***@')); // Hide password in logs
 
       redis = new Redis(redisUrl, {
