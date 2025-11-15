@@ -1,8 +1,69 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { verifyAdminToken, isTokenBlacklisted } from '@/lib/auth/admin';
+import { verifyToken } from '@/lib/jwt-auth';
 
 export async function middleware(request: NextRequest) {
+  // Handle user authentication for API routes and protected pages
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api');
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
+  const isPublicApiRoute =
+    request.nextUrl.pathname.startsWith('/api/auth') ||
+    request.nextUrl.pathname.startsWith('/api/shop/products') ||
+    request.nextUrl.pathname.startsWith('/api/community');
+
+  // Protected routes that require authentication
+  const protectedRoutes = [
+    '/dashboard',
+    '/pets',
+    '/health',
+    '/feeding',
+    '/profile',
+    '/cart',
+    '/checkout',
+    '/orders',
+    '/activity',
+  ];
+
+  const isProtectedRoute = protectedRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Extract JWT token from request
+  let token: string | null = null;
+
+  // Try cookie first
+  token = request.cookies.get('auth-token')?.value || null;
+
+  // Try Authorization header if no cookie
+  if (!token) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+  }
+
+  // Verify token and extract user info
+  let userPayload: any = null;
+  if (token) {
+    userPayload = verifyToken(token);
+  }
+
+  // Handle protected routes - redirect to login if not authenticated
+  if (isProtectedRoute && !userPayload && !isAuthRoute) {
+    return NextResponse.redirect(new URL('/auth/login', request.url));
+  }
+
+  // Handle API routes that require authentication
+  if (isApiRoute && !isPublicApiRoute && !request.nextUrl.pathname.startsWith('/api/admin')) {
+    if (!userPayload) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Authentication required' },
+        { status: 401 }
+      );
+    }
+  }
+
   // Handle admin routes protection
   if (request.nextUrl.pathname.startsWith('/admin')) {
     // Allow access to login page and auth endpoints
@@ -83,7 +144,23 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const response = NextResponse.next();
+  // Create request headers with user info if authenticated
+  const requestHeaders = new Headers(request.headers);
+
+  if (userPayload) {
+    // Inject user ID and email from verified JWT token
+    requestHeaders.set('x-user-id', userPayload.userId);
+    requestHeaders.set('x-user-email', userPayload.email);
+    if (userPayload.role) {
+      requestHeaders.set('x-user-role', userPayload.role);
+    }
+  }
+
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 
   // Apply security headers and CORS
   applySecurityHeaders(response);
@@ -172,7 +249,7 @@ function applyCORSHeaders(request: NextRequest, response: NextResponse) {
     );
     response.headers.set(
       'Access-Control-Allow-Headers',
-      'Content-Type, Authorization, x-user-id, x-admin-id, x-admin-email, x-admin-role'
+      'Content-Type, Authorization, x-user-id, x-user-email, x-user-role, x-admin-id, x-admin-email, x-admin-role'
     );
   }
 }

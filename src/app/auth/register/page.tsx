@@ -24,14 +24,26 @@ export default function RegisterPage() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          username: formData.name,
+          firstName: formData.name.split(' ')[0] || formData.name,
+          lastName: formData.name.split(' ')[1] || '',
+        }),
       });
 
-      if (!response.ok) throw new Error('Registration failed');
+      const data = await response.json();
 
-      window.location.href = '/auth/login';
-    } catch (error) {
-      alert('Registration failed');
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // Registration successful - token is automatically set in cookies by API
+      // Redirect to dashboard
+      window.location.href = '/dashboard';
+    } catch (error: any) {
+      alert(error.message || 'Registration failed');
     } finally {
       setLoading(false);
     }

@@ -36,7 +36,6 @@ function ActivityContent() {
   const fetchPets = async () => {
     try {
       const response = await fetch('/api/pets', {
-        headers: { 'x-user-id': 'demo-user' },
       });
       const data = await response.json();
       setPets(data.data || []);
@@ -54,7 +53,6 @@ function ActivityContent() {
     try {
       setLoading(true);
       const response = await fetch(`/api/activity?petId=${selectedPet}`, {
-        headers: { 'x-user-id': 'demo-user' },
       });
       const data = await response.json();
       setActivities(data.data || []);

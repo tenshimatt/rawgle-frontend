@@ -15,13 +15,11 @@ import { Badge } from '@/components/ui/badge';
  * - Complete cart items table
  * - Quantity controls
  * - Order summary card
- * - Coupon code input
  * - Empty state
  */
 export default function CartPage() {
   const router = useRouter();
   const { items, summary, removeFromCart, updateQuantity, clearCart, isLoading } = useCart();
-  const [couponCode, setCouponCode] = useState('');
   const [checkingOut, setCheckingOut] = useState(false);
 
   const handleIncrement = async (productId: string, sizeOption: string, currentQty: number) => {
@@ -44,11 +42,6 @@ export default function CartPage() {
     }
   };
 
-  const handleApplyCoupon = () => {
-    // TODO: Implement coupon functionality
-    alert(`Coupon "${couponCode}" functionality coming soon!`);
-  };
-
   const handleCheckout = async () => {
     try {
       setCheckingOut(true);
@@ -62,7 +55,6 @@ export default function CartPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': 'demo-user',
         },
         body: JSON.stringify({ items }),
       });
@@ -355,32 +347,6 @@ export default function CartPage() {
                     >
                       {checkingOut ? 'Processing...' : 'Proceed to Checkout'}
                     </Button>
-                  </CardContent>
-                </Card>
-
-                {/* Coupon code card */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Have a Coupon?</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <Input
-                        type="text"
-                        placeholder="Enter coupon code"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                        className="w-full"
-                      />
-                      <Button
-                        onClick={handleApplyCoupon}
-                        variant="outline"
-                        className="w-full"
-                        disabled={!couponCode.trim()}
-                      >
-                        Apply Coupon
-                      </Button>
-                    </div>
                   </CardContent>
                 </Card>
 

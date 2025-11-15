@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 import {
   ArrowLeft,
   ArrowRight,
@@ -59,6 +60,10 @@ export default function SubmitStoryPage() {
   const [improvementInput, setImprovementInput] = useState('');
 
   const totalSteps = 3;
+
+  const handleUploadClick = () => {
+    toast.info('Photo upload feature coming soon! For now, please use an image URL from Unsplash or similar service.');
+  };
 
   const updateFormData = (field: keyof FormData, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -354,6 +359,7 @@ export default function SubmitStoryPage() {
                         type="button"
                         variant="outline"
                         className="btn-outline flex-shrink-0"
+                        onClick={handleUploadClick}
                       >
                         <Upload className="h-4 w-4 mr-2" />
                         Upload
@@ -384,6 +390,7 @@ export default function SubmitStoryPage() {
                         type="button"
                         variant="outline"
                         className="btn-outline flex-shrink-0"
+                        onClick={handleUploadClick}
                       >
                         <Upload className="h-4 w-4 mr-2" />
                         Upload

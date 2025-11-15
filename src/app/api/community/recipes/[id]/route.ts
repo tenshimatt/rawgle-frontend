@@ -1,57 +1,71 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const getRecipeStore = () => {
-  const recipeStore = (global as any).__recipeStore || new Map<string, any>();
-  if (!(global as any).__recipeStore) {
-    (global as any).__recipeStore = recipeStore;
-  }
-  return recipeStore;
-};
+import { getRedis } from '@/lib/redis';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const recipeStore = getRecipeStore();
-  const recipe = recipeStore.get(id);
+  const redis = getRedis();
 
-  if (!recipe) {
-    return NextResponse.json({ error: 'Recipe not found', success: false }, { status: 404 });
+  try {
+    let recipe = null;
+
+    if (redis) {
+      const data = await redis.get('recipes:all');
+      const recipes = data ? JSON.parse(data as string) : [];
+      recipe = recipes.find((r: any) => r.id === id);
+    }
+
+    if (!recipe) {
+      return NextResponse.json({ error: 'Recipe not found', success: false }, { status: 404 });
+    }
+
+    return NextResponse.json({ data: recipe, success: true });
+  } catch (error) {
+    console.error('[Recipe GET] Error:', error);
+    return NextResponse.json({ error: 'Failed to fetch recipe', success: false }, { status: 500 });
   }
-
-  return NextResponse.json({ data: recipe, success: true });
 }
 
-export async function PATCH(
+export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const body = await request.json();
-  const recipeStore = getRecipeStore();
-  const recipe = recipeStore.get(id);
+  const redis = getRedis();
 
-  if (!recipe) {
-    return NextResponse.json({ error: 'Recipe not found', success: false }, { status: 404 });
+  try {
+    const body = await request.json();
+
+    if (redis) {
+      const data = await redis.get('recipes:all');
+      const recipes = data ? JSON.parse(data as string) : [];
+      const index = recipes.findIndex((r: any) => r.id === id);
+
+      if (index === -1) {
+        return NextResponse.json({ error: 'Recipe not found', success: false }, { status: 404 });
+      }
+
+      // Update recipe
+      const updatedRecipe = {
+        ...recipes[index],
+        ...body,
+        id, // Ensure ID doesn't change
+        updatedAt: new Date().toISOString(),
+      };
+
+      recipes[index] = updatedRecipe;
+      await redis.set('recipes:all', JSON.stringify(recipes));
+
+      return NextResponse.json({ data: updatedRecipe, success: true });
+    }
+
+    return NextResponse.json({ error: 'Storage not available', success: false }, { status: 500 });
+  } catch (error) {
+    console.error('[Recipe PUT] Error:', error);
+    return NextResponse.json({ error: 'Failed to update recipe', success: false }, { status: 500 });
   }
-
-  const { title, description, ingredientsList, instructionsList, servings, prepTime, photos } = body;
-
-  const updatedRecipe = {
-    ...recipe,
-    title: title || recipe.title,
-    description: description || recipe.description,
-    ingredients: ingredientsList || recipe.ingredients,
-    instructions: instructionsList || recipe.instructions,
-    servings: servings || recipe.servings,
-    prepTime: prepTime || recipe.prepTime,
-    photos: photos !== undefined ? photos : recipe.photos,
-    updatedAt: new Date().toISOString(),
-  };
-
-  recipeStore.set(id, updatedRecipe);
-  return NextResponse.json({ data: updatedRecipe, success: true });
 }
 
 export async function DELETE(
@@ -59,13 +73,25 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const recipeStore = getRecipeStore();
-  const recipe = recipeStore.get(id);
+  const redis = getRedis();
 
-  if (!recipe) {
-    return NextResponse.json({ error: 'Recipe not found', success: false }, { status: 404 });
+  try {
+    if (redis) {
+      const data = await redis.get('recipes:all');
+      const recipes = data ? JSON.parse(data as string) : [];
+      const filtered = recipes.filter((r: any) => r.id !== id);
+
+      if (filtered.length === recipes.length) {
+        return NextResponse.json({ error: 'Recipe not found', success: false }, { status: 404 });
+      }
+
+      await redis.set('recipes:all', JSON.stringify(filtered));
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json({ error: 'Storage not available', success: false }, { status: 500 });
+  } catch (error) {
+    console.error('[Recipe DELETE] Error:', error);
+    return NextResponse.json({ error: 'Failed to delete recipe', success: false }, { status: 500 });
   }
-
-  recipeStore.delete(id);
-  return NextResponse.json({ success: true });
 }
