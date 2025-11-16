@@ -132,7 +132,7 @@ export default function RecipeSubmitPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/community/recipes', {
+      const response = await fetch('/v2/api/community/recipes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

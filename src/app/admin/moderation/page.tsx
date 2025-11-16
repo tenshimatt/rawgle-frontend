@@ -43,7 +43,7 @@ export default function AdminModerationPage() {
 
   const fetchReports = async () => {
     try {
-      const res = await fetch('/api/admin/moderation');
+      const res = await fetch('/v2/api/admin/moderation');
       const data = await res.json();
       if (data.success) {
         setReports(data.reports);
@@ -57,7 +57,7 @@ export default function AdminModerationPage() {
 
   const handleAction = async (reportId: string, action: 'approve' | 'reject') => {
     try {
-      const res = await fetch('/api/admin/moderation', {
+      const res = await fetch('/v2/api/admin/moderation', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reportId, action }),

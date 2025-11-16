@@ -48,7 +48,7 @@ export default function WishlistPage() {
   const fetchWishlist = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/wishlist', {
+      const response = await fetch('/v2/api/wishlist', {
         headers: {
           'x-user-id': 'demo-user',
         },

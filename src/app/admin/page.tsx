@@ -67,7 +67,7 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const res = await fetch('/api/admin/dashboard');
+      const res = await fetch('/v2/api/admin/dashboard');
       const data = await res.json();
 
       // Set stats or use mock data

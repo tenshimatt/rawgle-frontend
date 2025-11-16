@@ -97,7 +97,7 @@ export default function NewPostPage() {
 
     try {
       setSaving(true);
-      const res = await fetch('/api/admin/posts', {
+      const res = await fetch('/v2/api/admin/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, status: 'draft' }),
@@ -131,7 +131,7 @@ export default function NewPostPage() {
 
     try {
       setSaving(true);
-      const res = await fetch('/api/admin/posts', {
+      const res = await fetch('/v2/api/admin/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, status }),

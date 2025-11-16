@@ -84,7 +84,7 @@ export default function AchievementsPage() {
 
   const fetchAchievements = async () => {
     try {
-      const response = await fetch('/api/achievements');
+      const response = await fetch('/v2/api/achievements');
       const data = await response.json();
       setAchievements(data.achievements);
       setStats(data.stats);

@@ -50,7 +50,7 @@ export default function NewProductPage() {
   const loadGelatoProducts = async () => {
     setLoadingGelato(true);
     try {
-      const res = await fetch('/api/admin/products/sync-gelato');
+      const res = await fetch('/v2/api/admin/products/sync-gelato');
       const data = await res.json();
       if (data.success && data.products) {
         // Extract unique Gelato products from synced products
@@ -136,7 +136,7 @@ export default function NewProductPage() {
         },
       };
 
-      const res = await fetch('/api/admin/products', {
+      const res = await fetch('/v2/api/admin/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

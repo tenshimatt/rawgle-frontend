@@ -73,7 +73,7 @@ export default function ChallengesPage() {
 
   const fetchChallenges = async () => {
     try {
-      const response = await fetch('/api/challenges');
+      const response = await fetch('/v2/api/challenges');
       const data = await response.json();
       setChallenges(data.challenges);
       setStats(data.stats);
@@ -86,7 +86,7 @@ export default function ChallengesPage() {
 
   const handleStartChallenge = async (challengeId: string) => {
     try {
-      await fetch('/api/challenges', {
+      await fetch('/v2/api/challenges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ challengeId, action: 'start' }),

@@ -46,7 +46,7 @@ export default function AdminProductsPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('/api/admin/products');
+      const res = await fetch('/v2/api/admin/products');
       const data = await res.json();
       if (data.success) {
         setProducts(data.products);
@@ -65,7 +65,7 @@ export default function AdminProductsPage() {
 
     setSyncing(true);
     try {
-      const res = await fetch('/api/admin/products/sync-gelato', {
+      const res = await fetch('/v2/api/admin/products/sync-gelato', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode: 'update' }),
@@ -88,7 +88,7 @@ export default function AdminProductsPage() {
   const handleStatusToggle = async (productId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'draft' : 'active';
     try {
-      const res = await fetch('/api/admin/products', {
+      const res = await fetch('/v2/api/admin/products', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, status: newStatus }),

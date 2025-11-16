@@ -55,7 +55,7 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('/api/admin/users');
+      const res = await fetch('/v2/api/admin/users');
       const data = await res.json();
       if (data.success) {
         setUsers(data.users);
@@ -69,7 +69,7 @@ export default function AdminUsersPage() {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const res = await fetch('/api/admin/users', {
+      const res = await fetch('/v2/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, role: newRole }),
@@ -85,7 +85,7 @@ export default function AdminUsersPage() {
 
   const handleStatusChange = async (userId: string, newStatus: string) => {
     try {
-      const res = await fetch('/api/admin/users', {
+      const res = await fetch('/v2/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, status: newStatus }),

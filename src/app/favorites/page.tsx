@@ -20,7 +20,7 @@ export default function FavoritesPage() {
 
   const fetchFavorites = async () => {
     try {
-      const response = await fetch('/api/favorites', {
+      const response = await fetch('/v2/api/favorites', {
         headers: { 'x-user-id': 'demo-user' },
       });
       const data = await response.json();

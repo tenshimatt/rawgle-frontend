@@ -129,7 +129,7 @@ export default function AdminPostsPage() {
       }
     } else if (bulkAction === 'publish' || bulkAction === 'draft') {
       try {
-        const res = await fetch('/api/admin/posts', {
+        const res = await fetch('/v2/api/admin/posts', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

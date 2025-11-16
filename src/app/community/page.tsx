@@ -31,7 +31,7 @@ export default function CommunityPage() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/community/posts', {
+      const response = await fetch('/v2/api/community/posts', {
         headers: { 'x-user-id': currentUserId },
       });
       const data = await response.json();

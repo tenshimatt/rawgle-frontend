@@ -49,7 +49,7 @@ export default function ForumsPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/community/forums');
+        const response = await fetch('/v2/api/community/forums');
         const data = await response.json();
         if (data.success) {
           setCategories(data.data);
