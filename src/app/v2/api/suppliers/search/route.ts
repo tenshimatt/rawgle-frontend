@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rawgleApi, type CloudflareSupplier } from '@/lib/rawgle-api-client';
 
-export const runtime = 'edge';
-
 /**
  * Text Search API for Suppliers
  *

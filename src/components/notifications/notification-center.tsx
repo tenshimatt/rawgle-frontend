@@ -22,7 +22,7 @@ export function NotificationCenter() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch('/api/notifications', {
+      const response = await fetch('/v2/api/notifications', {
         headers: { 'x-user-id': 'demo-user' },
       });
       const data = await response.json();
@@ -41,7 +41,7 @@ export function NotificationCenter() {
 
   const markAsRead = async (id: string) => {
     try {
-      await fetch(`/api/notifications/${id}/read`, {
+      await fetch(`/v2/api/notifications/${id}/read`, {
         method: 'PUT',
         headers: { 'x-user-id': 'demo-user' },
       });
@@ -53,7 +53,7 @@ export function NotificationCenter() {
 
   const deleteNotification = async (id: string) => {
     try {
-      await fetch(`/api/notifications/${id}`, {
+      await fetch(`/v2/api/notifications/${id}`, {
         method: 'DELETE',
         headers: { 'x-user-id': 'demo-user' },
       });

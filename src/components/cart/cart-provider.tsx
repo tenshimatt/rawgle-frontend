@@ -80,7 +80,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Refresh cart data from API
   const refreshCart = useCallback(async () => {
     try {
-      const response = await fetch('/api/cart', {
+      const response = await fetch('/v2/api/cart', {
         headers: {
           'x-user-id': 'demo-user',
         },
@@ -111,7 +111,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/cart', {
+      const response = await fetch('/v2/api/cart', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `/api/cart?productId=${encodeURIComponent(productId)}&sizeOption=${encodeURIComponent(sizeOption)}`,
+        `/v2/api/cart?productId=${encodeURIComponent(productId)}&sizeOption=${encodeURIComponent(sizeOption)}`,
         {
           method: 'DELETE',
           headers: {
@@ -215,7 +215,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/cart', {
+      const response = await fetch('/v2/api/cart', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -255,7 +255,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/cart', {
+      const response = await fetch('/v2/api/cart', {
         method: 'DELETE',
         headers: {
           'x-user-id': 'demo-user',

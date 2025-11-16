@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rawgleApi } from '@/lib/rawgle-api-client';
 
-export const runtime = 'edge';
-
 /**
  * Nearby Suppliers Search API
  *
