@@ -31,10 +31,17 @@ NEXT_PUBLIC_MAPBOX_TOKEN = "your-mapbox-token"
 [site]
 bucket = ".vercel/output/static"
 
-[[redirects]]
-from = "/api/*"
-to = "https://api.rawgle.com/:splat"
-status = 200
+# DISABLED: This redirect was blocking ALL /api/* requests
+# Cloudflare Workers was redirecting to non-existent api.rawgle.com
+# Causing 404 errors for all Next.js API routes
+#
+# Solution: Use /v2/api/* routes that bypass this redirect
+# See: CLOUDFLARE_AUDIT_FINDINGS.md for details
+#
+# [[redirects]]
+# from = "/api/*"
+# to = "https://api.rawgle.com/:splat"
+# status = 200
 
 [[headers]]
 for = "/*"
